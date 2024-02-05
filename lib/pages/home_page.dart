@@ -1,3 +1,6 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../services/AuthService.dart';
 import 'search_barcode_page.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -8,8 +11,9 @@ import 'profile_page.dart';
 
 class HomePage extends StatelessWidget {
   final String username;
+  final AuthService service = AuthService();
 
-  HomePage({required this.username});
+  HomePage({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +44,16 @@ class HomePage extends StatelessWidget {
         ],
         backgroundColor: Colors.green,
       ),
+      drawer: Drawer(
+        child: ListView(children: [
+          ListTile(
+            onTap: () {
+              _logout(context);
+            },
+            title: const Text("Sair"),
+            leading: const Icon(Icons.logout),
+          )
+        ],),),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -112,6 +126,25 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _logout(BuildContext context) {
+    service.revokeToken().then((_) {
+      return SharedPreferences.getInstance();
+    }).then((prefs) {
+      prefs.clear();
+      Navigator.pushReplacementNamed(context, "login");
+    }).catchError((error) {
+      final snackBar = SnackBar(
+        content: Text(
+          'Ocorreu um erro durante o logout: $error',
+          style: TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.red,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
   }
 
   void _openStockPage(BuildContext context) {

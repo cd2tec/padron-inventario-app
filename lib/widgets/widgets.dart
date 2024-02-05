@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LogoWidget extends StatelessWidget {
   const LogoWidget({super.key});
@@ -25,7 +26,7 @@ class UsernameInputWidget extends StatelessWidget {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        labelText: 'Usuário',
+        labelText: 'E-mail',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -91,80 +92,3 @@ class LoginButtonWidget extends StatelessWidget {
   }
 }
 
-/* import 'package:flutter/material.dart';
-
-class LogoWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Image.asset(
-        'images/logoMobile.png',
-        height: 200,
-      ),
-    );
-  }
-}
-
-class UsernameInputWidget extends StatelessWidget {
-  final TextEditingController controller;
-  final Function onChanged;
-
-  UsernameInputWidget({required this.controller, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(labelText: 'Usuário'),
-      onChanged: (value) => onChanged(),
-    );
-  }
-}
-
-class PasswordInputWidget extends StatelessWidget {
-  final TextEditingController controller;
-  final Function onChanged;
-  final bool obscureText;
-  final Function onToggle;
-
-  PasswordInputWidget({
-    required this.controller,
-    required this.onChanged,
-    required this.obscureText,
-    required this.onToggle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: 'Senha',
-        suffixIcon: IconButton(
-          icon: Icon(
-            obscureText ? Icons.visibility : Icons.visibility_off,
-          ),
-          onPressed: () => onToggle(),
-        ),
-      ),
-      obscureText: obscureText,
-      onChanged: (value) => onChanged(),
-    );
-  }
-}
-
-class LoginButtonWidget extends StatelessWidget {
-  final Function onPressed;
-  final bool isEnabled;
-
-  LoginButtonWidget({required this.onPressed, required this.isEnabled});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: isEnabled ? () => onPressed() : null,
-      child: Text('Acessar'),
-    );
-  }
-}
- */

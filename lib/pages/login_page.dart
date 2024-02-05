@@ -1,18 +1,18 @@
-import 'dart:developer';
-
-import 'package:delmoro_estoque_app/home_page.dart';
 import 'package:flutter/material.dart';
-import 'widgets.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:delmoro_estoque_app/services/AuthService.dart';
+import '../widgets/widgets.dart';
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  AuthService service = AuthService();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24),
                   LoginButtonWidget(
-                    onPressed: _isButtonEnabled ? login : () {},
+                    onPressed: _isButtonEnabled ? () => _performLogin(context) : () {},
                     isEnabled: _isButtonEnabled,
                   ),
                 ],
@@ -70,28 +70,28 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  login() async {
-    var apiUrl = Uri.parse('http://144.22.160.136:8081/login/mobile');
+  void _performLogin(BuildContext context) {
+    try {
+      service.login(
+        _usernameController.text,
+        _passwordController.text
+      ).then((resultLogin) {
+        if(resultLogin) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(username: _usernameController.text),
+            ),
+          );
+        }
+      });
 
-    var response = await http.post(apiUrl, body: {
-      'sequsuario': _usernameController.text,
-      'password': _passwordController.text,
-      'mobiletoken': '123456'
-    });
 
-    if (response.statusCode == 200) {
-      print(response.body);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(username: _usernameController.text),
-        ),
-      );
-    } else {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Colors.redAccent,
-          content: Text('Usuário ou senha inválidos'),
+          content: Text('Credenciais inválidas'),
           behavior: SnackBarBehavior.floating,
         ),
       );
