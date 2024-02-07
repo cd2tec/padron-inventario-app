@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
-import 'stock_page.dart'; // Importe a página StockPage
-import 'profile_page.dart'; // Importe a página ProfilePage
+import '../widgets/register/register_form.dart';
+import 'stock_page.dart';
 
-class SearchBarcodePage extends StatelessWidget {
-  final String productDetails;
-
-  SearchBarcodePage({required this.productDetails});
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Produto'),
+        title: const Text('Cadastrar Usuário'),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
-              // Implemente as ações para cada item do menu
               if (value == 'consultaEstoque') {
                 _openStockPage(context);
               } else if (value == 'gerenciarPerfis') {
@@ -33,20 +30,14 @@ class SearchBarcodePage extends StatelessWidget {
             },
           ),
         ],
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        child: DataTable(
-          columns: [
-            DataColumn(label: Text('Detalhes do Produto')),
-          ],
-          rows: [
-            DataRow(
-              cells: [
-                DataCell(Text(productDetails)),
-              ],
-            ),
-          ],
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: const Center(
+            child: RegisterForm(),
+          ),
         ),
       ),
     );
@@ -62,11 +53,6 @@ class SearchBarcodePage extends StatelessWidget {
   }
 
   void _openManageProfilesPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProfilePage(),
-      ),
-    );
+    // Não faz nada, já estamos na página de Gerenciar Perfis
   }
 }

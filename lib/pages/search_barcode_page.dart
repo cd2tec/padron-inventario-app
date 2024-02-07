@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
-import 'profile_page.dart';
+import 'stock_page.dart'; // Importe a página StockPage
+import 'register_page.dart'; // Importe a página ProfilePage
 
-class StockPage extends StatelessWidget {
+class SearchBarcodePage extends StatelessWidget {
+  final String productDetails;
+
+  SearchBarcodePage({required this.productDetails});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Consultar Estoque'),
+        title: Text('Produto'),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
               // Implemente as ações para cada item do menu
               if (value == 'consultaEstoque') {
-                // Não faz nada, já estamos na página de Consultar Estoque
+                _openStockPage(context);
               } else if (value == 'gerenciarPerfis') {
                 _openManageProfilesPage(context);
               }
@@ -30,8 +35,28 @@ class StockPage extends StatelessWidget {
         ],
         backgroundColor: Colors.green,
       ),
-      body: Center(
-        child: Text('Página de Consulta de Estoque'),
+      body: SingleChildScrollView(
+        child: DataTable(
+          columns: [
+            DataColumn(label: Text('Detalhes do Produto')),
+          ],
+          rows: [
+            DataRow(
+              cells: [
+                DataCell(Text(productDetails)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openStockPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StockPage(),
       ),
     );
   }
@@ -40,7 +65,7 @@ class StockPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfilePage(),
+        builder: (context) => RegisterPage(),
       ),
     );
   }
