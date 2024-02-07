@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'profile_page.dart';
+import 'register_page.dart';
 
 class StockPage extends StatelessWidget {
   @override
@@ -40,7 +40,7 @@ class StockPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfilePage(),
+        builder: (context) => RegisterPage(),
       ),
     );
   }

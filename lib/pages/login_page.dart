@@ -19,43 +19,46 @@ class _LoginPageState extends State<LoginPage> {
   bool _isButtonEnabled = false;
 
   @override
+  @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: const Color(0xFFA30000),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const LogoWidget(),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  UsernameInputWidget(
-                    controller: _usernameController,
-                    onChanged: _updateButtonState,
-                  ),
-                  const SizedBox(height: 16),
-                  PasswordInputWidget(
-                    controller: _passwordController,
-                    onChanged: _updateButtonState,
-                    obscureText: _obscurePassword,
-                    onToggle: _togglePasswordVisibility,
-                  ),
-                  const SizedBox(height: 24),
-                  LoginButtonWidget(
-                    onPressed: _isButtonEnabled ? () => _performLogin(context) : () {},
-                    isEnabled: _isButtonEnabled,
-                  ),
-                ],
-              ),
+            const SizedBox(height: 100),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                UsernameInputWidget(
+                  controller: _usernameController,
+                  onChanged: _updateButtonState,
+                ),
+                const SizedBox(height: 16),
+                PasswordInputWidget(
+                  controller: _passwordController,
+                  onChanged: _updateButtonState,
+                  obscureText: _obscurePassword,
+                  onToggle: _togglePasswordVisibility,
+                ),
+                const SizedBox(height: 24),
+                LoginButtonWidget(
+                  onPressed: _isButtonEnabled ? () => _performLogin(context) : () {},
+                  isEnabled: _isButtonEnabled,
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
+
+
 
   void _updateButtonState() {
     setState(() {
@@ -80,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => HomePage(username: _usernameController.text),
+              builder: (context) => HomePage(),
             ),
           );
         }

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import '../widgets/register/register_form.dart';
 import 'stock_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gerenciar Perfis'),
+        title: const Text('Cadastrar Usuário'),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
-              // Implemente as ações para cada item do menu
               if (value == 'consultaEstoque') {
                 _openStockPage(context);
               } else if (value == 'gerenciarPerfis') {
@@ -28,10 +30,15 @@ class ProfilePage extends StatelessWidget {
             },
           ),
         ],
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.white,
       ),
-      body: Center(
-        child: Text('Página de Gerenciamento de Perfis'),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: const Center(
+            child: RegisterForm(),
+          ),
+        ),
       ),
     );
   }

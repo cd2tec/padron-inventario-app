@@ -7,19 +7,18 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 
 import 'stock_page.dart';
-import 'profile_page.dart';
+import 'register_page.dart';
 
 class HomePage extends StatelessWidget {
-  final String username;
   final AuthService service = AuthService();
 
-  HomePage({super.key, required this.username});
+  HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bem-vindo, $username!'),
+        title: const Text('Bem-vindo!'),
         actions: [
           PopupMenuButton<String>(
             iconSize: 30,
@@ -42,10 +41,20 @@ class HomePage extends StatelessWidget {
             },
           ),
         ],
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.white,
       ),
       drawer: Drawer(
         child: ListView(children: [
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RegisterPage()),
+              );
+            },
+            title: const Text("Cadastrar Usuário"),
+            leading: const Icon(Icons.supervised_user_circle),
+          ),
           ListTile(
             onTap: () {
               _logout(context);
@@ -58,7 +67,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.all(16.0),
+              margin: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
                   _openStockPage(context);
@@ -67,11 +76,11 @@ class HomePage extends StatelessWidget {
                   primary: Colors.green,
                   onPrimary: Colors.white,
                 ),
-                child: Text('Consultar Estoque'),
+                child: const Text('Consultar Estoque'),
               ),
             ),
             Container(
-              margin: EdgeInsets.all(16.0),
+              margin: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
                   _openManageProfilesPage(context);
@@ -80,18 +89,18 @@ class HomePage extends StatelessWidget {
                   primary: Colors.green,
                   onPrimary: Colors.white,
                 ),
-                child: Text('Gerenciar Perfis'),
+                child: const Text('Gerenciar Perfis'),
               ),
             ),
             Container(
-              margin: EdgeInsets.all(16.0),
+              margin: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: _openBarcodeScanner,
                 style: ElevatedButton.styleFrom(
                   primary: Colors.green,
                   onPrimary: Colors.white,
                 ),
-                child: Text('Leitor de Código de Barras'),
+                child: const Text('Leitor de Código de Barras'),
               ),
             ),
             CarouselSlider(
@@ -160,7 +169,7 @@ class HomePage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfilePage(),
+        builder: (context) => const RegisterPage(),
       ),
     );
   }

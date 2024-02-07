@@ -6,10 +6,12 @@ class LogoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Align(
+      alignment: Alignment.center,
       child: Image.asset(
-        'images/logoMobile.png',
-        height: 10,
+        'images/logopadron.png',
+        height: 90,
+        width: 300,
       ),
     );
   }
@@ -26,7 +28,10 @@ class UsernameInputWidget extends StatelessWidget {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        labelText: 'E-mail',
+        labelText: 'Usuário',
+        prefixIcon: const Icon(Icons.supervised_user_circle_outlined),
+        filled: true,
+        fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -55,6 +60,9 @@ class PasswordInputWidget extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         labelText: 'Senha',
+        prefixIcon: const Icon(Icons.lock),
+        filled: true,
+        fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -75,20 +83,28 @@ class LoginButtonWidget extends StatelessWidget {
   final Function onPressed;
   final bool isEnabled;
 
-  const LoginButtonWidget({super.key, required this.onPressed, required this.isEnabled});
+  const LoginButtonWidget({
+    Key? key,
+    required this.onPressed,
+    required this.isEnabled,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: isEnabled ? () => onPressed() : null,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white, backgroundColor: Colors.green, // Texto em branco
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(isEnabled ? Colors.white : Colors.white),
+        foregroundColor: MaterialStateProperty.all(Colors.black),
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
         ),
       ),
       child: const Text('Acessar'),
     );
   }
 }
+
 

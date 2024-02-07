@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: isLogged ? "home" : "login",
       routes: {
-        "home": (context) => HomePage(username: "Teste"),
-        "login": (context) => LoginPage(),
+        "home": (context) => HomePage(),
+        "login": (context) => const LoginPage(),
       },
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'stock_page.dart'; // Importe a página StockPage
-import 'profile_page.dart'; // Importe a página ProfilePage
+import 'register_page.dart'; // Importe a página ProfilePage
 
 class SearchBarcodePage extends StatelessWidget {
   final String productDetails;
@@ -65,7 +65,7 @@ class SearchBarcodePage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfilePage(),
+        builder: (context) => RegisterPage(),
       ),
     );
   }
