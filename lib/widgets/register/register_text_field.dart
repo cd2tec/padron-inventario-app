@@ -4,12 +4,14 @@ class RegisterTextField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final bool obscureText;
+  final Icon icon;
   final String? Function(String?)? validator;
 
   const RegisterTextField({
     required this.label,
     required this.controller,
     this.obscureText = false,
+    required this.icon,
     this.validator,
   });
 
@@ -20,6 +22,7 @@ class RegisterTextField extends StatelessWidget {
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
+        prefixIcon: icon,
       ),
       validator: validator,
     );

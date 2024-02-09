@@ -6,7 +6,7 @@ class StockPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Consultar Estoque'),
+        title: const Text('Consultar Estoque'),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -30,7 +30,7 @@ class StockPage extends StatelessWidget {
         ],
         backgroundColor: Colors.green,
       ),
-      body: Center(
+      body: const Center(
         child: Text('Página de Consulta de Estoque'),
       ),
     );
@@ -40,7 +40,7 @@ class StockPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RegisterPage(),
+        builder: (context) => const RegisterPage(),
       ),
     );
   }
