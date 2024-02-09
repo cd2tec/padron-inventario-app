@@ -1,5 +1,7 @@
 import 'package:delmoro_estoque_app/pages/home_page.dart';
 import 'package:delmoro_estoque_app/pages/login_page.dart';
+import 'package:delmoro_estoque_app/pages/register_page.dart';
+import 'package:delmoro_estoque_app/pages/User/user_management_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,6 +34,8 @@ class MyApp extends StatelessWidget {
       routes: {
         "home": (context) => HomePage(),
         "login": (context) => const LoginPage(),
+        "register": (context) => const RegisterPage(),
+        "user": (context) => const UserListScreen(),
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,7 +45,7 @@ class AuthService {
     print(tokenSave);
   }
 
-  Future<void> revokeToken() async {
+  Future<void> revokeToken(context) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 
@@ -62,6 +63,10 @@ class AuthService {
     );
 
     if (response.statusCode != 200) {
+      if(response.statusCode == 401) {
+        prefs.clear();
+        Navigator.pushReplacementNamed(context, "login");
+      }
       throw http.ClientException(response.body);
     }
   }

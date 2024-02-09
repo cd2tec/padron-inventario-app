@@ -9,7 +9,14 @@ class RegisterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastrar Usuário'),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        title: const Text('Cadastrar Usuário',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -30,7 +37,7 @@ class RegisterPage extends StatelessWidget {
             },
           ),
         ],
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFA30000),
       ),
       body: SingleChildScrollView(
         child: Container(

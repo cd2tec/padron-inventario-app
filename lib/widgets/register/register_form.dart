@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:delmoro_estoque_app/services/User/RegisterService.dart';
+import 'package:delmoro_estoque_app/services/UserService.dart';
 import 'package:delmoro_estoque_app/widgets/register/register_check_box.dart';
 import 'package:delmoro_estoque_app/widgets/register/register_text_field.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ class RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-  RegisterService service = RegisterService();
+  UserService service = UserService();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -41,7 +41,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 return 'Por favor, digite seu nome completo';
               }
               return null;
-            },
+            }, icon: const Icon(Icons.supervised_user_circle_outlined),
           ),
           const SizedBox(height: 16.0),
           RegisterTextField(
@@ -52,7 +52,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 return 'Por favor, digite seu email';
               }
               return null;
-            },
+            }, icon: const Icon(Icons.email),
           ),
           const SizedBox(height: 16.0),
           RegisterTextField(
@@ -64,7 +64,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 return 'Por favor, digite sua senha';
               }
               return null;
-            },
+            }, icon: const Icon(Icons.password),
           ),
           const SizedBox(height: 16.0),
           RegisterTextField(
@@ -75,7 +75,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 return 'Por favor, digite seu CPF';
               }
               return null;
-            },
+            }, icon: const Icon(Icons.credit_card),
           ),
           const SizedBox(height: 16.0),
           RegisterCheckBox(
@@ -112,7 +112,6 @@ class _RegisterFormState extends State<RegisterForm> {
                 service.userRegister(name, email, password, cpf, administrator, ativo)
                     .then((response) {
                       Map<String, dynamic> data = jsonDecode(response);
-                      print(data['message']);
 
                         final snackBar = SnackBar(
                           content: Text(
