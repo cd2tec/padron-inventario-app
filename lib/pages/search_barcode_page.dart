@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'stock_page.dart'; // Importe a página StockPage
-import 'register_page.dart'; // Importe a página ProfilePage
+import 'stock_page.dart';
+import 'register_page.dart';
 
 class SearchBarcodePage extends StatelessWidget {
   final String productDetails;
@@ -11,7 +11,7 @@ class SearchBarcodePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Produto'),
+        title: const Text('Produto'),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -37,7 +37,7 @@ class SearchBarcodePage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: DataTable(
-          columns: [
+          columns: const [
             DataColumn(label: Text('Detalhes do Produto')),
           ],
           rows: [

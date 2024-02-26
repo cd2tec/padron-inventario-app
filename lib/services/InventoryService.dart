@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:padron_inventario_app/models/Store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InventoryService {
@@ -9,15 +10,47 @@ class InventoryService {
     return await SharedPreferences.getInstance();
   }
 
-  Future fetchProduct(String filter, String barcode) async {
+  Future fetchProduct(String filter, String code, String store) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
+    print(store);
 
     var apiUrl = Uri(
       scheme: 'http',
       host: url,
       port: 8080,
-      path: '/inventory/$filter/$barcode',
+      path: '/inventory',
+    );
+
+    http.Response response = await http.post(
+      apiUrl,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+      body: {
+        'lojaKey': store,
+         filter: code
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw http.ClientException(response.body);
+    }
+
+    return response.body;
+  }
+
+  Future<List<Store>> fetchStores() async {
+    SharedPreferences prefs = await getSharedPreferences();
+    var token = prefs.getString('token');
+
+
+    var apiUrl = Uri(
+      scheme: 'http',
+      host: url,
+      port: 8080,
+      path: '/store/allowed',
     );
 
     http.Response response = await http.get(
@@ -32,6 +65,13 @@ class InventoryService {
       throw http.ClientException(response.body);
     }
 
-    return response.body;
+    List<dynamic> storeListJson = json.decode(response.body);
+    List<Store> storeList = storeListJson.map((storeJson) {
+      return Store.fromJson(storeJson);
+    }).toList();
+
+    print(storeList);
+
+    return storeList;
   }
 }

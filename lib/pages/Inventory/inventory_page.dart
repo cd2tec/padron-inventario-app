@@ -1,10 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/pages/Inventory/inventory_detail_page.dart';
 import '../../services/InventoryService.dart';
 
 class InventoryPage extends StatefulWidget {
-  const InventoryPage({super.key});
+  const InventoryPage({Key? key}) : super(key: key);
 
   @override
   _InventoryPageState createState() => _InventoryPageState();
@@ -12,8 +14,23 @@ class InventoryPage extends StatefulWidget {
 
 class _InventoryPageState extends State<InventoryPage> {
   InventoryService service = InventoryService();
+  List<Store> lojas = [];
+  Store? selectedLoja;
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchStores();
+  }
+
+  Future<void> _fetchStores() async {
+    List<Store> fetchedLojas = await service.fetchStores();
+    setState(() {
+      lojas = fetchedLojas;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,74 +47,114 @@ class _InventoryPageState extends State<InventoryPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(20),
-            child: TextField(
-              controller: _productkeyController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Código do Produto',
-              ),
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (_productkeyController.text.isNotEmpty) {
-                service.fetchProduct('produtoKey', _productkeyController.text).then((value) {
-                  print(value);
-
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => InventoryDetailPage(),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _productkeyController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      hintText: 'Código do Produto',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.arrow_forward),
+                        onPressed: () {
+                          _scanProductKey(_productkeyController.text);
+                        },
+                      ),
                     ),
-                  );
-                });
-              } else {
-                // Trate o caso em que o campo está vazio
-                print("Campo de código de barras vazio");
-              }
-            },
-            child: const Padding(
-              padding: EdgeInsets.all(15),
-              child: Text("Buscar", style: TextStyle(fontSize: 16)),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.camera_alt),
+                  onPressed: () {
+                    _scanBarcode();
+                  },
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () async {
-              String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-                "#ff6666",
-                "Cancelar",
-                true,
-                ScanMode.DEFAULT,
-              );
-
-              if (!mounted) return;
-              setState(() {
-                _barcodeController.text = barcodeScanRes;
-              });
-
-              print("Código de Barras: $barcodeScanRes");
-              service.fetchProduct('gtin', _barcodeController.text).then((value) {
-                print(value);
-
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => InventoryDetailPage(),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<Store>(
+                      isDense: true,
+                      value: selectedLoja,
+                      style: const TextStyle(color: Colors.black),
+                      items: [
+                        const DropdownMenuItem<Store>(
+                          value: null,
+                          child: Center(child: Text("Selecionar Loja", style: TextStyle(fontSize: 16.0))),
+                        ),
+                        ...lojas.map((Store loja) {
+                          return DropdownMenuItem<Store>(
+                            value: loja,
+                            child: Center(child: Text(loja.fantasia)),
+                          );
+                        }).toList(),
+                      ],
+                      onChanged: (Store? newValue) {
+                        setState(() {
+                          selectedLoja = newValue;
+                        });
+                      },
+                    ),
                   ),
-                );
-              });
-            },
-            child: const Padding(
-              padding: EdgeInsets.all(15),
-              child: Text("Scanner", style: TextStyle(fontSize: 16)),
-            ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
+  Future<void> _scanBarcode() async {
+    String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+      "#ff6666",
+      "Cancelar",
+      true,
+      ScanMode.DEFAULT,
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _barcodeController.text = barcodeScanRes;
+    });
+
+    _searchProduct('gtin', _barcodeController.text);
+  }
+
+  Future<void> _scanProductKey(String productkey) async {
+    if (productkey.isEmpty) return;
+    _searchProduct('produtoKey', productkey);
+  }
+
+  void _searchProduct(String filter, String value) {
+    service.fetchProduct(filter, value, selectedLoja!.nroempresabluesoft).then((value) {
+      Map<String, dynamic> decodedData = jsonDecode(value);
+      var firstItem = decodedData['data'][0];
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InventoryDetailPage(inventoryData: firstItem),
+        ),
+      );
+    }).catchError((error) {
+        print(error);
+        final snackBar = SnackBar(
+          content: Text(
+            '$error',
+            style: const TextStyle(fontSize: 16),
+          ),
+          backgroundColor: Colors.redAccent,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+  }
+}
