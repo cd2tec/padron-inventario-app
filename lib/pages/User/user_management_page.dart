@@ -1,6 +1,6 @@
-import 'package:delmoro_estoque_app/pages/User/user_management_details_page.dart';
+import 'package:padron_inventario_app/pages/User/user_management_details_page.dart';
 import 'package:flutter/material.dart';
-import 'package:delmoro_estoque_app/services/UserService.dart';
+import 'package:padron_inventario_app/services/UserService.dart';
 
 class UserListScreen extends StatefulWidget {
   const UserListScreen({Key? key}) : super(key: key);

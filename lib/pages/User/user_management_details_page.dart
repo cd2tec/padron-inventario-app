@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:delmoro_estoque_app/pages/User/user_management_page.dart';
+import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:flutter/material.dart';
 import '../../services/UserService.dart';
 import '../home_page.dart';

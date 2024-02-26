@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -41,8 +42,17 @@ class AuthService {
 
     SharedPreferences prefs = await getSharedPreferences();
     prefs.setString('token', token);
-    String? tokenSave = prefs.getString('token');
-    print(tokenSave);
+  }
+
+  Future<bool> verifyToken() async{
+    SharedPreferences prefs = await getSharedPreferences();
+    String? token = prefs.getString('token');
+
+    if(token != null) {
+      return true;
+    }
+
+    return false;
   }
 
   Future<void> revokeToken(context) async {

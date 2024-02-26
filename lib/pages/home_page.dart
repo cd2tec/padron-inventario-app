@@ -1,4 +1,5 @@
-import 'package:delmoro_estoque_app/pages/User/user_management_page.dart';
+import 'package:padron_inventario_app/pages/Inventory/inventory_page.dart';
+import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/AuthService.dart';
@@ -54,21 +55,21 @@ class HomePage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const RegisterPage()),
+                MaterialPageRoute(builder: (context) => const UserListScreen()),
               );
             },
-            title: const Text("Cadastrar Usuário"),
+            title: const Text("Gerenciar Usuários"),
             leading: const Icon(Icons.supervised_user_circle),
           ),
           ListTile(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserListScreen()),
+                MaterialPageRoute(builder: (context) => InventoryPage()),
               );
             },
-            title: const Text("Gerenciar Usuários"),
-            leading: const Icon(Icons.supervised_user_circle),
+            title: const Text("Gerenciar Inventário"),
+            leading: const Icon(Icons.inventory),
           ),
           ListTile(
             onTap: () {
@@ -122,7 +123,7 @@ class HomePage extends StatelessWidget {
 
   Widget _buildStoreItem(int index) {
     String storeName =
-        'Loja ${index + 1}'; // Substitua com a lógica para obter o nome da loja
+        'Loja ${index + 1}';
 
     return GestureDetector(
       onTap: () {

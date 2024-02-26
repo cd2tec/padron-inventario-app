@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserService {
-  static const String url = "http://192.168.15.186/";
+  static const String url = "192.168.15.186";
 
   static Future<SharedPreferences> getSharedPreferences() async {
     return await SharedPreferences.getInstance();
@@ -15,7 +15,7 @@ class UserService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: '192.168.15.186',
+      host: url,
       port: 8080,
       path: '/user',
     );
@@ -45,7 +45,7 @@ class UserService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: '192.168.15.186',
+      host: url,
       port: 8080,
       path: '/user/$userId',
     );
@@ -89,7 +89,7 @@ class UserService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: '192.168.15.186',
+      host: url,
       port: 8080,
       path: '/register',
     );
@@ -125,7 +125,7 @@ class UserService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: '192.168.15.186',
+      host: url,
       port: 8080,
       path: '/user/${userId}',
     );
