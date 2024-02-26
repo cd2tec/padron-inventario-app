@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:delmoro_estoque_app/services/AuthService.dart';
+import 'package:padron_inventario_app/services/AuthService.dart';
 import '../widgets/widgets.dart';
 import 'home_page.dart';
 
@@ -18,8 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _isButtonEnabled = false;
 
-  @override
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(

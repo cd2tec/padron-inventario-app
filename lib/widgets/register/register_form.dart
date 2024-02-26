@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:delmoro_estoque_app/services/UserService.dart';
-import 'package:delmoro_estoque_app/widgets/register/register_check_box.dart';
-import 'package:delmoro_estoque_app/widgets/register/register_text_field.dart';
+import 'package:padron_inventario_app/pages/User/user_management_page.dart';
+import 'package:padron_inventario_app/services/UserService.dart';
+import 'package:padron_inventario_app/widgets/register/register_check_box.dart';
+import 'package:padron_inventario_app/widgets/register/register_text_field.dart';
 import 'package:flutter/material.dart';
 
 import '../../pages/home_page.dart';
@@ -126,7 +127,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => HomePage(),
+                            builder: (context) => const UserListScreen(),
                           ),
                         );
                       })
