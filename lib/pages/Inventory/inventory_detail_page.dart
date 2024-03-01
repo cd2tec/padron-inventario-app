@@ -1,18 +1,19 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 class InventoryDetailPage extends StatefulWidget {
-  final Map<String, dynamic>? inventoryData;
+  final Map<String, dynamic>? productData;
+  final Map<String, dynamic>? stockData;
 
-  InventoryDetailPage({Key? key, this.inventoryData}) : super(key: key);
+  InventoryDetailPage({Key? key, this.productData, this.stockData}) : super(key: key);
 
   @override
   _InventoryDetailPageState createState() => _InventoryDetailPageState();
 }
 
 class _InventoryDetailPageState extends State<InventoryDetailPage> {
-  Map<String, dynamic> get _mappedData => widget.inventoryData ?? {};
+  Map<String, dynamic> get _mappedProductData => widget.productData ?? {};
+  Map<String, dynamic> get _mappedStockData => widget.stockData ?? {};
 
 
   @override
@@ -62,7 +63,9 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                   _buildText('Saldo Disponível', 'saldoDisponivel'),
                   _buildText('Saldo Estoque Contábil', 'saldoEstoqueContabil'),
                   _buildText('Dta. Atualização Ficha Estoque', 'dataAtualizacaoFichaEstoque'),
-                  _buildText('Fato Estoque', 'fatorEstoque'),
+                  _buildText('Fator Estoque', 'fatorEstoque'),
+                  _buildText('Qtd. Exposição', 'quantidadeExposicao'),
+                  _buildText('Qtd. Ponto Extre', 'quantidadePontoExtra'),
                 ],
               ),
             ),
@@ -80,6 +83,12 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   }
 
   String? _getStringValue(String key) {
-    return widget.inventoryData?[key]?.toString();
+    if (widget.productData != null && widget.productData!.containsKey(key)) {
+      return widget.productData![key]?.toString();
+    } else if (widget.stockData != null && widget.stockData!.containsKey(key)) {
+      return widget.stockData![key]?.toString();
+    } else {
+      return null;
+    }
   }
 }

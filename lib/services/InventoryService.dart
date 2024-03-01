@@ -13,7 +13,6 @@ class InventoryService {
   Future fetchProduct(String filter, String code, String store) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
-    print(store);
 
     var apiUrl = Uri(
       scheme: 'http',
@@ -41,16 +40,45 @@ class InventoryService {
     return response.body;
   }
 
-  Future<List<Store>> fetchStores() async {
+  Future fetchStock(String filter, String code, String store) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
-
 
     var apiUrl = Uri(
       scheme: 'http',
       host: url,
       port: 8080,
-      path: '/store/allowed',
+      path: '/inventory/stock',
+    );
+
+    http.Response response = await http.post(
+      apiUrl,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+      body: {
+        'lojaKey': store,
+        filter: code
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw http.ClientException(response.body);
+    }
+
+    return response.body;
+  }
+
+  Future<List<Store>> fetchStores() async {
+    SharedPreferences prefs = await getSharedPreferences();
+    var token = prefs.getString('token');
+
+    var apiUrl = Uri(
+      scheme: 'http',
+      host: url,
+      port: 8080,
+      path: '/store/allowed/user',
     );
 
     http.Response response = await http.get(

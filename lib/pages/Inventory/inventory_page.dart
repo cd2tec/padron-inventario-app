@@ -36,10 +36,23 @@ class _InventoryPageState extends State<InventoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
         title: const Text(
           'Inventário',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+          ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              _openRegisterPage(context);
+            },
+          ),
+        ],
         backgroundColor: const Color(0xFFA30000),
       ),
       body: Column(
@@ -47,66 +60,123 @@ class _InventoryPageState extends State<InventoryPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(20),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _productkeyController,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      hintText: 'Código do Produto',
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.arrow_forward),
-                        onPressed: () {
-                          _scanProductKey(_productkeyController.text);
-                        },
-                      ),
-                    ),
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
+                const Text(
+                  'Estoque de Produtos',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.camera_alt),
-                  onPressed: () {
-                    _scanBarcode();
-                  },
+                const Divider(
+                  height: 20,
+                  thickness: 2,
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Buscar Produto',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          primaryColor: Colors.grey[300],
+                        ),
+                        child: TextField(
+                          controller: _productkeyController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Código do Produto',
+                          ),
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.camera_alt),
+                      onPressed: () {
+                        _scanBarcode();
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                const Text(
+                  'Selecionar Loja',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 10),
+                        DropdownButtonHideUnderline(
+                          child: DropdownButton<Store>(
+                            isDense: true,
+                            value: selectedLoja,
+                            style: const TextStyle(color: Colors.black),
+                            items: [
+                              ...lojas.map((Store loja) {
+                                return DropdownMenuItem<Store>(
+                                  value: loja,
+                                  child: Center(
+                                    child: Text(loja.fantasia),
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                            onChanged: (Store? newValue) {
+                              setState(() {
+                                selectedLoja = newValue;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<Store>(
-                      isDense: true,
-                      value: selectedLoja,
-                      style: const TextStyle(color: Colors.black),
-                      items: [
-                        const DropdownMenuItem<Store>(
-                          value: null,
-                          child: Center(child: Text("Selecionar Loja", style: TextStyle(fontSize: 16.0))),
-                        ),
-                        ...lojas.map((Store loja) {
-                          return DropdownMenuItem<Store>(
-                            value: loja,
-                            child: Center(child: Text(loja.fantasia)),
-                          );
-                        }).toList(),
-                      ],
-                      onChanged: (Store? newValue) {
-                        setState(() {
-                          selectedLoja = newValue;
-                        });
-                      },
-                    ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: ElevatedButton(
+                onPressed: () {
+                  _scanProductKey(_productkeyController.text);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFA30000),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  minimumSize: const Size(double.infinity, 60),
+                ),
+                child: const Text(
+                  'Buscar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         ],
       ),
@@ -135,16 +205,32 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   void _searchProduct(String filter, String value) {
-    service.fetchProduct(filter, value, selectedLoja!.nroempresabluesoft).then((value) {
-      Map<String, dynamic> decodedData = jsonDecode(value);
-      var firstItem = decodedData['data'][0];
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => InventoryDetailPage(inventoryData: firstItem),
-        ),
-      );
-    }).catchError((error) {
+    service.fetchProduct(filter, value, selectedLoja!.nroempresabluesoft).then((productData) {
+      print('productData');
+      print(productData);
+
+      service.fetchStock(filter, value, selectedLoja!.nroempresabluesoft).then((stockData) {
+        print('stock');
+        print(stockData);
+
+        Map<String, dynamic> decodedProductData = jsonDecode(productData);
+        Map<String, dynamic> decodedStockData = jsonDecode(stockData);
+
+        // Ajuste para acessar a chave "data" corretamente
+        Map<String, dynamic> productDataMap = decodedProductData['data'][0];
+        Map<String, dynamic> stockDataMap = decodedStockData['data'][0];
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => InventoryDetailPage(
+              productData: productDataMap,
+              stockData: stockDataMap,
+            ),
+          ),
+        );
+      }).catchError((error) {
+        // Tratamento de erro para fetchStock
         print(error);
         final snackBar = SnackBar(
           content: Text(
@@ -153,8 +239,26 @@ class _InventoryPageState extends State<InventoryPage> {
           ),
           backgroundColor: Colors.redAccent,
         );
-
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      });
+    }).catchError((error) {
+      // Tratamento de erro para fetchProduct
+      print(error);
+      final snackBar = SnackBar(
+        content: Text(
+          '$error',
+          style: const TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.redAccent,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     });
   }
+
+  void _openRegisterPage(BuildContext context) {
+    if (ModalRoute.of(context)!.settings.name != "inventory") {
+      Navigator.pushNamed(context, "inventory");
+    }
+  }
+
 }
