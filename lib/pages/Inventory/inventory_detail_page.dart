@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart'; // Import CupertinoAlertDialog
+import 'package:flutter/services.dart';
+import 'package:padron_inventario_app/pages/Inventory/inventory_page.dart'; // Import SystemNavigator for app exit
 
 class InventoryDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
@@ -19,8 +22,22 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const InventoryPage(),
+              ),
+            );
+          },
+          child: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
         title: const Text(
-          'Inventário',
+          'Detalhes',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color(0xFFA30000),
@@ -36,7 +53,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                 content: [
                   _buildText('Código Produto:', 'produtoKey'),
                   _buildText('GTIN:', 'gtinPrincipal'),
-                  _buildText('Código Loja(Bluesoft):', 'lojaKey'),
+                  _buildText('Código Loja - Bluesoft:', 'lojaKey'),
                 ],
               ),
               _buildCard(
@@ -99,10 +116,10 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           _getStringValue(dataKey) ?? '',
           style: const TextStyle(fontSize: 16, color: Colors.white),
         ),
-        const Divider(  // Add a Divider after each label-value pair
+        const Divider(
           color: Colors.white,
-          height: 20,  // Adjust the height as needed
-          thickness: 2,  // Adjust the thickness as needed
+          height: 20,
+          thickness: 2,
         ),
       ],
     );

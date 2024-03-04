@@ -18,6 +18,7 @@ class _InventoryPageState extends State<InventoryPage> {
   Store? selectedLoja;
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -55,129 +56,140 @@ class _InventoryPageState extends State<InventoryPage> {
         ],
         backgroundColor: const Color(0xFFA30000),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Stack(
         children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  'Estoque de Produtos',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
-                const Divider(
-                  height: 20,
-                  thickness: 2,
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Buscar Produto',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          primaryColor: Colors.grey[300],
-                        ),
-                        child: TextField(
-                          controller: _productkeyController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Código do Produto',
-                          ),
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                        ),
+                    const Text(
+                      'Estoque de Produtos',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.camera_alt),
-                      onPressed: () {
-                        _scanBarcode();
-                      },
+                    const Divider(
+                      height: 20,
+                      thickness: 2,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                const Text(
-                  'Selecionar Loja',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Buscar Produto',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
                       children: [
-                        const SizedBox(height: 10),
-                        DropdownButtonHideUnderline(
-                          child: DropdownButton<Store>(
-                            isDense: true,
-                            value: selectedLoja,
-                            style: const TextStyle(color: Colors.black),
-                            items: [
-                              ...lojas.map((Store loja) {
-                                return DropdownMenuItem<Store>(
-                                  value: loja,
-                                  child: Center(
-                                    child: Text(loja.fantasia),
-                                  ),
-                                );
-                              }).toList(),
-                            ],
-                            onChanged: (Store? newValue) {
-                              setState(() {
-                                selectedLoja = newValue;
-                              });
-                            },
+                        Expanded(
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              primaryColor: Colors.grey[300],
+                            ),
+                            child: TextField(
+                              controller: _productkeyController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Código do Produto',
+                              ),
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.camera_alt),
+                          onPressed: () {
+                            _scanBarcode();
+                          },
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 30),
+                    const Text(
+                      'Selecionar Loja',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 10),
+                            DropdownButtonHideUnderline(
+                              child: DropdownButton<Store>(
+                                isDense: true,
+                                value: selectedLoja,
+                                style: const TextStyle(color: Colors.black),
+                                items: [
+                                  ...lojas.map((Store loja) {
+                                    return DropdownMenuItem<Store>(
+                                      value: loja,
+                                      child: Center(
+                                        child: Text(loja.fantasia),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ],
+                                onChanged: (Store? newValue) {
+                                  setState(() {
+                                    selectedLoja = newValue;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: ElevatedButton(
-                onPressed: () {
-                  _scanProductKey(_productkeyController.text);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFA30000),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                  ),
-                  minimumSize: const Size(double.infinity, 60),
-                ),
-                child: const Text(
-                  'Buscar',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _scanProductKey(_productkeyController.text);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFA30000),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                      minimumSize: const Size(double.infinity, 60),
+                    ),
+                    child: const Text(
+                      'Buscar',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
+          if (isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
         ],
       ),
     );
@@ -205,6 +217,10 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   void _searchProduct(String filter, String value) {
+    setState(() {
+      isLoading = true;
+    });
+
     service.fetchProduct(filter, value, selectedLoja!.nroempresabluesoft).then((productData) {
       print('productData');
       print(productData);
@@ -230,8 +246,19 @@ class _InventoryPageState extends State<InventoryPage> {
           ),
         );
       }).catchError((error) {
-        // Tratamento de erro para fetchStock
-        print(error);
+        final snackBar = SnackBar(
+          content: Text(
+            '$error',
+            style: const TextStyle(fontSize: 16),
+          ),
+          backgroundColor: Colors.redAccent,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }).whenComplete(() {
+        setState(() {
+          isLoading = false;
+        });
+      }).catchError((error) {
         final snackBar = SnackBar(
           content: Text(
             '$error',
@@ -241,24 +268,11 @@ class _InventoryPageState extends State<InventoryPage> {
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       });
-    }).catchError((error) {
-      // Tratamento de erro para fetchProduct
-      print(error);
-      final snackBar = SnackBar(
-        content: Text(
-          '$error',
-          style: const TextStyle(fontSize: 16),
-        ),
-        backgroundColor: Colors.redAccent,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     });
   }
-
-  void _openRegisterPage(BuildContext context) {
-    if (ModalRoute.of(context)!.settings.name != "inventory") {
-      Navigator.pushNamed(context, "inventory");
+    void _openRegisterPage(BuildContext context) {
+      if (ModalRoute.of(context)!.settings.name != "inventory") {
+        Navigator.pushNamed(context, "inventory");
+      }
     }
   }
-
-}
