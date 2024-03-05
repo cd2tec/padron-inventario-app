@@ -26,27 +26,6 @@ class HomePage extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        actions: [
-          PopupMenuButton<String>(
-            iconSize: 30,
-            onSelected: (value) {
-              if (value == 'consultaEstoque') {
-                _openStockPage(context);
-              } else if (value == 'gerenciarPerfis') {
-                _openManageProfilesPage(context);
-              }
-            },
-            itemBuilder: (BuildContext context) {
-              return {'Consulta Estoque', 'Gerenciar Perfis'}
-                  .map((String choice) {
-                return PopupMenuItem<String>(
-                  value: choice.toLowerCase().replaceAll(' ', ''),
-                  child: Text(choice),
-                );
-              }).toList();
-            },
-          ),
-        ],
         backgroundColor: const Color(0xFFA30000),
       ),
       drawer: Drawer(
@@ -79,40 +58,38 @@ class HomePage extends StatelessWidget {
             leading: const Icon(Icons.logout),
           )
         ],),),
-      body: SingleChildScrollView(
+      body: const Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              margin: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  _openStockPage(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
-                  onPrimary: Colors.white,
-                ),
-                child: const Text('Consultar Estoque'),
+            SizedBox(height: 20),
+            Text(
+              'Padron',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Container(
-              margin: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  _openManageProfilesPage(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
-                  onPrimary: Colors.white,
-                ),
-                child: const Text('Gerenciar Perfis'),
+            Text(
+              'Perfumaria',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            CarouselSlider(
-              items: List.generate(10, (index) => _buildStoreItem(index)),
-              options: CarouselOptions(
-                height: 300.0,
-                enlargeCenterPage: true,
+            SizedBox(height: 30),
+            Text(
+              'APP Inventário V1.0',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Versão Debug',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],

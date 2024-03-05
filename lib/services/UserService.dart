@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserService {
-  static const String url = "192.168.15.186";
 
   static Future<SharedPreferences> getSharedPreferences() async {
     return await SharedPreferences.getInstance();
@@ -15,7 +15,7 @@ class UserService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: url,
+      host: dotenv.env['API_SERVER_IP'],
       port: 8080,
       path: '/user',
     );
@@ -45,7 +45,7 @@ class UserService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: url,
+      host: dotenv.env['API_SERVER_IP'],
       port: 8080,
       path: '/user/$userId',
     );
@@ -89,7 +89,7 @@ class UserService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: url,
+      host: dotenv.env['API_SERVER_IP'],
       port: 8080,
       path: '/register',
     );
@@ -125,7 +125,7 @@ class UserService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: url,
+      host: dotenv.env['API_SERVER_IP'],
       port: 8080,
       path: '/user/${userId}',
     );

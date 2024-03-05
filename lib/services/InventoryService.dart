@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InventoryService {
-  static const String url = "192.168.15.186";
 
   static Future<SharedPreferences> getSharedPreferences() async {
     return await SharedPreferences.getInstance();
@@ -16,7 +16,7 @@ class InventoryService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: url,
+      host: dotenv.env['API_SERVER_IP'],
       port: 8080,
       path: '/inventory',
     );
@@ -46,7 +46,7 @@ class InventoryService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: url,
+      host: dotenv.env['API_SERVER_IP'],
       port: 8080,
       path: '/inventory/stock',
     );
@@ -76,7 +76,7 @@ class InventoryService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: url,
+      host: dotenv.env['API_SERVER_IP'],
       port: 8080,
       path: '/store/allowed/user',
     );

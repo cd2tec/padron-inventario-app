@@ -49,14 +49,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           child: CarouselSlider(
             items: [
               _buildCard(
-                title: 'Descrição',
-                content: [
-                  _buildText('Código Produto:', 'produtoKey'),
-                  _buildText('GTIN:', 'gtinPrincipal'),
-                  _buildText('Código Loja - Bluesoft:', 'lojaKey'),
-                ],
-              ),
-              _buildCard(
                 title: 'Dados de Estoque',
                 content: [
                   _buildText('Saldo Online', 'saldoOnline'),
@@ -66,6 +58,14 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                   _buildText('Fator Estoque', 'fatorEstoque'),
                   _buildText('Qtd. Exposição', 'quantidadeExposicao'),
                   _buildText('Qtd. Ponto Extra', 'quantidadePontoExtra'),
+                ],
+              ),
+              _buildCard(
+                title: 'Descrição',
+                content: [
+                  _buildText('Código Produto:', 'produtoKey'),
+                  _buildText('GTIN:', 'gtinPrincipal'),
+                  _buildText('Código Loja - Bluesoft:', 'lojaKey'),
                 ],
               ),
             ],

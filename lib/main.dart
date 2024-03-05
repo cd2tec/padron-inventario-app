@@ -6,11 +6,13 @@ import 'package:padron_inventario_app/pages/login_page.dart';
 import 'package:padron_inventario_app/pages/register_page.dart';
 import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:padron_inventario_app/services/AuthService.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AuthService authService = AuthService();
 
+  await dotenv.load(fileName: "assets/.env");
   bool isLogged = await authService.verifyToken();
   runApp(MyApp(isLogged: isLogged,));
 }
