@@ -10,9 +10,7 @@ class StockPage extends StatelessWidget {
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
-              // Implemente as ações para cada item do menu
               if (value == 'consultaEstoque') {
-                // Não faz nada, já estamos na página de Consultar Estoque
               } else if (value == 'gerenciarPerfis') {
                 _openManageProfilesPage(context);
               }

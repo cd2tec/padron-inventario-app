@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:padron_inventario_app/pages/Inventory/inventory_detail_page.dart';
 import 'package:padron_inventario_app/pages/Inventory/inventory_page.dart';
 import 'package:padron_inventario_app/pages/home_page.dart';
@@ -5,13 +6,13 @@ import 'package:padron_inventario_app/pages/login_page.dart';
 import 'package:padron_inventario_app/pages/register_page.dart';
 import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:padron_inventario_app/services/AuthService.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AuthService authService = AuthService();
 
+  await dotenv.load(fileName: "assets/.env");
   bool isLogged = await authService.verifyToken();
   runApp(MyApp(isLogged: isLogged,));
 }
@@ -29,9 +30,16 @@ class MyApp extends StatelessWidget {
         "login": (context) => const LoginPage(),
         "register": (context) => const RegisterPage(),
         "user": (context) => const UserListScreen(),
-        "inventory": (context) => InventoryPage(),
-        "inventory/detail": (context) => InventoryDetailPage()
+        "inventory": (context) => const InventoryPage(),
+        "inventory/detail": (context) => InventoryDetailPage(),
       },
+      theme: ThemeData(
+        textTheme: const TextTheme(
+          bodyText1: TextStyle(fontFamily: 'OpenSans'),
+          bodyText2: TextStyle(fontFamily: 'OpenSans'),
+          headline1: TextStyle(fontFamily: 'OpenSans', fontSize: 72.0, fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }

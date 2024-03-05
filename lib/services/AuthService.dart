@@ -1,21 +1,22 @@
 import 'dart:convert';
-import 'dart:ffi';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String url = "http://192.168.15.186/";
-
   static Future<SharedPreferences> getSharedPreferences() async {
     return await SharedPreferences.getInstance();
+  }
+
+  static Future<String?> getIpAddress() async {
+    return dotenv.env['API_SERVER_IP'];
   }
 
   Future<bool> login(String email, String password) async {
     var apiUrl = Uri(
       scheme: 'http',
-      host: '192.168.15.186',
+      host: dotenv.env['API_SERVER_IP'],
       port: 8080,
       path: '/login',
     );
@@ -61,7 +62,7 @@ class AuthService {
 
     var apiUrl = Uri(
       scheme: 'http',
-      host: '192.168.15.186',
+      host: dotenv.env['API_SERVER_IP'],
       port: 8080,
       path: '/revoke',
     );
