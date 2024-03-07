@@ -1,7 +1,9 @@
+import 'package:auto_route/annotations.dart';
 import 'package:padron_inventario_app/pages/User/user_management_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
 
+@RoutePage()
 class UserListScreen extends StatefulWidget {
   const UserListScreen({Key? key}) : super(key: key);
 

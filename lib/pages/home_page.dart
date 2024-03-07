@@ -1,7 +1,10 @@
+import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:padron_inventario_app/pages/Inventory/inventory_page.dart';
 import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../routes/app_router.gr.dart';
 import '../services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -9,6 +12,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'stock_page.dart';
 import 'register_page.dart';
 
+@RoutePage()
 class HomePage extends StatelessWidget {
   final AuthService service = AuthService();
 
@@ -32,20 +36,14 @@ class HomePage extends StatelessWidget {
         child: ListView(children: [
           ListTile(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const UserListScreen()),
-              );
+              AutoRouter.of(context).push(const UserListRoute());
             },
             title: const Text("Gerenciar Usuários"),
             leading: const Icon(Icons.supervised_user_circle),
           ),
           ListTile(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InventoryPage()),
-              );
+              AutoRouter.of(context).push(const InventoryRoute());
             },
             title: const Text("Gerenciar Inventário"),
             leading: const Icon(Icons.inventory),

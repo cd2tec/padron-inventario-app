@@ -1,7 +1,9 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import '../widgets/register/register_form.dart';
 import 'stock_page.dart';
 
+@RoutePage()
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
 

@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:auto_route/annotations.dart';
 import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:flutter/material.dart';
 import '../../services/UserService.dart';
 import '../home_page.dart';
 
+@RoutePage()
 class UserDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> user;
 

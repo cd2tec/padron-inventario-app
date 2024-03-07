@@ -1,6 +1,8 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'register_page.dart';
 
+@RoutePage()
 class StockPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

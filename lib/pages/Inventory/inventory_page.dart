@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:http/http.dart';
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/pages/Inventory/inventory_detail_page.dart';
 import '../../services/InventoryService.dart';
 
+@RoutePage()
 class InventoryPage extends StatefulWidget {
   const InventoryPage({Key? key}) : super(key: key);
 
@@ -123,16 +126,28 @@ class _InventoryPageState extends State<InventoryPage> {
                     const SizedBox(height: 20),
                     Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const SizedBox(height: 10),
-                            DropdownButtonHideUnderline(
-                              child: DropdownButton<Store>(
-                                isDense: true,
-                                value: selectedLoja,
-                                style: const TextStyle(color: Colors.black),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.07,
+                              child: DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                validator: (value) => value == null ? "Selecione uma loja" : null,
                                 items: [
                                   ...lojas.map((Store loja) {
                                     return DropdownMenuItem<Store>(
@@ -186,7 +201,7 @@ class _InventoryPageState extends State<InventoryPage> {
           if (isLoading)
             Container(
               color: Colors.black.withOpacity(0.5),
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),
@@ -204,11 +219,7 @@ class _InventoryPageState extends State<InventoryPage> {
     );
 
     if (!mounted) return;
-    setState(() {
-      _barcodeController.text = barcodeScanRes;
-    });
-
-    _searchProduct('gtin', _barcodeController.text);
+    _productkeyController.text = barcodeScanRes;
   }
 
   Future<void> _scanProductKey(String productkey) async {
@@ -222,17 +233,10 @@ class _InventoryPageState extends State<InventoryPage> {
     });
 
     service.fetchProduct(filter, value, selectedLoja!.nroempresabluesoft).then((productData) {
-      print('productData');
-      print(productData);
-
       service.fetchStock(filter, value, selectedLoja!.nroempresabluesoft).then((stockData) {
-        print('stock');
-        print(stockData);
-
         Map<String, dynamic> decodedProductData = jsonDecode(productData);
         Map<String, dynamic> decodedStockData = jsonDecode(stockData);
 
-        // Ajuste para acessar a chave "data" corretamente
         Map<String, dynamic> productDataMap = decodedProductData['data'][0];
         Map<String, dynamic> stockDataMap = decodedStockData['data'][0];
 
@@ -246,33 +250,50 @@ class _InventoryPageState extends State<InventoryPage> {
           ),
         );
       }).catchError((error) {
-        final snackBar = SnackBar(
-          content: Text(
-            '$error',
-            style: const TextStyle(fontSize: 16),
-          ),
-          backgroundColor: Colors.redAccent,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        _handleError(error);
       }).whenComplete(() {
         setState(() {
           isLoading = false;
         });
-      }).catchError((error) {
-        final snackBar = SnackBar(
-          content: Text(
-            '$error',
-            style: const TextStyle(fontSize: 16),
-          ),
-          backgroundColor: Colors.redAccent,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      });
+    }).catchError((error) {
+      _handleError(error);
+    }).whenComplete(() {
+      setState(() {
+        isLoading = false;
       });
     });
   }
-    void _openRegisterPage(BuildContext context) {
-      if (ModalRoute.of(context)!.settings.name != "inventory") {
-        Navigator.pushNamed(context, "inventory");
-      }
+
+  void _handleError(dynamic error) {
+    if (error is ClientException) {
+      final snackBar = SnackBar(
+        content: Text(
+          _isProductNotFoundError(error) ? 'Produto não encontrado.' : '$error',
+          style: const TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.redAccent,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      final snackBar = SnackBar(
+        content: Text(
+          '$error',
+          style: const TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.redAccent,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
+
+  bool _isProductNotFoundError(ClientException error) {
+    return error.message.contains("Failed to fetch product.");
+  }
+
+  void _openRegisterPage(BuildContext context) {
+    if (ModalRoute.of(context)!.settings.name != "inventory") {
+      Navigator.pushNamed(context, "inventory");
+    }
+  }
+}

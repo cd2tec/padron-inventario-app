@@ -1,9 +1,11 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:padron_inventario_app/services/AuthService.dart';
 import '../widgets/widgets.dart';
 import 'home_page.dart';
 
+@RoutePage()
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key});
 

@@ -1,9 +1,11 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart'; // Import CupertinoAlertDialog
 import 'package:flutter/services.dart';
 import 'package:padron_inventario_app/pages/Inventory/inventory_page.dart'; // Import SystemNavigator for app exit
 
+@RoutePage()
 class InventoryDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
   final Map<String, dynamic>? stockData;
