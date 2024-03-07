@@ -7,7 +7,8 @@ import 'home_page.dart';
 
 @RoutePage()
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key});
+  final Function(bool?) onResult;
+  const LoginPage({Key? key, required this.onResult});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -80,15 +81,10 @@ class _LoginPageState extends State<LoginPage> {
         _passwordController.text
       ).then((resultLogin) {
         if(resultLogin) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomePage(),
-            ),
-          );
+          widget.onResult.call(true);
+
         }
       });
-
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -122,7 +122,7 @@ class HomePage extends StatelessWidget {
       return SharedPreferences.getInstance();
     }).then((prefs) {
       prefs.clear();
-      Navigator.pushReplacementNamed(context, "login");
+      AutoRouter.of(context).push(const LoginRoute());
     }).catchError((error) {
       final snackBar = SnackBar(
         content: Text(

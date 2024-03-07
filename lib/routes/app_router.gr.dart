@@ -56,9 +56,13 @@ abstract class $AppRouter extends _i10.RootStackRouter {
       );
     },
     LoginRoute.name: (routeData) {
+      final args = routeData.argsAs<LoginRouteArgs>();
       return _i10.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i4.LoginPage(),
+        child: _i4.LoginPage(
+          key: args.key,
+          onResult: args.onResult,
+        ),
       );
     },
     RegisterRoute.name: (routeData) {
@@ -188,16 +192,40 @@ class InventoryRoute extends _i10.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.LoginPage]
-class LoginRoute extends _i10.PageRouteInfo<void> {
-  const LoginRoute({List<_i10.PageRouteInfo>? children})
-      : super(
+class LoginRoute extends _i10.PageRouteInfo<LoginRouteArgs> {
+  LoginRoute({
+    _i11.Key? key,
+    required dynamic Function(bool?) onResult,
+    List<_i10.PageRouteInfo>? children,
+  }) : super(
           LoginRoute.name,
+          args: LoginRouteArgs(
+            key: key,
+            onResult: onResult,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'LoginRoute';
 
-  static const _i10.PageInfo<void> page = _i10.PageInfo<void>(name);
+  static const _i10.PageInfo<LoginRouteArgs> page =
+      _i10.PageInfo<LoginRouteArgs>(name);
+}
+
+class LoginRouteArgs {
+  const LoginRouteArgs({
+    this.key,
+    required this.onResult,
+  });
+
+  final _i11.Key? key;
+
+  final dynamic Function(bool?) onResult;
+
+  @override
+  String toString() {
+    return 'LoginRouteArgs{key: $key, onResult: $onResult}';
+  }
 }
 
 /// generated route for

@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -76,7 +78,7 @@ class AuthService {
     if (response.statusCode != 200) {
       if(response.statusCode == 401) {
         prefs.clear();
-        Navigator.pushReplacementNamed(context, "login");
+        AutoRouter.of(context).push(const LoginRoute());
       }
       throw http.ClientException(response.body);
     }
