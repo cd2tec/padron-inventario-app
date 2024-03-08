@@ -78,10 +78,16 @@ class AuthService {
     if (response.statusCode != 200) {
       if(response.statusCode == 401) {
         prefs.clear();
-        AutoRouter.of(context).push(const LoginRoute());
+        AutoRouter.of(context).replace(LoginRoute(onResult: (result) {
+          return false;
+        }));
       }
       throw http.ClientException(response.body);
     }
+
+    AutoRouter.of(context).replace(LoginRoute(onResult: (result) {
+      return false;
+    }));
   }
 
   Future<String> hasInventoryPermission(context) async {

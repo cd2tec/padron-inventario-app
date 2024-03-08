@@ -1,9 +1,8 @@
-import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/AuthService.dart';
 import '../widgets/widgets.dart';
-import 'home_page.dart';
 
 @RoutePage()
 class LoginPage extends StatefulWidget {
@@ -82,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
       ).then((resultLogin) {
         if(resultLogin) {
           widget.onResult.call(true);
-
+          AutoRouter.of(context).push(HomeRoute());
         }
       });
 
