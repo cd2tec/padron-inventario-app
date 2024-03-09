@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:padron_inventario_app/models/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -164,6 +165,25 @@ class UserService {
     );
 
     return jsonDecode(response.body);
+  }
+
+  Future<User> fetchUserData() async {
+    SharedPreferences prefs = await getSharedPreferences();
+    var token = prefs.getString('token');
+
+    var apiUrl = Uri(
+      scheme: 'http',
+      host: dotenv.env['API_SERVER_IP'],
+      port: 8080,
+      path: '/me',
+    );
+
+    http.Response response = await http.get(
+      apiUrl,
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+
+    return User.fromJson(jsonDecode(response.body));
   }
 }
 

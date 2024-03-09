@@ -1,7 +1,10 @@
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:padron_inventario_app/pages/User/user_management_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
+
+import '../../routes/app_router.gr.dart';
 
 @RoutePage()
 class UserListScreen extends StatefulWidget {
@@ -113,13 +116,7 @@ class _UserListScreenState extends State<UserListScreen> {
                   title: Text(filteredUsers[index]['name']),
                   subtitle: Text(filteredUsers[index]['email']),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            UserDetailsScreen(user: filteredUsers[index]),
-                      ),
-                    );
+                    AutoRouter.of(context).push(UserDetailsRoute(user: filteredUsers[index]));
                   },
                 );
               },
@@ -132,7 +129,7 @@ class _UserListScreenState extends State<UserListScreen> {
 
   void _openRegisterPage(BuildContext context) {
     if (ModalRoute.of(context)!.settings.name != "register") {
-      Navigator.pushNamed(context, "register");
+      AutoRouter.of(context).push(const RegisterRoute());
     }
   }
 }

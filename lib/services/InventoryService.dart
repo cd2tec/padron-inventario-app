@@ -78,7 +78,7 @@ class InventoryService {
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
       port: 8080,
-      path: '/store/allowed/user',
+      path: '/linker/store',
     );
 
     http.Response response = await http.get(
@@ -92,13 +92,18 @@ class InventoryService {
     if (response.statusCode != 200) {
       throw http.ClientException(response.body);
     }
+    print(response.body);
 
-    List<dynamic> storeListJson = json.decode(response.body);
-    List<Store> storeList = storeListJson.map((storeJson) {
-      return Store.fromJson(storeJson);
-    }).toList();
+    List<dynamic> userStoreListJson = json.decode(response.body);
+    List<Store> storeList = [];
 
-    print(storeList);
+    for (var userStoreJson in userStoreListJson) {
+      var storesJson = userStoreJson['stores'] as List<dynamic>;
+
+      for (var storeJson in storesJson) {
+        storeList.add(Store.fromJson(storeJson));
+      }
+    }
 
     return storeList;
   }

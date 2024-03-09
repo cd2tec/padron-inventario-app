@@ -14,9 +14,11 @@ class ModuleGuard extends AutoRouteGuard {
 
     try {
       List<dynamic> modulesPermission = await service.hasModulesPermission();
+      bool hasValidOption = false;
 
       if (modulesPermission.isNotEmpty && modulesPermission.first.containsKey("modules")) {
         List<dynamic> modules = modulesPermission.first["modules"];
+        print(modules);
 
         if (modules.isEmpty) {
           _showSnackBar(context, "Usuário não possui módulos vinculados!");
@@ -25,12 +27,17 @@ class ModuleGuard extends AutoRouteGuard {
 
         modules.forEach((element) {
           if (isValidOption(selectedModule, modules)) {
-            resolver.next(true);
+            hasValidOption = true;
           }
         });
 
-        _showSnackBar(context, "Usuário não tem permissão para acessar esse módulo.");
-        router.push(HomeRoute());
+        if (hasValidOption) {
+          resolver.next(true);
+        } else {
+          _showSnackBar(context, "Usuário não tem permissão para acessar esse módulo.");
+          router.push(HomeRoute());
+        }
+
       }
     } catch (errorOrException) {
       _showSnackBar(context, "$errorOrException");

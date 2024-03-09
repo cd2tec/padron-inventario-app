@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart';
 import 'package:padron_inventario_app/models/Store.dart';
-import 'package:padron_inventario_app/pages/Inventory/inventory_detail_page.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
+import 'package:padron_inventario_app/services/UserService.dart';
+import '../../models/User.dart';
 import '../../services/InventoryService.dart';
 
 @RoutePage()
@@ -17,9 +18,14 @@ class InventoryPage extends StatefulWidget {
 }
 
 class _InventoryPageState extends State<InventoryPage> {
-  InventoryService service = InventoryService();
-  List<Store> lojas = [];
-  Store? selectedLoja;
+  InventoryService inventoryService = InventoryService();
+  UserService userService = UserService();
+
+  List<Store> stores = [];
+  List<User> user = [];
+
+  Store? selectedStore;
+  int? defaultStore;
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
   bool isLoading = false;
@@ -27,13 +33,30 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   void initState() {
     super.initState();
-    _fetchStores();
+    _fetchUser().then((_) {
+      _fetchStores();
+    });
   }
 
   Future<void> _fetchStores() async {
-    List<Store> fetchedLojas = await service.fetchStores();
+    List<Store> fetchedStores = await inventoryService.fetchStores();
     setState(() {
-      lojas = fetchedLojas;
+      stores = fetchedStores;
+
+      if (defaultStore != null) {
+        selectedStore = stores.firstWhere((store) => store.id == defaultStore);
+      }
+    });
+  }
+
+  Future<void> _fetchUser() async {
+    User fetchedUser = await userService.fetchUserData();
+    setState(() {
+      user.add(fetchedUser);
+    });
+
+    setState(() {
+      defaultStore = fetchedUser.store_id;
     });
   }
 
@@ -148,9 +171,10 @@ class _InventoryPageState extends State<InventoryPage> {
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
-                                validator: (value) => value == null ? "Selecione uma loja" : null,
+                                validator: (value) =>
+                                value == null ? "Selecione uma loja" : null,
                                 items: [
-                                  ...lojas.map((Store loja) {
+                                  ...stores.map((Store loja) {
                                     return DropdownMenuItem<Store>(
                                       value: loja,
                                       child: Center(
@@ -161,9 +185,10 @@ class _InventoryPageState extends State<InventoryPage> {
                                 ],
                                 onChanged: (Store? newValue) {
                                   setState(() {
-                                    selectedLoja = newValue;
+                                    selectedStore = newValue;
                                   });
                                 },
+                                value: selectedStore,
                               ),
                             ),
                           ],
@@ -233,8 +258,8 @@ class _InventoryPageState extends State<InventoryPage> {
       isLoading = true;
     });
 
-    service.fetchProduct(filter, value, selectedLoja!.nroempresabluesoft).then((productData) {
-      service.fetchStock(filter, value, selectedLoja!.nroempresabluesoft).then((stockData) {
+    inventoryService.fetchProduct(filter, value, selectedStore!.nroEmpresaBluesoft).then((productData) {
+      inventoryService.fetchStock(filter, value, selectedStore!.nroEmpresaBluesoft).then((stockData) {
         Map<String, dynamic> decodedProductData = jsonDecode(productData);
         Map<String, dynamic> decodedStockData = jsonDecode(stockData);
 
