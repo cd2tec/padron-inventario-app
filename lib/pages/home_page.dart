@@ -97,7 +97,9 @@ class HomePage extends StatelessWidget {
             ),
           ListTile(
             onTap: () {
-              AutoRouter.of(context).push(const InventoryRoute());
+              AutoRouter.of(context).push(const InventoryRoute()).catchError((error) {
+                Navigator.pop(context);
+              });
             },
             title: const Text("Gerenciar Inventário"),
             leading: const Icon(Icons.inventory),
