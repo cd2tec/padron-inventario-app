@@ -1,16 +1,12 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:padron_inventario_app/pages/Inventory/inventory_page.dart';
 import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../routes/app_router.gr.dart';
-import '../services/AuthService.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-
-import 'stock_page.dart';
-import 'register_page.dart';
+import 'package:padron_inventario_app/routes/app_router.gr.dart';
+import 'package:padron_inventario_app/pages/stock_page.dart';
+import 'package:padron_inventario_app/pages/register_page.dart';
+import 'package:padron_inventario_app/services/AuthService.dart';
 
 @RoutePage()
 class HomePage extends StatelessWidget {
@@ -25,37 +21,26 @@ class HomePage extends StatelessWidget {
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: const Text('Bem-vindo!',
+        title: const Text(
+          'Bem-vindo!',
           style: TextStyle(
             color: Colors.white,
           ),
         ),
         backgroundColor: const Color(0xFFA30000),
       ),
-      drawer: Drawer(
-        child: ListView(children: [
-          ListTile(
-            onTap: () {
-              AutoRouter.of(context).push(const UserListRoute());
-            },
-            title: const Text("Gerenciar Usuários"),
-            leading: const Icon(Icons.supervised_user_circle),
-          ),
-          ListTile(
-            onTap: () {
-              AutoRouter.of(context).push(const InventoryRoute());
-            },
-            title: const Text("Gerenciar Inventário"),
-            leading: const Icon(Icons.inventory),
-          ),
-          ListTile(
-            onTap: () {
-              _logout(context);
-            },
-            title: const Text("Sair"),
-            leading: const Icon(Icons.logout),
-          )
-        ],),),
+      drawer: FutureBuilder<SharedPreferences>(
+        future: SharedPreferences.getInstance(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            bool isAdmin = snapshot.data?.getBool('isAdmin') ?? false;
+
+            return buildDrawer(context, isAdmin);
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
+      ),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -96,23 +81,33 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStoreItem(int index) {
-    String storeName =
-        'Loja ${index + 1}';
-
-    return GestureDetector(
-      onTap: () {
-        // _openStoreDetailsPage(context, storeName);
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-        color: Colors.green,
-        child: Center(
-          child: Text(
-            storeName,
-            style: const TextStyle(color: Colors.white),
+  Drawer buildDrawer(BuildContext context, bool isAdmin) {
+    return Drawer(
+      child: ListView(
+        children: [
+          if (isAdmin)
+            ListTile(
+              onTap: () {
+                AutoRouter.of(context).push(const UserListRoute());
+              },
+              title: const Text("Gerenciar Usuários"),
+              leading: const Icon(Icons.supervised_user_circle),
+            ),
+          ListTile(
+            onTap: () {
+              AutoRouter.of(context).push(const InventoryRoute());
+            },
+            title: const Text("Gerenciar Inventário"),
+            leading: const Icon(Icons.inventory),
           ),
-        ),
+          ListTile(
+            onTap: () {
+              _logout(context);
+            },
+            title: const Text("Sair"),
+            leading: const Icon(Icons.logout),
+          )
+        ],
       ),
     );
   }
@@ -134,24 +129,4 @@ class HomePage extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     });
   }
-
-  void _openStockPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StockPage(),
-      ),
-    );
-  }
-
-  void _openManageProfilesPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const RegisterPage(),
-      ),
-    );
-  }
 }
-
-

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,9 +41,11 @@ class AuthService {
   Future<void> saveUserInfo(String body) async {
     Map<String, dynamic> map = jsonDecode(body);
     String token = map['access_token'];
+    bool isAdmin = map['isAdmin'];
 
     SharedPreferences prefs = await getSharedPreferences();
     prefs.setString('token', token);
+    prefs.setBool('isAdmin', isAdmin);
   }
 
   Future<bool> verifyToken() async{

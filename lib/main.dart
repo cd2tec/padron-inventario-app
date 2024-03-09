@@ -1,3 +1,4 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:padron_inventario_app/routes/app_router.dart';
@@ -8,6 +9,7 @@ void main() async {
   runApp(const MyApp());
 }
 
+@RoutePage()
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

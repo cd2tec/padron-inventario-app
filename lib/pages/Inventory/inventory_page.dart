@@ -1,10 +1,11 @@
 import 'dart:convert';
-import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart';
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/pages/Inventory/inventory_detail_page.dart';
+import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import '../../services/InventoryService.dart';
 
 @RoutePage()
@@ -240,15 +241,7 @@ class _InventoryPageState extends State<InventoryPage> {
         Map<String, dynamic> productDataMap = decodedProductData['data'][0];
         Map<String, dynamic> stockDataMap = decodedStockData['data'][0];
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => InventoryDetailPage(
-              productData: productDataMap,
-              stockData: stockDataMap,
-            ),
-          ),
-        );
+        AutoRouter.of(context).replace(InventoryDetailRoute(productData: productDataMap, stockData: stockDataMap));
       }).catchError((error) {
         _handleError(error);
       }).whenComplete(() {
@@ -293,7 +286,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   void _openRegisterPage(BuildContext context) {
     if (ModalRoute.of(context)!.settings.name != "inventory") {
-      Navigator.pushNamed(context, "inventory");
+      AutoRouter.of(context).replace(const InventoryRoute());
     }
   }
 }
