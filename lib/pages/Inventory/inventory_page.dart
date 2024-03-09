@@ -1,10 +1,15 @@
 import 'dart:convert';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:http/http.dart';
 import 'package:padron_inventario_app/models/Store.dart';
-import 'package:padron_inventario_app/pages/Inventory/inventory_detail_page.dart';
+import 'package:padron_inventario_app/routes/app_router.gr.dart';
+import 'package:padron_inventario_app/services/UserService.dart';
+import '../../models/User.dart';
 import '../../services/InventoryService.dart';
 
+@RoutePage()
 class InventoryPage extends StatefulWidget {
   const InventoryPage({Key? key}) : super(key: key);
 
@@ -13,9 +18,14 @@ class InventoryPage extends StatefulWidget {
 }
 
 class _InventoryPageState extends State<InventoryPage> {
-  InventoryService service = InventoryService();
-  List<Store> lojas = [];
-  Store? selectedLoja;
+  InventoryService inventoryService = InventoryService();
+  UserService userService = UserService();
+
+  List<Store> stores = [];
+  List<User> user = [];
+
+  Store? selectedStore;
+  int? defaultStore;
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
   bool isLoading = false;
@@ -23,13 +33,30 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   void initState() {
     super.initState();
-    _fetchStores();
+    _fetchUser().then((_) {
+      _fetchStores();
+    });
   }
 
   Future<void> _fetchStores() async {
-    List<Store> fetchedLojas = await service.fetchStores();
+    List<Store> fetchedStores = await inventoryService.fetchStores();
     setState(() {
-      lojas = fetchedLojas;
+      stores = fetchedStores;
+
+      if (defaultStore != null) {
+        selectedStore = stores.firstWhere((store) => store.id == defaultStore);
+      }
+    });
+  }
+
+  Future<void> _fetchUser() async {
+    User fetchedUser = await userService.fetchUserData();
+    setState(() {
+      user.add(fetchedUser);
+    });
+
+    setState(() {
+      defaultStore = fetchedUser.store_id;
     });
   }
 
@@ -123,18 +150,31 @@ class _InventoryPageState extends State<InventoryPage> {
                     const SizedBox(height: 20),
                     Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const SizedBox(height: 10),
-                            DropdownButtonHideUnderline(
-                              child: DropdownButton<Store>(
-                                isDense: true,
-                                value: selectedLoja,
-                                style: const TextStyle(color: Colors.black),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.07,
+                              child: DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                validator: (value) =>
+                                value == null ? "Selecione uma loja" : null,
                                 items: [
-                                  ...lojas.map((Store loja) {
+                                  ...stores.map((Store loja) {
                                     return DropdownMenuItem<Store>(
                                       value: loja,
                                       child: Center(
@@ -145,9 +185,10 @@ class _InventoryPageState extends State<InventoryPage> {
                                 ],
                                 onChanged: (Store? newValue) {
                                   setState(() {
-                                    selectedLoja = newValue;
+                                    selectedStore = newValue;
                                   });
                                 },
+                                value: selectedStore,
                               ),
                             ),
                           ],
@@ -186,7 +227,7 @@ class _InventoryPageState extends State<InventoryPage> {
           if (isLoading)
             Container(
               color: Colors.black.withOpacity(0.5),
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),
@@ -204,11 +245,7 @@ class _InventoryPageState extends State<InventoryPage> {
     );
 
     if (!mounted) return;
-    setState(() {
-      _barcodeController.text = barcodeScanRes;
-    });
-
-    _searchProduct('gtin', _barcodeController.text);
+    _productkeyController.text = barcodeScanRes;
   }
 
   Future<void> _scanProductKey(String productkey) async {
@@ -221,58 +258,60 @@ class _InventoryPageState extends State<InventoryPage> {
       isLoading = true;
     });
 
-    service.fetchProduct(filter, value, selectedLoja!.nroempresabluesoft).then((productData) {
-      print('productData');
-      print(productData);
-
-      service.fetchStock(filter, value, selectedLoja!.nroempresabluesoft).then((stockData) {
-        print('stock');
-        print(stockData);
-
+    inventoryService.fetchProduct(filter, value, selectedStore!.nroEmpresaBluesoft).then((productData) {
+      inventoryService.fetchStock(filter, value, selectedStore!.nroEmpresaBluesoft).then((stockData) {
         Map<String, dynamic> decodedProductData = jsonDecode(productData);
         Map<String, dynamic> decodedStockData = jsonDecode(stockData);
 
-        // Ajuste para acessar a chave "data" corretamente
         Map<String, dynamic> productDataMap = decodedProductData['data'][0];
         Map<String, dynamic> stockDataMap = decodedStockData['data'][0];
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => InventoryDetailPage(
-              productData: productDataMap,
-              stockData: stockDataMap,
-            ),
-          ),
-        );
+        AutoRouter.of(context).replace(InventoryDetailRoute(productData: productDataMap, stockData: stockDataMap));
       }).catchError((error) {
-        final snackBar = SnackBar(
-          content: Text(
-            '$error',
-            style: const TextStyle(fontSize: 16),
-          ),
-          backgroundColor: Colors.redAccent,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        _handleError(error);
       }).whenComplete(() {
         setState(() {
           isLoading = false;
         });
-      }).catchError((error) {
-        final snackBar = SnackBar(
-          content: Text(
-            '$error',
-            style: const TextStyle(fontSize: 16),
-          ),
-          backgroundColor: Colors.redAccent,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      });
+    }).catchError((error) {
+      _handleError(error);
+    }).whenComplete(() {
+      setState(() {
+        isLoading = false;
       });
     });
   }
-    void _openRegisterPage(BuildContext context) {
-      if (ModalRoute.of(context)!.settings.name != "inventory") {
-        Navigator.pushNamed(context, "inventory");
-      }
+
+  void _handleError(dynamic error) {
+    if (error is ClientException) {
+      final snackBar = SnackBar(
+        content: Text(
+          _isProductNotFoundError(error) ? 'Produto não encontrado.' : '$error',
+          style: const TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.redAccent,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      final snackBar = SnackBar(
+        content: Text(
+          '$error',
+          style: const TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.redAccent,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
+
+  bool _isProductNotFoundError(ClientException error) {
+    return error.message.contains("Failed to fetch product.");
+  }
+
+  void _openRegisterPage(BuildContext context) {
+    if (ModalRoute.of(context)!.settings.name != "inventory") {
+      AutoRouter.of(context).replace(const InventoryRoute());
+    }
+  }
+}

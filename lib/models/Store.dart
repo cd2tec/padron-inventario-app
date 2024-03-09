@@ -1,40 +1,45 @@
 class Store {
-  String id;
-  String razao_social;
+  int id;
+  String razaoSocial;
   String fantasia;
   String cnpj;
   String cidade;
   String uf;
   String telefone;
-  String nroempresaproteus;
-  String nroempresabluesoft;
+  String nroEmpresaProteus;
+  String nroEmpresaBluesoft;
   bool cd;
 
   Store({
     required this.id,
-    required this.razao_social,
+    required this.razaoSocial,
     required this.fantasia,
     required this.cnpj,
     required this.cidade,
     required this.uf,
     required this.telefone,
-    required this.nroempresaproteus,
-    required this.nroempresabluesoft,
+    required this.nroEmpresaProteus,
+    required this.nroEmpresaBluesoft,
     required this.cd,
   });
 
   factory Store.fromJson(Map<String, dynamic> json) {
     return Store(
-      id: json['id'].toString(),
-      razao_social: json['razao_social'].toString(),
-      fantasia: json['fantasia'].toString(),
-      cnpj: json['cnpj'].toString(),
-      cidade: json['cidade'].toString(),
-      uf: json['uf'].toString(),
-      telefone: json['telefone'].toString(),
-      nroempresaproteus: json['nroempresaproteus'].toString(),
-      nroempresabluesoft: json['nroempresabluesoft'].toString(),
-      cd: json['cd'] as bool,
+      id: json['id'],
+      razaoSocial: json['razao_social'],
+      fantasia: json['fantasia'],
+      cnpj: json['cnpj'],
+      cidade: json['cidade'],
+      uf: json['uf'],
+      telefone: json['telefone'],
+      nroEmpresaProteus: json['nroempresaproteus'],
+      nroEmpresaBluesoft: json['nroempresabluesoft'],
+      cd: json['cd'],
     );
+  }
+
+  @override
+  String toString() {
+    return '{id: $id, razaoSocial: $razaoSocial, fantasia: $fantasia, cnpj: $cnpj, cidade: $cidade, uf: $uf, telefone: $telefone, nroEmpresaProteus: $nroEmpresaProteus, nroEmpresaBluesoft: $nroEmpresaBluesoft, cd: $cd}';
   }
 }

@@ -1,11 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/AuthService.dart';
 import '../widgets/widgets.dart';
-import 'home_page.dart';
 
+@RoutePage()
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key});
+  final Function(bool?) onResult;
+  const LoginPage({Key? key, required this.onResult});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -78,15 +80,10 @@ class _LoginPageState extends State<LoginPage> {
         _passwordController.text
       ).then((resultLogin) {
         if(resultLogin) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomePage(),
-            ),
-          );
+          widget.onResult.call(true);
+          AutoRouter.of(context).push(HomeRoute());
         }
       });
-
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
