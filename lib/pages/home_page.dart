@@ -8,6 +8,8 @@ import 'package:padron_inventario_app/pages/stock_page.dart';
 import 'package:padron_inventario_app/pages/register_page.dart';
 import 'package:padron_inventario_app/services/AuthService.dart';
 
+import '../routes/guard/module_guard.dart';
+
 @RoutePage()
 class HomePage extends StatelessWidget {
   final AuthService service = AuthService();

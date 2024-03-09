@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:padron_inventario_app/routes/guard/module_guard.dart';
 import 'package:padron_inventario_app/routes/guard/permission_guard.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'app_router.gr.dart';
 import 'guard/auth_guard.dart';
 
@@ -17,10 +17,10 @@ class AppRouter extends $AppRouter {
     AutoRoute(page: RegisterRoute.page,     guards: [AuthGuard(), PermissionGuard()]),
 
     // Inventory
-    AutoRoute(page: InventoryDetailRoute.page,  guards: [AuthGuard()]),
-    AutoRoute(page: InventoryRoute.page,        guards: [AuthGuard()]),
-    AutoRoute(page: SearchBarcodeRoute.page,    guards: [AuthGuard()]),
-    AutoRoute(page: StockRoute.page,            guards: [AuthGuard()]),
+    AutoRoute(page: InventoryDetailRoute.page,  guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+    AutoRoute(page: InventoryRoute.page,        guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+    AutoRoute(page: SearchBarcodeRoute.page,    guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+    AutoRoute(page: StockRoute.page,            guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
   ];
 
   //List<AutoRouteGuard> get globalGuards => [AuthGuard()];

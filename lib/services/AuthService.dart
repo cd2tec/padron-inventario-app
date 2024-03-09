@@ -90,23 +90,4 @@ class AuthService {
       return false;
     }));
   }
-
-  Future<String> hasInventoryPermission(context) async {
-    SharedPreferences prefs = await getSharedPreferences();
-    var token = prefs.getString('token');
-
-    var apiUrl = Uri(
-      scheme: 'http',
-      host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
-      path: '/linker/module',
-    );
-
-    http.Response response = await http.get(
-        apiUrl,
-        headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
-    );
-
-    return jsonDecode(response.body);
-  }
 }
