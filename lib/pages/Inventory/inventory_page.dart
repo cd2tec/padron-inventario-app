@@ -246,6 +246,8 @@ class _InventoryPageState extends State<InventoryPage> {
 
     if (!mounted) return;
     _productkeyController.text = barcodeScanRes;
+
+    _scanProductKey(_productkeyController.text);
   }
 
   Future<void> _scanProductKey(String productkey) async {
@@ -258,8 +260,8 @@ class _InventoryPageState extends State<InventoryPage> {
       isLoading = true;
     });
 
-    inventoryService.fetchProduct(filter, value, selectedStore!.nroEmpresaBluesoft).then((productData) {
-      inventoryService.fetchStock(filter, value, selectedStore!.nroEmpresaBluesoft).then((stockData) {
+    inventoryService.fetchProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
+      inventoryService.fetchStock(filter, value, selectedStore!.nroEmpresaBluesoft!).then((stockData) {
         Map<String, dynamic> decodedProductData = jsonDecode(productData);
         Map<String, dynamic> decodedStockData = jsonDecode(stockData);
 

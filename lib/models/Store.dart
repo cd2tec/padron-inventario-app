@@ -3,11 +3,11 @@ class Store {
   String razaoSocial;
   String fantasia;
   String cnpj;
-  String cidade;
-  String uf;
-  String telefone;
-  String nroEmpresaProteus;
-  String nroEmpresaBluesoft;
+  String? cidade;
+  String? uf;
+  String? telefone;
+  String? nroEmpresaProteus;
+  String? nroEmpresaBluesoft;
   bool cd;
 
   Store({

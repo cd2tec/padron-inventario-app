@@ -77,22 +77,30 @@ class _LoginPageState extends State<LoginPage> {
     try {
       service.login(
         _usernameController.text,
-        _passwordController.text
+        _passwordController.text,
       ).then((resultLogin) {
-        if(resultLogin) {
+        if (resultLogin) {
           widget.onResult.call(true);
           AutoRouter.of(context).push(HomeRoute());
         }
+      }).catchError((error) {
+        // Exibir mensagem de erro na tela
+        _showErrorSnackbar(context, 'Erro durante o login: $error');
       });
-
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text('Credenciais inválidas'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      // Exibir mensagem de erro na tela
+      _showErrorSnackbar(context, 'Erro durante o login: $e');
     }
   }
+
+  void _showErrorSnackbar(BuildContext context, String errorMessage) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.redAccent,
+        content: Text(errorMessage),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
 }
