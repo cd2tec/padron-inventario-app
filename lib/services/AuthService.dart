@@ -31,6 +31,14 @@ class AuthService {
     );
 
     if(response.statusCode != 200) {
+      if (response.statusCode == 401) {
+        Map<String, dynamic> errorMap = {
+          'message': 'Credenciais inválidas!',
+          'statusCode': response.statusCode,
+        };
+        throw http.ClientException(jsonEncode(errorMap));
+      }
+
       throw http.ClientException(response.body);
     }
     
