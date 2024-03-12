@@ -1,13 +1,9 @@
 import 'dart:convert';
-
 import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
 import 'package:padron_inventario_app/widgets/register/register_check_box.dart';
 import 'package:padron_inventario_app/widgets/register/register_text_field.dart';
 import 'package:flutter/material.dart';
-
-import '../../pages/home_page.dart';
-
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({Key? key}) : super(key: key);
@@ -98,7 +94,7 @@ class _RegisterFormState extends State<RegisterForm> {
               });
             },
           ),
-          const SizedBox(height: 24.0),
+          const SizedBox(height: 30),
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState?.validate() ?? false) {
@@ -146,10 +142,18 @@ class _RegisterFormState extends State<RegisterForm> {
             },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0.0),
+              ),
+              backgroundColor: const Color(0xFFA30000),
+
             ),
             child: const Text(
               'Cadastrar',
-              style: TextStyle(fontSize: 18.0),
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.white,
+              ),
             ),
           ),
         ],

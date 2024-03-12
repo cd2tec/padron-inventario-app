@@ -1,7 +1,6 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import '../widgets/register/register_form.dart';
-import 'stock_page.dart';
 
 @RoutePage()
 class RegisterPage extends StatelessWidget {
@@ -19,26 +18,6 @@ class RegisterPage extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'consultaEstoque') {
-                _openStockPage(context);
-              } else if (value == 'gerenciarPerfis') {
-                _openManageProfilesPage(context);
-              }
-            },
-            itemBuilder: (BuildContext context) {
-              return {'Consulta Estoque', 'Gerenciar Perfis'}
-                  .map((String choice) {
-                return PopupMenuItem<String>(
-                  value: choice.toLowerCase().replaceAll(' ', ''),
-                  child: Text(choice),
-                );
-              }).toList();
-            },
-          ),
-        ],
         backgroundColor: const Color(0xFFA30000),
       ),
       body: SingleChildScrollView(
@@ -50,18 +29,5 @@ class RegisterPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _openStockPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StockPage(),
-      ),
-    );
-  }
-
-  void _openManageProfilesPage(BuildContext context) {
-    // Não faz nada, já estamos na página de Gerenciar Perfis
   }
 }

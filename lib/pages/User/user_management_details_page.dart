@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:auto_route/annotations.dart';
-import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import '../../services/UserService.dart';
-import '../home_page.dart';
 
 @RoutePage()
 class UserDetailsScreen extends StatefulWidget {
@@ -51,6 +49,14 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
           ),
         ),
         backgroundColor: const Color(0xFFA30000),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              _showDeleteConfirmationDialog();
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -109,7 +115,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                     });
                   },
                 ),
-                const SizedBox(height: 32.0),
+                const SizedBox(height: 50.0),
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
@@ -152,73 +158,70 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                         });
                       }
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFA30000),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                      minimumSize: const Size(double.infinity, 60),
+                    ),
                     child: const Text(
                       'Salvar Alterações',
-                      style: TextStyle(fontSize: 18.0),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 32.0),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Confirmação'),
-                              content: const Text('Você tem certeza que deseja excluir o usuário?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Cancelar'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    service.deleteUser(widget.user['id']).then((data) {
-                                      final snackBar = SnackBar(
-                                        content: Text(
-                                          data['message'],
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                        backgroundColor: Colors.greenAccent,
-                                      );
-
-                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const UserListScreen(),
-                                        ),
-                                      );
-                                    });
-                                  },
-                                  child: const Text('Confirmar'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                    child: const Text(
-                      'Excluir Usuário',
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                  ),
-                ),
-
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmação'),
+          content: const Text('Você tem certeza que deseja excluir o usuário?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                service.deleteUser(widget.user['id']).then((data) {
+                  final snackBar = SnackBar(
+                    content: Text(
+                      data['message'],
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    backgroundColor: Colors.greenAccent,
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UserListScreen(),
+                    ),
+                  );
+                });
+              },
+              child: const Text('Confirmar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
