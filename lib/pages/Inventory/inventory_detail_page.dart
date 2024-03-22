@@ -1,14 +1,8 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart'; // Import CupertinoAlertDialog
-import 'package:flutter/services.dart';
-import 'package:padron_inventario_app/pages/Inventory/inventory_page.dart';
+import '../../routes/app_router.gr.dart';
+import '../../services/InventoryService.dart';
 
-import '../../routes/app_router.gr.dart'; // Import SystemNavigator for app exit
-
-@RoutePage()
 class InventoryDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
   final Map<String, dynamic>? stockData;
@@ -20,8 +14,42 @@ class InventoryDetailPage extends StatefulWidget {
 }
 
 class _InventoryDetailPageState extends State<InventoryDetailPage> {
-  Map<String, dynamic> get _mappedProductData => widget.productData ?? {};
-  Map<String, dynamic> get _mappedStockData => widget.stockData ?? {};
+  InventoryService inventoryService = InventoryService();
+  final _controllers = <String, TextEditingController>{};
+  final _originalData = <String, dynamic>{};
+  final _currentData = <String, dynamic>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllers();
+    _initializeData();
+  }
+
+  void _initializeControllers() {
+    _controllers.addAll({
+      'Saldo Físico': TextEditingController(text: _getStringValue('saldoFisico')),
+      'Saldo Disponível': TextEditingController(text: _getStringValue('saldoDisponivel')),
+      'Qtd. Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
+      'Qtd. Ponto Extra': TextEditingController(text: _getStringValue('quantidadePontoExtra')),
+    });
+  }
+
+  void _initializeData() {
+    _originalData.addAll({
+      'saldoFisico': _getStringValue('saldoFisico'),
+      'saldoDisponivel': _getStringValue('saldoDisponivel'),
+      'quantidadeExposicao': _getStringValue('quantidadeExposicao'),
+      'quantidadePontoExtra': _getStringValue('quantidadePontoExtra'),
+    });
+    _currentData.addAll(_originalData);
+  }
+
+  @override
+  void dispose() {
+    _controllers.values.forEach((controller) => controller.dispose());
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,91 +70,19 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         ),
         backgroundColor: const Color(0xFFA30000),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: Expanded(
-              child: Center(
-                child: Container(
-                  alignment: Alignment.center,
-                  width: MediaQuery.of(context).size.width,
-                  child: CarouselSlider(
-                    items: [
-                      _buildCard(
-                        title: 'Dados de Estoque',
-                        content: [
-                          _buildText('Saldo Físico', 'saldoFisico'),
-                          _buildText('Saldo Disponível', 'saldoDisponivel'),
-                          _buildText('Qtd. Exposição', 'quantidadeExposicao'),
-                          _buildText('Qtd. Ponto Extra', 'quantidadePontoExtra'),
-                        ],
-                      ),
-                      _buildCard(
-                        title: 'Descrição',
-                        content: [
-                          _buildText('Código Produto:', 'produtoKey'),
-                          _buildText('GTIN:', 'gtinPrincipal'),
-                          _buildText('Código Loja - Bluesoft:', 'lojaKey'),
-                        ],
-                      ),
-                    ],
-                    options: CarouselOptions(
-                      height:  500,
-                      autoPlay: false,
-                      enlargeCenterPage: true,
-                      autoPlayAnimationDuration: const Duration(milliseconds: 500),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: ElevatedButton(
-                onPressed: () {
-
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFA30000),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                  ),
-                  minimumSize: const Size(double.infinity, 60),
-                ),
-                child: const Text(
-                  'Confirmar',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCard({required String title, required List<Widget> content}) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 1.0,
-      child: Card(
-        color: const Color(0xFFBA2A25),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
+              _buildInfoCard(),
               const SizedBox(height: 20),
-              ...content,
+              // TextFormFields for editable fields
+              for (final entry in _controllers.entries)
+                _buildTextFormField(entry.key, entry.value),
+              const SizedBox(height: 20),
+              _buildConfirmButton(),
             ],
           ),
         ),
@@ -134,24 +90,60 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     );
   }
 
-  Widget _buildText(String labelText, String dataKey) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          labelText,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+  Widget _buildInfoCard() {
+    return Card(
+      color: const Color(0xFFA30000),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildReadOnlyField('Loja:', _getStringValue('lojaKey')),
+            _buildReadOnlyField('GTIN:', _getStringValue('gtinPrincipal')),
+            _buildReadOnlyField('Código Produto:', _getStringValue('produtoKey')),
+          ],
         ),
-        Text(
-          _getStringValue(dataKey) ?? '',
-          style: const TextStyle(fontSize: 20, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildTextFormField(String labelText, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: TextFormField(
+        controller: controller,
+        onChanged: (value) {
+          _currentData[labelText.toLowerCase()] = value;
+        },
+        style: const TextStyle(fontSize: 20, color: Colors.black),
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: const TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
+          border: const OutlineInputBorder(),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         ),
-        const Divider(
-          color: Colors.white,
-          height: 20,
-          thickness: 2,
-        ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildReadOnlyField(String labelText, String? value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Text(
+            labelText,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              value ?? '',
+              style: const TextStyle(fontSize: 20, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -163,5 +155,65 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     } else {
       return null;
     }
+  }
+
+  Widget _buildConfirmButton() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: ElevatedButton(
+        onPressed: _confirmChanges,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFA30000),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
+          minimumSize: const Size(double.infinity, 60),
+        ),
+        child: const Text(
+          'Confirmar',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _confirmChanges() {
+    final changes = <String, dynamic>{};
+    Map<String, dynamic> product = {};
+
+    _currentData.forEach((key, value) {
+      final originalValue = _originalData[key] ?? '';
+      final updatedValue = value ?? '';
+      if (originalValue != updatedValue) {
+        changes[key] = updatedValue;
+      }
+    });
+
+    product = {
+      'lojaKey': _getStringValue('lojaKey') ?? '',
+      'productKey': _getStringValue('produtoKey') ?? '',
+      'gtin': _getStringValue('gtinPrincipal') ?? ''
+    };
+
+    if (changes.isNotEmpty && product.isNotEmpty) {
+      print("ALTERANDO DADOS!");
+      _sendChangesToAPI(changes, product);
+    } else {
+      print("NENHUM DADO ALTERADO!");
+    }
+  }
+
+  void _sendChangesToAPI(Map<String, dynamic> changes, Map<String, dynamic> product) {
+    print("ENVIANDO DADOS PARA API");
+    print(changes);
+
+    inventoryService.createInventory(changes, product).then((response) {
+    // Lógica de tratamento da resposta da API
+    }).catchError((error) {
+    // Lógica de tratamento de erro
+    });
   }
 }
