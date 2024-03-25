@@ -18,6 +18,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   final _controllers = <String, TextEditingController>{};
   final _originalData = <String, dynamic>{};
   final _currentData = <String, dynamic>{};
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -28,7 +29,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   void _initializeControllers() {
     _controllers.addAll({
-      'Saldo Físico': TextEditingController(text: _getStringValue('saldoFisico')),
       'Saldo Disponível': TextEditingController(text: _getStringValue('saldoDisponivel')),
       'Qtd. Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
       'Qtd. Ponto Extra': TextEditingController(text: _getStringValue('quantidadePontoExtra')),
@@ -37,7 +37,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   void _initializeData() {
     _originalData.addAll({
-      'saldoFisico': _getStringValue('saldoFisico'),
       'saldoDisponivel': _getStringValue('saldoDisponivel'),
       'quantidadeExposicao': _getStringValue('quantidadeExposicao'),
       'quantidadePontoExtra': _getStringValue('quantidadePontoExtra'),
@@ -161,7 +160,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: ElevatedButton(
-        onPressed: _confirmChanges,
+        onPressed: _isLoading ? null : _confirmChanges,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFA30000),
           shape: const RoundedRectangleBorder(
@@ -169,7 +168,16 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           ),
           minimumSize: const Size(double.infinity, 60),
         ),
-        child: const Text(
+        child: _isLoading
+            ? SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        )
+            : const Text(
           'Confirmar',
           style: TextStyle(
             color: Colors.white,
@@ -181,6 +189,10 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   }
 
   void _confirmChanges() {
+    setState(() {
+      _isLoading = true;
+    });
+
     final changes = <String, dynamic>{};
     Map<String, dynamic> product = {};
 
@@ -204,17 +216,43 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       _sendChangesToAPI(changes, product);
     } else {
       print("NENHUM DADO ALTERADO!");
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   void _sendChangesToAPI(Map<String, dynamic> changes, Map<String, dynamic> product) {
-    print(changes);
-    print(product);
-
     inventoryService.createInventory(changes, product).then((response) {
-    // Lógica de tratamento da resposta da API
+      const snackBar = SnackBar(
+        content: Text(
+          'Inventário fechado com sucesso!',
+          style: TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.greenAccent,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+      AutoRouter.of(context).push(const InventoryRoute());
+
+      setState(() {
+        _isLoading = false;
+      });
     }).catchError((error) {
-    // Lógica de tratamento de erro
+      final snackBar = SnackBar(
+        content: Text(
+          error['error'],
+          style: const TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.greenAccent,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+      setState(() {
+        _isLoading = false;
+      });
     });
   }
 }
