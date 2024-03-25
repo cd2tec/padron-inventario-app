@@ -41,7 +41,7 @@ class AuthService {
 
       throw http.ClientException(response.body);
     }
-    
+
     saveUserInfo(response.body);
     return true;
   }

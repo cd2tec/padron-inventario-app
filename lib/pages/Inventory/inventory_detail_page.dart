@@ -188,7 +188,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       final originalValue = _originalData[key] ?? '';
       final updatedValue = value ?? '';
       if (originalValue != updatedValue) {
-        changes[key] = updatedValue;
+        String cleanedKey = key.replaceAll(' ', '');
+        changes[cleanedKey] = updatedValue;
       }
     });
 
@@ -207,8 +208,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   }
 
   void _sendChangesToAPI(Map<String, dynamic> changes, Map<String, dynamic> product) {
-    print("ENVIANDO DADOS PARA API");
     print(changes);
+    print(product);
 
     inventoryService.createInventory(changes, product).then((response) {
     // Lógica de tratamento da resposta da API

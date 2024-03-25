@@ -118,25 +118,31 @@ class InventoryService {
       path: '/inventory',
     );
 
-    http.Response response = await http.post(
-      apiUrl,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      },
-      body: {
-        'lojaKey': product['lojaKey'],
-        'productKey': product['productKey'],
-        'fields': data
-      },
-    );
+    try {
+      http.Response response = await http.post(
+        apiUrl,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+        body: {
+          'lojaKey': product['lojaKey'].toString(),
+          'productKey': product['productKey'].toString(),
+          'gtin': product['gtin'].toString(),
+          'fields': jsonEncode(data)
+        },
+      );
 
-    if (response.statusCode != 200) {
-      throw http.ClientException(response.body);
+      if (response.statusCode != 200) {
+        throw http.ClientException(response.body);
+      }
+
+      print(response);
+      return response.body;
+
+    } catch (error) {
+      print(error);
     }
-
-    print(response);
-    return response.body;
   }
 
 }
