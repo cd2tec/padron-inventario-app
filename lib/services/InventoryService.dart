@@ -141,4 +141,38 @@ class InventoryService {
     return response.body;
   }
 
+  Future updateShelf(Map<String, dynamic> data, Map<String, dynamic> product) async {
+    SharedPreferences prefs = await getSharedPreferences();
+    var token = prefs.getString('token');
+
+    var apiUrl = Uri(
+      scheme: 'http',
+      host: dotenv.env['API_SERVER_IP'],
+      port: 8080,
+      path: '/inventory/shelf',
+    );
+
+    data = {
+      'lojaKey': product['lojaKey'].toString(),
+      'productKey': product['productKey'].toString(),
+      'gtin': product['gtin'].toString(),
+      'fields': jsonEncode(data)
+    };
+
+    http.Response response = await http.post(
+      apiUrl,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+      body: data,
+    );
+
+    if (response.statusCode != 200) {
+      throw http.ClientException(response.body);
+    }
+
+    return response.body;
+  }
+
 }
