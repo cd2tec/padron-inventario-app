@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../routes/app_router.gr.dart';
 import '../../services/InventoryService.dart';
@@ -20,6 +21,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   final _currentData = <String, dynamic>{};
   bool _isLoading = false;
 
+
   @override
   void initState() {
     super.initState();
@@ -29,17 +31,17 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   void _initializeControllers() {
     _controllers.addAll({
-      'Saldo Disponível': TextEditingController(text: _getStringValue('saldoDisponivel')),
-      'Qtd. Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
-      'Qtd. Ponto Extra': TextEditingController(text: _getStringValue('quantidadePontoExtra')),
+      'Saldo Disponivel': TextEditingController(text: _getStringValue('saldoDisponivel')),
+      'Quantidade Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
+      'Quantidade Ponto Extra': TextEditingController(text: _getStringValue('quantidadePontoExtra')),
     });
   }
 
   void _initializeData() {
     _originalData.addAll({
-      'saldoDisponivel': _getStringValue('saldoDisponivel'),
-      'quantidadeExposicao': _getStringValue('quantidadeExposicao'),
-      'quantidadePontoExtra': _getStringValue('quantidadePontoExtra'),
+      'saldodisponivel': _getStringValue('saldoDisponivel'),
+      'quantidadeexposicao': _getStringValue('quantidadeExposicao'),
+      'quantidadepontoextra': _getStringValue('quantidadePontoExtra'),
     });
     _currentData.addAll(_originalData);
   }
@@ -112,7 +114,9 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       child: TextFormField(
         controller: controller,
         onChanged: (value) {
-          _currentData[labelText.toLowerCase()] = value;
+          setState(() {
+            _currentData[removeSpecialCharacters(labelText.toLowerCase().replaceAll(' ', ''))] = value;
+          });
         },
         style: const TextStyle(fontSize: 20, color: Colors.black),
         decoration: InputDecoration(
@@ -169,7 +173,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           minimumSize: const Size(double.infinity, 60),
         ),
         child: _isLoading
-            ? SizedBox(
+            ? const SizedBox(
           width: 24,
           height: 24,
           child: CircularProgressIndicator(
@@ -196,11 +200,16 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     final changes = <String, dynamic>{};
     Map<String, dynamic> product = {};
 
+    print("Current Data");
+    print(_currentData);
+    print("Original Data");
+    print(_originalData);
+
     _currentData.forEach((key, value) {
       final originalValue = _originalData[key] ?? '';
       final updatedValue = value ?? '';
       if (originalValue != updatedValue) {
-        String cleanedKey = key.replaceAll(' ', '');
+        String cleanedKey = key.replaceAll(' ', '').replaceAll('.', '');
         changes[cleanedKey] = updatedValue;
       }
     });
@@ -213,7 +222,10 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
     if (changes.isNotEmpty && product.isNotEmpty) {
       print("ALTERANDO DADOS!");
-      _sendChangesToAPI(changes, product);
+      print(_currentData);
+
+      _updateStockAvailable(_currentData, product);
+
     } else {
       print("NENHUM DADO ALTERADO!");
       setState(() {
@@ -222,7 +234,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     }
   }
 
-  void _sendChangesToAPI(Map<String, dynamic> changes, Map<String, dynamic> product) {
+  void _updateStockAvailable(Map<String, dynamic> changes, Map<String, dynamic> product) {
     inventoryService.createInventory(changes, product).then((response) {
       const snackBar = SnackBar(
         content: Text(
@@ -240,19 +252,28 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         _isLoading = false;
       });
     }).catchError((error) {
-      final snackBar = SnackBar(
+      const snackBar = SnackBar(
         content: Text(
-          error['error'],
-          style: const TextStyle(fontSize: 16),
+          'Erro ao criar inventário',
+          style: TextStyle(fontSize: 16),
         ),
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Colors.redAccent,
       );
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      print(error);
 
       setState(() {
         _isLoading = false;
       });
     });
+  }
+
+  String removeSpecialCharacters(String text) {
+    return text
+        .replaceAll('ã', 'a')
+        .replaceAll('õ', 'o')
+        .replaceAll('â', 'a')
+        .replaceAll(RegExp(r'[çÇ]'), 'c');
   }
 }
