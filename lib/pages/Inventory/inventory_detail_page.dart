@@ -222,13 +222,9 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
     if (changes.isNotEmpty && product.isNotEmpty) {
       print("ALTERANDO DADOS!");
+      print(_currentData);
 
-      if (changes.containsKey('saldodisponivel')) {
-        _updateStockAvailable(changes, product);
-      }else {
-        print("ENTREI NO ELSE HEHE");
-        _updateShelfAvailable(_currentData, product);
-      }
+      _updateStockAvailable(_currentData, product);
 
     } else {
       print("NENHUM DADO ALTERADO!");
@@ -259,41 +255,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       const snackBar = SnackBar(
         content: Text(
           'Erro ao criar inventário',
-          style: TextStyle(fontSize: 16),
-        ),
-        backgroundColor: Colors.redAccent,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      print(error);
-
-      setState(() {
-        _isLoading = false;
-      });
-    });
-  }
-
-  void _updateShelfAvailable(Map<String, dynamic> changes, Map<String, dynamic> product) {
-    inventoryService.updateShelf(changes, product).then((response) {
-      const snackBar = SnackBar(
-        content: Text(
-          'Gôndola atualizada com sucesso!',
-          style: TextStyle(fontSize: 16),
-        ),
-        backgroundColor: Colors.greenAccent,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-      AutoRouter.of(context).push(const InventoryRoute());
-
-      setState(() {
-        _isLoading = false;
-      });
-    }).catchError((error) {
-      const snackBar = SnackBar(
-        content: Text(
-          'Erro ao editar gôndola',
           style: TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,

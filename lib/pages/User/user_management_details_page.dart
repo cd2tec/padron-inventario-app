@@ -1,6 +1,7 @@
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:padron_inventario_app/pages/User/user_management_page.dart';
+import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import '../../services/UserService.dart';
 
 @RoutePage()
@@ -51,7 +52,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         backgroundColor: const Color(0xFFA30000),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () {
               _showDeleteConfirmationDialog();
             },
@@ -139,12 +140,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const UserListScreen(),
-                            ),
-                          );
+                          AutoRouter.of(context).push(const UserListRoute());
                         }).catchError((error) {
                           final snackBar = SnackBar(
                             content: Text(
@@ -209,12 +205,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const UserListScreen(),
-                    ),
-                  );
+                  AutoRouter.of(context).push(const UserListRoute());
                 });
               },
               child: const Text('Confirmar'),
