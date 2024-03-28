@@ -247,7 +247,7 @@ class _InventoryPageState extends State<InventoryPage> {
     if (!mounted) return;
     _productkeyController.text = barcodeScanRes;
 
-    _scanProductKey(_productkeyController.text);
+    _searchProduct('gtin', _productkeyController.text);
   }
 
   Future<void> _scanProductKey(String productkey) async {
