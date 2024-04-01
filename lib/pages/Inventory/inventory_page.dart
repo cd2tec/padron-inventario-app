@@ -73,14 +73,6 @@ class _InventoryPageState extends State<InventoryPage> {
             color: Colors.white,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              _openRegisterPage(context);
-            },
-          ),
-        ],
         backgroundColor: const Color(0xFFA30000),
       ),
       body: Stack(
@@ -138,6 +130,22 @@ class _InventoryPageState extends State<InventoryPage> {
                           },
                         ),
                       ],
+                    ),
+                    Visibility(
+                      visible: _barcodeController.text.isNotEmpty,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 30),
+                          Text(
+                            "Código de barras: ${_barcodeController.text}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 30),
                     const Text(
@@ -237,17 +245,17 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   Future<void> _scanBarcode() async {
-    String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+    /*String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
       "#ff6666",
       "Cancelar",
       true,
       ScanMode.DEFAULT,
     );
 
-    if (!mounted) return;
-    _productkeyController.text = barcodeScanRes;
+    if (!mounted) return;*/
+    _barcodeController.text = "856485795628";
 
-    _searchProduct('gtin', _productkeyController.text);
+    _searchProduct('gtin', _barcodeController.text);
   }
 
   Future<void> _scanProductKey(String productkey) async {
@@ -261,6 +269,11 @@ class _InventoryPageState extends State<InventoryPage> {
     });
 
     inventoryService.fetchProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
+      if (productData == null || productData.isEmpty){
+        _handleError("Produto não encontrado.");
+        return;
+      }
+
       inventoryService.fetchStock(filter, value, selectedStore!.nroEmpresaBluesoft!).then((stockData) {
         Map<String, dynamic> decodedProductData = jsonDecode(productData);
         Map<String, dynamic> decodedStockData = jsonDecode(stockData);
@@ -270,6 +283,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
         AutoRouter.of(context).replace(InventoryDetailRoute(productData: productDataMap, stockData: stockDataMap));
       }).catchError((error) {
+        print("cai aqui!");
         _handleError(error);
       }).whenComplete(() {
         setState(() {
@@ -277,6 +291,7 @@ class _InventoryPageState extends State<InventoryPage> {
         });
       });
     }).catchError((error) {
+      print("cai aqui 2!");
       _handleError(error);
     }).whenComplete(() {
       setState(() {
@@ -286,6 +301,7 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   void _handleError(dynamic error) {
+    print("entrei aqui!");
     if (error is ClientException) {
       final snackBar = SnackBar(
         content: Text(
@@ -296,10 +312,10 @@ class _InventoryPageState extends State<InventoryPage> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
-      final snackBar = SnackBar(
+      const snackBar = SnackBar(
         content: Text(
-          '$error',
-          style: const TextStyle(fontSize: 16),
+          'Problemas ao buscar produto.',
+          style: TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,
       );
