@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'package:auto_route/auto_route.dart';
 import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
 import 'package:padron_inventario_app/widgets/register/register_check_box.dart';
 import 'package:padron_inventario_app/widgets/register/register_text_field.dart';
 import 'package:flutter/material.dart';
+
+import '../../routes/app_router.gr.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({Key? key}) : super(key: key);
@@ -120,12 +123,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const UserListScreen(),
-                          ),
-                        );
+                      AutoRouter.of(context).push(const UserListRoute());
                       })
                     .catchError((error) {
                         final snackBar = SnackBar(
