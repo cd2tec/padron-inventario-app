@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import '../../routes/app_router.gr.dart';
 import '../../services/InventoryService.dart';
 
+@RoutePage()
 class InventoryDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
   final Map<String, dynamic>? stockData;
 
-  const InventoryDetailPage({Key? key, this.productData, this.stockData}) : super(key: key);
+  const InventoryDetailPage({Key? key, this.productData, this.stockData})
+      : super(key: key);
 
   @override
   _InventoryDetailPageState createState() => _InventoryDetailPageState();
@@ -21,7 +23,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   final _currentData = <String, dynamic>{};
   bool _isLoading = false;
 
-
   @override
   void initState() {
     super.initState();
@@ -31,9 +32,12 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   void _initializeControllers() {
     _controllers.addAll({
-      'Saldo Disponivel': TextEditingController(text: _getStringValue('saldoDisponivel')),
-      'Quantidade Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
-      'Quantidade Ponto Extra': TextEditingController(text: _getStringValue('quantidadePontoExtra')),
+      'Saldo Disponivel':
+          TextEditingController(text: _getStringValue('saldoDisponivel')),
+      'Quantidade Exposição':
+          TextEditingController(text: _getStringValue('quantidadeExposicao')),
+      'Quantidade Ponto Extra':
+          TextEditingController(text: _getStringValue('quantidadePontoExtra')),
     });
   }
 
@@ -101,29 +105,34 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           children: [
             _buildReadOnlyField('Loja:', _getStringValue('lojaKey')),
             _buildReadOnlyField('GTIN:', _getStringValue('gtinPrincipal')),
-            _buildReadOnlyField('Código Produto:', _getStringValue('produtoKey')),
+            _buildReadOnlyField(
+                'Código Produto:', _getStringValue('produtoKey')),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextFormField(String labelText, TextEditingController controller) {
+  Widget _buildTextFormField(
+      String labelText, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
         controller: controller,
         onChanged: (value) {
           setState(() {
-            _currentData[removeSpecialCharacters(labelText.toLowerCase().replaceAll(' ', ''))] = value;
+            _currentData[removeSpecialCharacters(
+                labelText.toLowerCase().replaceAll(' ', ''))] = value;
           });
         },
         style: const TextStyle(fontSize: 20, color: Colors.black),
         decoration: InputDecoration(
           labelText: labelText,
-          labelStyle: const TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
+          labelStyle: const TextStyle(
+              fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
           border: const OutlineInputBorder(),
-          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         ),
       ),
     );
@@ -136,7 +145,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         children: [
           Text(
             labelText,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -174,20 +184,20 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         ),
         child: _isLoading
             ? const SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        )
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
             : const Text(
-          'Confirmar',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-          ),
-        ),
+                'Confirmar',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
       ),
     );
   }
@@ -225,7 +235,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       print(_currentData);
 
       _updateStockAvailable(_currentData, product);
-
     } else {
       print("NENHUM DADO ALTERADO!");
       setState(() {
@@ -234,7 +243,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     }
   }
 
-  void _updateStockAvailable(Map<String, dynamic> changes, Map<String, dynamic> product) {
+  void _updateStockAvailable(
+      Map<String, dynamic> changes, Map<String, dynamic> product) {
     inventoryService.createInventory(changes, product).then((response) {
       const snackBar = SnackBar(
         content: Text(

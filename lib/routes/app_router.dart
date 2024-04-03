@@ -8,20 +8,36 @@ import 'guard/auth_guard.dart';
 class AppRouter extends $AppRouter {
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(page: LoginRoute.page),
-    AutoRoute(page: HomeRoute.page, initial: true, guards: [AuthGuard()]),
+        AutoRoute(page: LoginRoute.page),
+        AutoRoute(page: HomeRoute.page, initial: true, guards: [AuthGuard()]),
 
-    // Users
-    AutoRoute(page: UserDetailsRoute.page,  guards: [AuthGuard(), PermissionGuard()]),
-    AutoRoute(page: UserListRoute.page,     guards: [AuthGuard(), PermissionGuard()]),
-    AutoRoute(page: RegisterRoute.page,     guards: [AuthGuard(), PermissionGuard()]),
+        // Users
+        AutoRoute(
+            page: UserDetailsRoute.page,
+            guards: [AuthGuard(), PermissionGuard()]),
+        AutoRoute(
+            page: UserListRoute.page, guards: [AuthGuard(), PermissionGuard()]),
+        AutoRoute(
+            page: RegisterRoute.page, guards: [AuthGuard(), PermissionGuard()]),
 
-    // Inventory
-    AutoRoute(page: InventoryDetailRoute.page,  guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
-    AutoRoute(page: InventoryRoute.page,        guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
-    AutoRoute(page: SearchBarcodeRoute.page,    guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
-    AutoRoute(page: StockRoute.page,            guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
-  ];
+        // Inventory
+        AutoRoute(
+            page: InventoryDetailRoute.page,
+            guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+        AutoRoute(
+            page: InventoryRoute.page,
+            guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+        AutoRoute(
+            page: SearchBarcodeRoute.page,
+            guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+        AutoRoute(
+            page: StockRoute.page,
+            guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+
+        // Supplier
+        AutoRoute(page: SupplierRoute.page)
+        // guards: [AuthGuard(), ModuleGuard(selectedModule: 'supplier')]),
+      ];
 
   //List<AutoRouteGuard> get globalGuards => [AuthGuard()];
 }
