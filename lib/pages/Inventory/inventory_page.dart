@@ -268,30 +268,11 @@ class _InventoryPageState extends State<InventoryPage> {
       isLoading = true;
     });
 
-    inventoryService.fetchProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
-      if (productData == null || productData.isEmpty){
-        _handleError("Produto não encontrado.");
-        return;
-      }
+    inventoryService.fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
+      Map<String, dynamic> decodedProductData = jsonDecode(productData);
 
-      inventoryService.fetchStock(filter, value, selectedStore!.nroEmpresaBluesoft!).then((stockData) {
-        Map<String, dynamic> decodedProductData = jsonDecode(productData);
-        Map<String, dynamic> decodedStockData = jsonDecode(stockData);
-
-        Map<String, dynamic> productDataMap = decodedProductData['data'][0];
-        Map<String, dynamic> stockDataMap = decodedStockData['data'][0];
-
-        AutoRouter.of(context).replace(InventoryDetailRoute(productData: productDataMap, stockData: stockDataMap));
-      }).catchError((error) {
-        print("cai aqui!");
-        _handleError(error);
-      }).whenComplete(() {
-        setState(() {
-          isLoading = false;
-        });
-      });
+      AutoRouter.of(context).replace(InventoryDetailRoute(productData: decodedProductData));
     }).catchError((error) {
-      print("cai aqui 2!");
       _handleError(error);
     }).whenComplete(() {
       setState(() {
@@ -302,6 +283,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   void _handleError(dynamic error) {
     print("entrei aqui!");
+    print(error);
     if (error is ClientException) {
       final snackBar = SnackBar(
         content: Text(
@@ -312,6 +294,8 @@ class _InventoryPageState extends State<InventoryPage> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
+      print(error);
+
       const snackBar = SnackBar(
         content: Text(
           'Problemas ao buscar produto.',

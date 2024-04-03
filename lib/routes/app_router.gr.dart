@@ -46,7 +46,6 @@ abstract class $AppRouter extends _i11.RootStackRouter {
         child: _i2.InventoryDetailPage(
           key: args.key,
           productData: args.productData,
-          stockData: args.stockData,
         ),
       );
     },
@@ -146,14 +145,12 @@ class InventoryDetailRoute
   InventoryDetailRoute({
     _i12.Key? key,
     Map<String, dynamic>? productData,
-    Map<String, dynamic>? stockData,
     List<_i11.PageRouteInfo>? children,
   }) : super(
           InventoryDetailRoute.name,
           args: InventoryDetailRouteArgs(
             key: key,
             productData: productData,
-            stockData: stockData,
           ),
           initialChildren: children,
         );
