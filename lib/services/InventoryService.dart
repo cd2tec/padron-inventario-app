@@ -90,9 +90,11 @@ class InventoryService {
 
     data = {
       'lojaKey': product['lojaKey'].toString(),
-      'productKey': product['productKey'].toString(),
+      'produtoKey': product['productKey'].toString(),
       'gtin': product['gtin'].toString(),
-      'fields': jsonEncode(data)
+      'saldodisponivel': data['saldodisponivel'],
+      'quantidadeexposicao': data['quantidadeexposicao'],
+      'quantidadepontoextra': data['quantidadepontoextra'],
     };
 
     http.Response response = await http.post(

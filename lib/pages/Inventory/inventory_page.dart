@@ -148,61 +148,6 @@ class _InventoryPageState extends State<InventoryPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    const Text(
-                      'Selecionar Loja',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.07,
-                              child: DropdownButtonFormField(
-                                decoration: InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                                validator: (value) =>
-                                value == null ? "Selecione uma loja" : null,
-                                items: [
-                                  ...stores.map((Store loja) {
-                                    return DropdownMenuItem<Store>(
-                                      value: loja,
-                                      child: Center(
-                                        child: Text(loja.fantasia),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ],
-                                onChanged: (Store? newValue) {
-                                  setState(() {
-                                    selectedStore = newValue;
-                                  });
-                                },
-                                value: selectedStore,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -245,15 +190,15 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   Future<void> _scanBarcode() async {
-    /*String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+    String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
       "#ff6666",
       "Cancelar",
       true,
       ScanMode.DEFAULT,
     );
 
-    if (!mounted) return;*/
-    _barcodeController.text = "856485795628";
+    if (!mounted) return;
+    _barcodeController.text = barcodeScanRes;
 
     _searchProduct('gtin', _barcodeController.text);
   }
