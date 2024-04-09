@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/models/Store.dart';
@@ -65,6 +66,43 @@ class SupplierService {
   }
 
   Future<List<Supplier>> fetchSupplier() async {
+    await Future.delayed(Duration(seconds: 2));
+
+    return [
+      Supplier(
+          id: 1,
+          razaoSocial: 'Fornecedor 1',
+          fantasia: 'Fornecedor 1',
+          cnpj: '00100123000123',
+          cidade: 'Brasilia',
+          uf: 'DF',
+          telefone: '61992651358',
+          nroEmpresaBluesoft: '123',
+          cd: true),
+      Supplier(
+          id: 2,
+          razaoSocial: 'Fornecedor 2',
+          fantasia: 'Fornecedor 1',
+          cnpj: '00100123000123',
+          cidade: 'Brasilia',
+          uf: 'DF',
+          telefone: '61992651358',
+          nroEmpresaBluesoft: '123',
+          cd: true),
+      Supplier(
+          id: 3,
+          razaoSocial: 'Fornecedor 3',
+          fantasia: 'Fornecedor 1',
+          cnpj: '00100123000123',
+          cidade: 'Brasilia',
+          uf: 'DF',
+          telefone: '61992651358',
+          nroEmpresaBluesoft: '123',
+          cd: true),
+    ];
+  }
+
+  /* Future<List<Supplier>> fetchSupplier() async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 
@@ -75,31 +113,38 @@ class SupplierService {
       path: '/supplier',
     );
 
-    http.Response response = await http.get(
-      apiUrl,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      },
-    );
+    try {
+      http.Response response = await http.get(
+        apiUrl,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
 
-    if (response.statusCode != 200) {
-      throw http.ClientException(response.body);
-    }
-
-    List<dynamic> userStoreListJson = json.decode(response.body);
-    List<Supplier> supplierList = [];
-
-    for (var userStoreJson in userStoreListJson) {
-      var storesJson = userStoreJson['stores'] as List<dynamic>;
-
-      for (var storeJson in storesJson) {
-        supplierList.add(Supplier.fromJson(storeJson));
+      if (response.statusCode != 200) {
+        if (response.statusCode == 404) {
+          throw Exception('Rota não encontrada: /supplier');
+        }
+        throw http.ClientException(response.body);
       }
-    }
 
-    return supplierList;
-  }
+      List<dynamic> userStoreListJson = json.decode(response.body);
+      List<Supplier> supplierList = [];
+
+      for (var userStoreJson in userStoreListJson) {
+        var storesJson = userStoreJson['stores'] as List<dynamic>;
+
+        for (var storeJson in storesJson) {
+          supplierList.add(Supplier.fromJson(storeJson));
+        }
+      }
+
+      return supplierList;
+    } catch (e) {
+      throw Exception('Erro ao buscar fornecedor: $e');
+    }
+  } */
 
   Future createInventory(
       Map<String, dynamic> data, Map<String, dynamic> product) async {

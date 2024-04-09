@@ -8,6 +8,7 @@ import 'package:padron_inventario_app/models/Supplier.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
+import 'package:padron_inventario_app/widgets/supplier/supplier_list.dart';
 import '../../models/User.dart';
 import '../../services/InventoryService.dart';
 
@@ -35,10 +36,14 @@ class _SupplierPageState extends State<SupplierPage> {
   }
 
   Future<void> _fetchSupplier() async {
-    List<Supplier> fetchedSupplier = await supplierService.fetchSupplier();
-    setState(() {
-      supplier = fetchedSupplier;
-    });
+    try {
+      List<Supplier> fetchedSupplier = await supplierService.fetchSupplier();
+      setState(() {
+        supplier = fetchedSupplier;
+      });
+    } catch (e) {
+      throw Exception('Erro ao buscar fornecedor: $e');
+    }
   }
 
   @override
@@ -97,7 +102,7 @@ class _SupplierPageState extends State<SupplierPage> {
                               controller: _supplierNameController,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
-                                hintText: 'Nome do Fornecedor',
+                                hintText: 'Fornecedor',
                               ),
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
@@ -116,25 +121,29 @@ class _SupplierPageState extends State<SupplierPage> {
                 ),
               ),
               Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _searchSupplierName(_supplierNameController.text);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA30000),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      minimumSize: const Size(double.infinity, 60),
+                // Adicione o Expanded aqui
+                child: SupplierListWidget(
+                  suppliers: supplier,
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _searchSupplierName(_supplierNameController.text);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFA30000),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
                     ),
-                    child: const Text(
-                      'Buscar',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
+                    minimumSize: const Size(double.infinity, 60),
+                  ),
+                  child: const Text(
+                    'Buscar',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
                     ),
                   ),
                 ),
@@ -163,35 +172,12 @@ class _SupplierPageState extends State<SupplierPage> {
       isLoading = true;
     });
 
-    supplierService
-        .fetchSupplier(filter, value, selectedSupplier!.nroEmpresaBluesoft!)
-        .then((productData) {
-      if (productData == null || productData.isEmpty) {
-        _handleError("Produto não encontrado.");
-        return;
-      }
-
-      supplierService
-          .fetchStock(filter, value, selectedSupplier!.nroEmpresaBluesoft!)
-          .then((stockData) {
-        Map<String, dynamic> decodedProductData = jsonDecode(productData);
-        Map<String, dynamic> decodedStockData = jsonDecode(stockData);
-
-        Map<String, dynamic> productDataMap = decodedProductData['data'][0];
-        Map<String, dynamic> stockDataMap = decodedStockData['data'][0];
-
-        AutoRouter.of(context).replace(InventoryDetailRoute(
-            productData: productDataMap, stockData: stockDataMap));
-      }).catchError((error) {
-        _handleError(error);
-      }).whenComplete(() {
-        setState(() {
-          isLoading = false;
-        });
+    _fetchSupplier().then((_) {
+      setState(() {
+        isLoading = false;
       });
     }).catchError((error) {
       _handleError(error);
-    }).whenComplete(() {
       setState(() {
         isLoading = false;
       });

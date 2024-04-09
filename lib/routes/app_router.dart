@@ -35,7 +35,8 @@ class AppRouter extends $AppRouter {
             guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
 
         // Supplier
-        AutoRoute(page: SupplierRoute.page)
+        AutoRoute(page: SupplierRoute.page),
+        AutoRoute(page: SupplierDetailRoute.page)
         // guards: [AuthGuard(), ModuleGuard(selectedModule: 'supplier')]),
       ];
 
