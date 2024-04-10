@@ -213,6 +213,21 @@ class _InventoryPageState extends State<InventoryPage> {
       isLoading = true;
     });
 
+    if (selectedStore!.nroEmpresaBluesoft == null) {
+      setState(() {
+        isLoading = false;
+      });
+
+      const snackBar = SnackBar(
+        content: Text(
+          'Loja padrão não cadastrada.',
+          style: TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.redAccent,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+
     inventoryService.fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
       Map<String, dynamic> decodedProductData = jsonDecode(productData);
 
@@ -227,8 +242,6 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   void _handleError(dynamic error) {
-    print("entrei aqui!");
-    print(error);
     if (error is ClientException) {
       final snackBar = SnackBar(
         content: Text(

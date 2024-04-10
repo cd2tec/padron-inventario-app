@@ -165,6 +165,12 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   String? _getStringValue(String key) {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
+
+      // Regra dos múltiplos
+      if (key == 'quantidadeExposicao' && widget.productData?[key] >= 3){
+        widget.productData?[key] = widget.productData?[key] + 1;
+      }
+
       return widget.productData![key]?.toString();
     } else {
       return null;
@@ -229,6 +235,12 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     if (changes.isNotEmpty && product.isNotEmpty) {
       print("ALTERANDO DADOS!");
       print(_currentData);
+
+      // Regra de múltiplos
+      if (int.parse(_currentData['quantidadeexposicao']) > 3) {
+        var quantidadeexposicao = int.parse(_currentData['quantidadeexposicao']) - 1;
+        _currentData['quantidadeexposicao'] = quantidadeexposicao.toString();
+      }
 
       _updateStockAvailable(_currentData, product);
 
