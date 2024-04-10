@@ -205,7 +205,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   Future<void> _scanProductKey(String productkey) async {
     if (productkey.isEmpty) return;
-    _searchProduct('produtoKey', productkey);
+    _searchProduct('gtin', productkey);
   }
 
   void _searchProduct(String filter, String value) {
