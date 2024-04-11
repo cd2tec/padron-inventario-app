@@ -31,8 +31,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   void _initializeControllers() {
     _controllers.addAll({
       'Saldo Disponivel': TextEditingController(text: _getStringValue('qtdDisponivel')),
-      'Quantidade Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
       'Quantidade Ponto Extra': TextEditingController(text: _getStringValue('quantidadePontoExtra')),
+      'Quantidade Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
     });
   }
 
@@ -233,9 +233,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     };
 
     if (changes.isNotEmpty && product.isNotEmpty) {
-      print("ALTERANDO DADOS!");
-      print(_currentData);
-
       // Regra de múltiplos
       if (int.parse(_currentData['quantidadeexposicao']) > 3) {
         var quantidadeexposicao = int.parse(_currentData['quantidadeexposicao']) - 1;
