@@ -25,7 +25,7 @@ class AuthService {
     http.Response response = await http.post(
         apiUrl,
         body: {
-          'email': email,
+          'name': email,
           'password': password,
         }
     );

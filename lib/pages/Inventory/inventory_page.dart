@@ -148,61 +148,6 @@ class _InventoryPageState extends State<InventoryPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    const Text(
-                      'Selecionar Loja',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.07,
-                              child: DropdownButtonFormField(
-                                decoration: InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                                validator: (value) =>
-                                value == null ? "Selecione uma loja" : null,
-                                items: [
-                                  ...stores.map((Store loja) {
-                                    return DropdownMenuItem<Store>(
-                                      value: loja,
-                                      child: Center(
-                                        child: Text(loja.fantasia),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ],
-                                onChanged: (Store? newValue) {
-                                  setState(() {
-                                    selectedStore = newValue;
-                                  });
-                                },
-                                value: selectedStore,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -245,22 +190,22 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   Future<void> _scanBarcode() async {
-    /*String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+    String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
       "#ff6666",
       "Cancelar",
       true,
       ScanMode.DEFAULT,
     );
 
-    if (!mounted) return;*/
-    _barcodeController.text = "856485795628";
+    if (!mounted) return;
+    _barcodeController.text = barcodeScanRes;
 
     _searchProduct('gtin', _barcodeController.text);
   }
 
   Future<void> _scanProductKey(String productkey) async {
     if (productkey.isEmpty) return;
-    _searchProduct('produtoKey', productkey);
+    _searchProduct('gtin', productkey);
   }
 
   void _searchProduct(String filter, String value) {
@@ -268,30 +213,26 @@ class _InventoryPageState extends State<InventoryPage> {
       isLoading = true;
     });
 
-    inventoryService.fetchProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
-      if (productData == null || productData.isEmpty){
-        _handleError("Produto não encontrado.");
-        return;
-      }
-
-      inventoryService.fetchStock(filter, value, selectedStore!.nroEmpresaBluesoft!).then((stockData) {
-        Map<String, dynamic> decodedProductData = jsonDecode(productData);
-        Map<String, dynamic> decodedStockData = jsonDecode(stockData);
-
-        Map<String, dynamic> productDataMap = decodedProductData['data'][0];
-        Map<String, dynamic> stockDataMap = decodedStockData['data'][0];
-
-        AutoRouter.of(context).replace(InventoryDetailRoute(productData: productDataMap, stockData: stockDataMap));
-      }).catchError((error) {
-        print("cai aqui!");
-        _handleError(error);
-      }).whenComplete(() {
-        setState(() {
-          isLoading = false;
-        });
+    if (selectedStore!.nroEmpresaBluesoft == null) {
+      setState(() {
+        isLoading = false;
       });
+
+      const snackBar = SnackBar(
+        content: Text(
+          'Loja padrão não cadastrada.',
+          style: TextStyle(fontSize: 16),
+        ),
+        backgroundColor: Colors.redAccent,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+
+    inventoryService.fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
+      Map<String, dynamic> decodedProductData = jsonDecode(productData);
+
+      AutoRouter.of(context).replace(InventoryDetailRoute(productData: decodedProductData));
     }).catchError((error) {
-      print("cai aqui 2!");
       _handleError(error);
     }).whenComplete(() {
       setState(() {
@@ -301,7 +242,6 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   void _handleError(dynamic error) {
-    print("entrei aqui!");
     if (error is ClientException) {
       final snackBar = SnackBar(
         content: Text(
@@ -312,6 +252,8 @@ class _InventoryPageState extends State<InventoryPage> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
+      print(error);
+
       const snackBar = SnackBar(
         content: Text(
           'Problemas ao buscar produto.',

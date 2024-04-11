@@ -6,9 +6,8 @@ import '../../services/InventoryService.dart';
 
 class InventoryDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
-  final Map<String, dynamic>? stockData;
 
-  const InventoryDetailPage({Key? key, this.productData, this.stockData}) : super(key: key);
+  const InventoryDetailPage({Key? key, this.productData}) : super(key: key);
 
   @override
   _InventoryDetailPageState createState() => _InventoryDetailPageState();
@@ -31,15 +30,15 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   void _initializeControllers() {
     _controllers.addAll({
-      'Saldo Disponivel': TextEditingController(text: _getStringValue('saldoDisponivel')),
-      'Quantidade Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
+      'Saldo Disponivel': TextEditingController(text: _getStringValue('qtdDisponivel')),
       'Quantidade Ponto Extra': TextEditingController(text: _getStringValue('quantidadePontoExtra')),
+      'Quantidade Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
     });
   }
 
   void _initializeData() {
     _originalData.addAll({
-      'saldodisponivel': _getStringValue('saldoDisponivel'),
+      'saldodisponivel': _getStringValue('qtdDisponivel'),
       'quantidadeexposicao': _getStringValue('quantidadeExposicao'),
       'quantidadepontoextra': _getStringValue('quantidadePontoExtra'),
     });
@@ -99,9 +98,23 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildReadOnlyField('Loja:', _getStringValue('lojaKey')),
+            _buildReadOnlyField('Loja (BlueSoft):', _getStringValue('lojaKey')),
             _buildReadOnlyField('GTIN:', _getStringValue('gtinPrincipal')),
             _buildReadOnlyField('Código Produto:', _getStringValue('produtoKey')),
+            _buildReadOnlyField('Descrição Produto:', ''),
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
+              child: Text(
+                _getStringValue('descricao')!,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0
+                ),
+              ),
+            ),
+            _buildReadOnlyField('Preço Normal:', _getStringValue('precoNormal')),
+            _buildReadOnlyField('Preço Fidelidade:', _getStringValue('precoFidelidade')),
           ],
         ),
       ),
@@ -152,9 +165,13 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   String? _getStringValue(String key) {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
+
+      // Regra dos múltiplos
+      if (key == 'quantidadeExposicao' && widget.productData?[key] >= 3){
+        widget.productData?[key] = widget.productData?[key] + 1;
+      }
+
       return widget.productData![key]?.toString();
-    } else if (widget.stockData != null && widget.stockData!.containsKey(key)) {
-      return widget.stockData![key]?.toString();
     } else {
       return null;
     }
@@ -200,11 +217,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     final changes = <String, dynamic>{};
     Map<String, dynamic> product = {};
 
-    print("Current Data");
-    print(_currentData);
-    print("Original Data");
-    print(_originalData);
-
     _currentData.forEach((key, value) {
       final originalValue = _originalData[key] ?? '';
       final updatedValue = value ?? '';
@@ -221,8 +233,11 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     };
 
     if (changes.isNotEmpty && product.isNotEmpty) {
-      print("ALTERANDO DADOS!");
-      print(_currentData);
+      // Regra de múltiplos
+      if (int.parse(_currentData['quantidadeexposicao']) > 3) {
+        var quantidadeexposicao = int.parse(_currentData['quantidadeexposicao']) - 1;
+        _currentData['quantidadeexposicao'] = quantidadeexposicao.toString();
+      }
 
       _updateStockAvailable(_currentData, product);
 
