@@ -18,8 +18,6 @@ import 'package:padron_inventario_app/pages/Inventory/inventory_page.dart'
     as _i3;
 import 'package:padron_inventario_app/pages/login_page.dart' as _i4;
 import 'package:padron_inventario_app/pages/register_page.dart' as _i6;
-import 'package:padron_inventario_app/pages/search_barcode_page.dart' as _i7;
-import 'package:padron_inventario_app/pages/stock_page.dart' as _i8;
 import 'package:padron_inventario_app/pages/User/user_management_details_page.dart'
     as _i9;
 import 'package:padron_inventario_app/pages/User/user_management_page.dart'
@@ -75,19 +73,6 @@ abstract class $AppRouter extends _i11.RootStackRouter {
       return _i11.AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const _i6.RegisterPage(),
-      );
-    },
-    SearchBarcodeRoute.name: (routeData) {
-      final args = routeData.argsAs<SearchBarcodeRouteArgs>();
-      return _i11.AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: _i7.SearchBarcodePage(productDetails: args.productDetails),
-      );
-    },
-    StockRoute.name: (routeData) {
-      return _i11.AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: _i8.StockPage(),
       );
     },
     UserDetailsRoute.name: (routeData) {
