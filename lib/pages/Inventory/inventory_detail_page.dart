@@ -5,6 +5,7 @@ import '../../routes/app_router.gr.dart';
 import '../../services/InventoryService.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
 
+@RoutePage()
 class InventoryDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
 
@@ -255,12 +256,12 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     }
 
     // Regra de múltiplos
-    if (_currentData.containsKey('quantidadeexposicao')) {
-      var quantidadeexposicao = _currentData['quantidadeexposicao'];
+    if (changes.containsKey('quantidadeexposicao')) {
+      var quantidadeexposicao = changes['quantidadeexposicao'];
 
       if (quantidadeexposicao != null && int.parse(quantidadeexposicao) > 3) {
         var novaQuantidade = int.parse(quantidadeexposicao) - 1;
-        _currentData['quantidadeexposicao'] = novaQuantidade.toString();
+        changes['quantidadeexposicao'] = novaQuantidade.toString();
       }
     }
 
@@ -275,7 +276,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         _isLoading = false;
       });
 
-      final successSnackBar = SuccessSnackBar(message: 'Inventário fechado com sucesso!');
+      final successSnackBar = SuccessSnackBar(message: 'Alteração Enviada Para Fila De Processamento!');
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
 
       AutoRouter.of(context).push(const InventoryRoute());
@@ -286,7 +287,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         _isLoading = false;
       });
 
-      final errorSnackBar = ErrorSnackBar(message: 'Erro ao criar inventário');
+      final errorSnackBar = ErrorSnackBar(message: 'Erro Na Gravação Das Alterações!');
       ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
 
       print(error);

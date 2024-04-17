@@ -1,12 +1,23 @@
-import 'package:auto_route/annotations.dart';
-import 'package:auto_route/auto_route.dart';
-import 'package:padron_inventario_app/pages/User/user_management_details_page.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:padron_inventario_app/services/UserService.dart';
+import 'package:flutter/services.dart';
+import 'package:galactic_hotkeys/galactic_hotkeys_widget.dart';
 
-import '../../routes/app_router.gr.dart';
+void main() {
+  runApp(const MyApp());
+}
 
-@RoutePage()
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: const MappingKeys(),
+    );
+  }
+}
+
 class MappingKeys extends StatefulWidget {
   const MappingKeys({Key? key}) : super(key: key);
 
@@ -15,24 +26,52 @@ class MappingKeys extends StatefulWidget {
 }
 
 class _MappingKeysState extends State<MappingKeys> {
+  String? _latestPressedKey;
+  Timer? _delayToClearPressedKey;
+
+  @override
+  void dispose() {
+    _delayToClearPressedKey?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
-        title: const Text(
-          'Mapeando teclas',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: const Color(0xFFA30000),
+        title: const Text('Mapping Keys'),
       ),
-      body: const Column(),
+      body: Focus(
+        autofocus: true,
+        onKey: (node, event) {
+          if (event is RawKeyDownEvent) {
+            setState(() {
+              _latestPressedKey = event.logicalKey.keyLabel;
+            });
+
+            _delayToClearPressedKey?.cancel();
+            _delayToClearPressedKey = Timer(const Duration(seconds: 2), () {
+              if (mounted) {
+                setState(() {
+                  _latestPressedKey = null;
+                });
+              }
+            });
+          }
+          return KeyEventResult.handled;
+        },
+        child: ListView(
+          children: [
+            if (_latestPressedKey != null)
+              ListTile(
+                title: Text(
+                  _latestPressedKey!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
-
 }
