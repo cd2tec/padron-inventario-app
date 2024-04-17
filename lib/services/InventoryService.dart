@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/models/Store.dart';
@@ -88,14 +89,13 @@ class InventoryService {
       path: '/inventory',
     );
 
-    data = {
+    var productData = {
       'lojaKey': product['lojaKey'].toString(),
-      'produtoKey': product['productKey'].toString(),
+      'produtoKey': product['produtoKey'].toString(),
       'gtin': product['gtin'].toString(),
-      'saldodisponivel': data['saldodisponivel'],
-      'quantidadeexposicao': data['quantidadeexposicao'],
-      'quantidadepontoextra': data['quantidadepontoextra'],
     };
+
+    var updateData = {...productData, ...data};
 
     http.Response response = await http.post(
       apiUrl,
@@ -103,7 +103,7 @@ class InventoryService {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
       },
-      body: data,
+      body: updateData,
     );
 
     if (response.statusCode != 200) {

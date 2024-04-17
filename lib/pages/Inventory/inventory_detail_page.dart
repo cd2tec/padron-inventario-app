@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../routes/app_router.gr.dart';
 import '../../services/InventoryService.dart';
+import '../../widgets/notifications/snackbar_widgets.dart';
 
+@RoutePage()
 class InventoryDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
 
@@ -216,71 +218,79 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
     final changes = <String, dynamic>{};
     Map<String, dynamic> product = {};
+    final keysToRemove = <String>[];
 
     _currentData.forEach((key, value) {
-      final originalValue = _originalData[key] ?? '';
-      final updatedValue = value ?? '';
+      final originalValue = _originalData[key];
+      final updatedValue = value;
+
       if (originalValue != updatedValue) {
-        String cleanedKey = key.replaceAll(' ', '').replaceAll('.', '');
-        changes[cleanedKey] = updatedValue;
+        changes[key.replaceAll(' ', '').replaceAll('.', '')] = updatedValue;
+      } else {
+
+        if (key == 'saldodisponivel') {
+          keysToRemove.add(key);
+        } else {
+          changes[key.replaceAll(' ', '').replaceAll('.', '')] = originalValue;
+        }
       }
+    });
+
+    keysToRemove.forEach((key) {
+      _currentData.remove(key);
     });
 
     product = {
       'lojaKey': _getStringValue('lojaKey') ?? '',
-      'productKey': _getStringValue('produtoKey') ?? '',
+      'produtoKey': _getStringValue('produtoKey') ?? '',
       'gtin': _getStringValue('gtinPrincipal') ?? ''
     };
 
-    if (changes.isNotEmpty && product.isNotEmpty) {
-      // Regra de múltiplos
-      if (int.parse(_currentData['quantidadeexposicao']) > 3) {
-        var quantidadeexposicao = int.parse(_currentData['quantidadeexposicao']) - 1;
-        _currentData['quantidadeexposicao'] = quantidadeexposicao.toString();
-      }
-
-      _updateStockAvailable(_currentData, product);
-
-    } else {
-      print("NENHUM DADO ALTERADO!");
+    if (changes.isEmpty && product.isEmpty) {
       setState(() {
         _isLoading = false;
       });
+
+      final errorSnackBar = ErrorSnackBar(message: 'Nenhum dado alterado!');
+      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
     }
+
+    // Regra de múltiplos
+    if (changes.containsKey('quantidadeexposicao')) {
+      var quantidadeexposicao = changes['quantidadeexposicao'];
+
+      if (quantidadeexposicao != null && int.parse(quantidadeexposicao) > 3) {
+        var novaQuantidade = int.parse(quantidadeexposicao) - 1;
+        changes['quantidadeexposicao'] = novaQuantidade.toString();
+      }
+    }
+
+    _updateStockAvailable(changes, product);
   }
+
 
   void _updateStockAvailable(Map<String, dynamic> changes, Map<String, dynamic> product) {
     inventoryService.createInventory(changes, product).then((response) {
-      const snackBar = SnackBar(
-        content: Text(
-          'Inventário fechado com sucesso!',
-          style: TextStyle(fontSize: 16),
-        ),
-        backgroundColor: Colors.greenAccent,
-      );
 
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      setState(() {
+        _isLoading = false;
+      });
+
+      final successSnackBar = SuccessSnackBar(message: 'Alteração Enviada Para Fila De Processamento!');
+      ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
 
       AutoRouter.of(context).push(const InventoryRoute());
 
-      setState(() {
-        _isLoading = false;
-      });
     }).catchError((error) {
-      const snackBar = SnackBar(
-        content: Text(
-          'Erro ao criar inventário',
-          style: TextStyle(fontSize: 16),
-        ),
-        backgroundColor: Colors.redAccent,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      print(error);
 
       setState(() {
         _isLoading = false;
       });
+
+      final errorSnackBar = ErrorSnackBar(message: 'Erro Na Gravação Das Alterações!');
+      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+
+      print(error);
     });
   }
 

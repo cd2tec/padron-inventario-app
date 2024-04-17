@@ -4,7 +4,6 @@ import 'package:padron_inventario_app/pages/User/user_management_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
-import 'package:padron_inventario_app/pages/stock_page.dart';
 import 'package:padron_inventario_app/pages/register_page.dart';
 import 'package:padron_inventario_app/services/AuthService.dart';
 
