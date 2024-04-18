@@ -169,7 +169,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
 
       // Regra dos múltiplos
-      if (key == 'quantidadeExposicao' && widget.productData?[key] >= 3){
+      if (key == 'quantidadeExposicao' && widget.productData?[key] > 3){
         widget.productData?[key] = widget.productData?[key] + 1;
       }
 
