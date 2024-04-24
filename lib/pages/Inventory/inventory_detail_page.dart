@@ -230,7 +230,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
         if (key == 'saldodisponivel') {
           keysToRemove.add(key);
-        } else {
+        } else if (!changes.containsKey('saldodisponivel')) {
           changes[key.replaceAll(' ', '').replaceAll('.', '')] = originalValue;
         }
       }

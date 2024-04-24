@@ -8,6 +8,7 @@ import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
 import '../../models/User.dart';
 import '../../services/InventoryService.dart';
+import '../../widgets/notifications/snackbar_widgets.dart';
 
 @RoutePage()
 class InventoryPage extends StatefulWidget {
@@ -229,7 +230,19 @@ class _InventoryPageState extends State<InventoryPage> {
     }
 
     inventoryService.fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
+
+      var productStatus = jsonDecode(productData);
+
+      if (productStatus.containsKey('error')) {
+        final errorSnackBar = ErrorSnackBar(
+            message: 'Houve um problema com a requisição. Por favor, verifique se o token é válido.'
+        );
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+        return;
+      }
+
       Map<String, dynamic> decodedProductData = jsonDecode(productData);
+
 
       AutoRouter.of(context).replace(InventoryDetailRoute(productData: decodedProductData));
     }).catchError((error) {
