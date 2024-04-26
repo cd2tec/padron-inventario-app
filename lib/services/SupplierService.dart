@@ -65,14 +65,14 @@ class SupplierService {
     return response.body;
   }
 
-  Future<List<Supplier>> fetchSupplier() async {
+  Future<List<Supplier>> fetchSupplierInventory() async {
     await Future.delayed(Duration(seconds: 2));
 
     return [
       Supplier(
           id: 1,
-          razaoSocial: 'Fornecedor 1',
-          fantasia: 'Fornecedor 1',
+          razaoSocial: 'Inventário 1',
+          fantasia: 'Inventário 1',
           cnpj: '00100123000123',
           cidade: 'Brasilia',
           uf: 'DF',
@@ -81,8 +81,8 @@ class SupplierService {
           cd: true),
       Supplier(
           id: 2,
-          razaoSocial: 'Fornecedor 2',
-          fantasia: 'Fornecedor 1',
+          razaoSocial: 'Inventário 2',
+          fantasia: 'Inventário 1',
           cnpj: '00100123000123',
           cidade: 'Brasilia',
           uf: 'DF',
@@ -91,8 +91,8 @@ class SupplierService {
           cd: true),
       Supplier(
           id: 3,
-          razaoSocial: 'Fornecedor 3',
-          fantasia: 'Fornecedor 1',
+          razaoSocial: 'Inventário 3',
+          fantasia: 'Inventário 1',
           cnpj: '00100123000123',
           cidade: 'Brasilia',
           uf: 'DF',

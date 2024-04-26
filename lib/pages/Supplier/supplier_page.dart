@@ -26,18 +26,26 @@ class _SupplierPageState extends State<SupplierPage> {
   List<Supplier> supplier = [];
   Supplier? selectedSupplier;
 
-  final TextEditingController _supplierNameController = TextEditingController();
+  final TextEditingController _supplierInventarioKeyController =
+      TextEditingController();
+  final TextEditingController _supplierLocalDeEstoqueController =
+      TextEditingController();
+  final TextEditingController _supplierLoteKeyController =
+      TextEditingController();
   bool isLoading = false;
+  bool showSupplierList =
+      false; // Variável para controlar a visibilidade do SupplierListWidget
 
   @override
   void initState() {
     super.initState();
-    _fetchSupplier();
+    _fetchSupplierInventory();
   }
 
-  Future<void> _fetchSupplier() async {
+  Future<void> _fetchSupplierInventory() async {
     try {
-      List<Supplier> fetchedSupplier = await supplierService.fetchSupplier();
+      List<Supplier> fetchedSupplier =
+          await supplierService.fetchSupplierInventory();
       setState(() {
         supplier = fetchedSupplier;
       });
@@ -54,7 +62,7 @@ class _SupplierPageState extends State<SupplierPage> {
           color: Colors.white,
         ),
         title: const Text(
-          'Fornecedores',
+          'Inventário por Fornecedor',
           style: TextStyle(
             color: Colors.white,
           ),
@@ -63,92 +71,113 @@ class _SupplierPageState extends State<SupplierPage> {
       ),
       body: Stack(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Consulta Fornecedores',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Buscar Inventário',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
-                    const Divider(
-                      height: 20,
-                      thickness: 2,
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Buscar Fornecedor',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
                           child: Theme(
                             data: Theme.of(context).copyWith(
                               primaryColor: Colors.grey[300],
                             ),
                             child: TextField(
-                              controller: _supplierNameController,
+                              controller: _supplierInventarioKeyController,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
-                                hintText: 'Fornecedor',
+                                hintText: 'Chave do Inventário',
                               ),
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
                             ),
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _supplierNameController.clear();
-                          },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _supplierInventarioKeyController.clear();
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              primaryColor: Colors.grey[300],
+                            ),
+                            child: TextField(
+                              controller: _supplierLocalDeEstoqueController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Chave Local de Estoque',
+                              ),
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                // Adicione o Expanded aqui
-                child: SupplierListWidget(
-                  suppliers: supplier,
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: ElevatedButton(
-                  onPressed: () {
-                    _searchSupplierName(_supplierNameController.text);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFA30000),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
-                    ),
-                    minimumSize: const Size(double.infinity, 60),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _supplierLocalDeEstoqueController.clear();
+                        },
+                      ),
+                    ],
                   ),
-                  child: const Text(
-                    'Buscar',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              primaryColor: Colors.grey[300],
+                            ),
+                            child: TextField(
+                              controller: _supplierLoteKeyController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Chave Lote',
+                              ),
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _supplierLoteKeyController.clear();
+                        },
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
           if (isLoading)
             Container(
@@ -157,29 +186,69 @@ class _SupplierPageState extends State<SupplierPage> {
                 child: CircularProgressIndicator(),
               ),
             ),
+          if (showSupplierList)
+            Container(
+              margin: const EdgeInsets.only(top: 300),
+              child: SupplierListWidget(
+                suppliers: supplier,
+              ),
+            ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: ElevatedButton(
+              onPressed: () {
+                _searchSupplierInventory(
+                    _supplierInventarioKeyController.text,
+                    _supplierLocalDeEstoqueController.text,
+                    _supplierLoteKeyController.text);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFA30000),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+                minimumSize: const Size(double.infinity, 60),
+              ),
+              child: const Text(
+                'Buscar',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Future<void> _searchSupplierName(String supplierName) async {
-    if (supplierName.isEmpty) return;
-    _searchSupplier('produtoKey', supplierName);
+  Future<void> _searchSupplierInventory(
+      String inventarioKey, String localDeEstoqueKey, String loteKey) async {
+    if (inventarioKey.isEmpty || localDeEstoqueKey.isEmpty || loteKey.isEmpty)
+      return;
+    _searchSupplier(inventarioKey, localDeEstoqueKey, loteKey);
   }
 
-  void _searchSupplier(String filter, String value) {
+  void _searchSupplier(
+      String inventarioKey, String localDeEstoqueKey, String loteKey) {
     setState(() {
       isLoading = true;
+      showSupplierList =
+          false; // Ocultar SupplierListWidget antes de iniciar a busca
     });
 
-    _fetchSupplier().then((_) {
+    _fetchSupplierInventory().then((_) {
       setState(() {
         isLoading = false;
+        showSupplierList =
+            true; // Exibir SupplierListWidget após a busca ser concluída
       });
     }).catchError((error) {
       _handleError(error);
       setState(() {
         isLoading = false;
+        showSupplierList = false; // Ocultar SupplierListWidget em caso de erro
       });
     });
   }
@@ -189,7 +258,7 @@ class _SupplierPageState extends State<SupplierPage> {
       final snackBar = SnackBar(
         content: Text(
           _isSupplierNotFoundError(error)
-              ? 'Fornecedor não encontrado.'
+              ? 'Inventário de Fornecedor não encontrado.'
               : '$error',
           style: const TextStyle(fontSize: 16),
         ),
@@ -199,7 +268,7 @@ class _SupplierPageState extends State<SupplierPage> {
     } else {
       const snackBar = SnackBar(
         content: Text(
-          'Problemas ao buscar fornecedor.',
+          'Problemas ao buscar inventário do fornecedor.',
           style: TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,

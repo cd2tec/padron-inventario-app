@@ -114,7 +114,7 @@ class HomePage extends StatelessWidget {
                 Navigator.pop(context);
               });
             },
-            title: const Text("Consulta Fornecedores"),
+            title: const Text("Inventário por Fornecedor"),
             leading: const Icon(Icons.business),
           ),
           ListTile(
