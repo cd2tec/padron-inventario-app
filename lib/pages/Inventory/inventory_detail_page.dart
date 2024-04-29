@@ -128,9 +128,10 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
         controller: controller,
+        keyboardType: TextInputType.number,
         onChanged: (value) {
           setState(() {
-            _currentData[removeSpecialCharacters(labelText.toLowerCase().replaceAll(' ', ''))] = value;
+            _currentData[removeSpecialCharacters(labelText.toLowerCase().replaceAll(' ', ''))] = formatData(value);
           });
         },
         style: const TextStyle(fontSize: 20, color: Colors.black),
@@ -218,27 +219,39 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
     final changes = <String, dynamic>{};
     Map<String, dynamic> product = {};
-    final keysToRemove = <String>[];
 
     _currentData.forEach((key, value) {
       final originalValue = _originalData[key];
       final updatedValue = value;
 
-      if (originalValue != updatedValue) {
-        changes[key.replaceAll(' ', '').replaceAll('.', '')] = updatedValue;
-      } else {
+      String? saldoDisponivel;
+      String? quantidadeExposicao;
+      String? quantidadePontoExtra;
 
+      if (originalValue != updatedValue) {
         if (key == 'saldodisponivel') {
-          keysToRemove.add(key);
-        } else if (!changes.containsKey('saldodisponivel')) {
-          changes[key.replaceAll(' ', '').replaceAll('.', '')] = originalValue;
+          saldoDisponivel = value;
+        } else if (key == 'quantidadeexposicao') {
+          quantidadeExposicao = value;
+        } else if (key == 'quantidadepontoextra') {
+          quantidadePontoExtra = value;
         }
       }
+
+      if (saldoDisponivel != null) {
+        changes['saldodisponivel'] = saldoDisponivel;
+      }
+
+      if (quantidadeExposicao != null || quantidadePontoExtra != null) {
+        changes['quantidadeexposicao'] =
+            quantidadeExposicao ?? _originalData['quantidadeexposicao'];
+        changes['quantidadepontoextra'] =
+            quantidadePontoExtra ?? _originalData['quantidadepontoextra'];
+      }
+
     });
 
-    keysToRemove.forEach((key) {
-      _currentData.remove(key);
-    });
+    print(changes);
 
     product = {
       'lojaKey': _getStringValue('lojaKey') ?? '',
@@ -300,5 +313,9 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         .replaceAll('õ', 'o')
         .replaceAll('â', 'a')
         .replaceAll(RegExp(r'[çÇ]'), 'c');
+  }
+
+  String formatData(String value) {
+    return value.replaceAll(RegExp(r'[^0-9]'), '');
   }
 }
