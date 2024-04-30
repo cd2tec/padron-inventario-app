@@ -248,10 +248,11 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       }
 
       if (quantidadeExposicao != null || quantidadePontoExtra != null) {
-        changes['quantidadeexposicao'] =
-            quantidadeExposicao ?? _originalData['quantidadeexposicao'];
-        changes['quantidadepontoextra'] =
-            quantidadePontoExtra ?? _originalData['quantidadepontoextra'];
+        var exposicaoParse = (quantidadeExposicao != null) ? int.parse(quantidadeExposicao) : _originalData['quantidadeexposicao'];
+        var pontoextraParse = (quantidadePontoExtra != null) ? int.parse(quantidadePontoExtra) : _originalData['quantidadepontoextra'];
+
+        changes['quantidadeexposicao'] = exposicaoParse.toString();
+        changes['quantidadepontoextra'] = pontoextraParse.toString();
       }
 
     });
