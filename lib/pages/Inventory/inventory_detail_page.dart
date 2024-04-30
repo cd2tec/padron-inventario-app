@@ -229,17 +229,22 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       String? quantidadePontoExtra;
 
       if (originalValue != updatedValue) {
-        if (key == 'saldodisponivel') {
-          saldoDisponivel = value;
-        } else if (key == 'quantidadeexposicao') {
-          quantidadeExposicao = value;
-        } else if (key == 'quantidadepontoextra') {
-          quantidadePontoExtra = value;
+        switch (key) {
+          case 'saldodisponivel':
+            saldoDisponivel = value;
+            break;
+          case 'quantidadeexposicao':
+            quantidadeExposicao = value;
+            break;
+          case 'quantidadepontoextra':
+            quantidadePontoExtra = value;
+            break;
         }
       }
 
       if (saldoDisponivel != null) {
-        changes['saldodisponivel'] = saldoDisponivel;
+        var saldoParse = int.parse(saldoDisponivel);
+        changes['saldodisponivel'] = saldoParse.toString();
       }
 
       if (quantidadeExposicao != null || quantidadePontoExtra != null) {
