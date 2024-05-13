@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:galactic_hotkeys/galactic_hotkeys_widget.dart';
@@ -12,12 +13,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const MappingKeys(),
+    return const MaterialApp(
+      home: MappingKeys(),
     );
   }
 }
-
+@RoutePage()
 class MappingKeys extends StatefulWidget {
   const MappingKeys({Key? key}) : super(key: key);
 

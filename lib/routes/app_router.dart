@@ -20,8 +20,11 @@ class AppRouter extends $AppRouter {
     AutoRoute(page: InventoryDetailRoute.page,  guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
     AutoRoute(page: InventoryRoute.page,        guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
 
+    // Supplier
+    AutoRoute(page: SupplierRoute.page, guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+
     // Mapping Keys
-    AutoRoute(page: MappingKeysRoute.page,      guards: [AuthGuard()]),
+    //AutoRoute(page: MappingKeysRoute.page,      guards: [AuthGuard()]),
   ];
 
   //List<AutoRouteGuard> get globalGuards => [AuthGuard()];

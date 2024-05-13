@@ -105,6 +105,15 @@ class HomePage extends StatelessWidget {
           ),
           ListTile(
             onTap: () {
+              AutoRouter.of(context).push(const SupplierRoute()).catchError((error) {
+                Navigator.pop(context);
+              });
+            },
+            title: const Text("Inventário Fornecedor"),
+            leading: const Icon(Icons.inventory),
+          ),
+          ListTile(
+            onTap: () {
               _logout(context);
             },
             title: const Text("Sair"),
