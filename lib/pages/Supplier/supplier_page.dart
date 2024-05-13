@@ -24,7 +24,8 @@ class _SupplierPageState extends State<SupplierPage> {
   bool isLoading = false;
 
   final TextEditingController _inventarioController = TextEditingController();
-  final TextEditingController _localDeEstoqueController = TextEditingController();
+  final TextEditingController _localDeEstoqueController =
+      TextEditingController();
   final TextEditingController _loteController = TextEditingController();
 
   @override
@@ -193,13 +194,11 @@ class _SupplierPageState extends State<SupplierPage> {
   }
 
   Future<void> _fetchInventory() async {
-    if (_inventarioController.text.isEmpty
-        || _localDeEstoqueController.text.isEmpty
-        || _loteController.text.isEmpty)
-    {
-      ScaffoldMessenger.of(context).showSnackBar(
-          ErrorSnackBar(message: 'Preencha todos os campos!')
-      );
+    if (_inventarioController.text.isEmpty ||
+        _localDeEstoqueController.text.isEmpty ||
+        _loteController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(ErrorSnackBar(message: 'Preencha todos os campos!'));
 
       return;
     }
@@ -222,16 +221,14 @@ class _SupplierPageState extends State<SupplierPage> {
       var supplierResp = await supplierService.fetchSupplierInventory(supplier);
       print(supplierResp);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-          SuccessSnackBar(message: formatMessage(supplierResp))
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SuccessSnackBar(message: formatMessage(supplierResp)));
 
       return supplierResp;
     } catch (error) {
       if (error is http.ClientException) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            ErrorSnackBar(message: formatMessage(error.message))
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(ErrorSnackBar(message: formatMessage(error.message)));
       }
     } finally {
       setState(() {
