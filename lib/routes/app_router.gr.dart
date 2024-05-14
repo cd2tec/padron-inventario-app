@@ -12,7 +12,6 @@ import 'package:auto_route/auto_route.dart' as _i13;
 import 'package:flutter/foundation.dart' as _i15;
 import 'package:flutter/material.dart' as _i14;
 import 'package:padron_inventario_app/main.dart' as _i6;
-import 'package:padron_inventario_app/models/Supplier.dart' as _i16;
 import 'package:padron_inventario_app/pages/home_page.dart' as _i1;
 import 'package:padron_inventario_app/pages/Inventory/inventory_detail_page.dart'
     as _i2;
@@ -101,7 +100,7 @@ abstract class $AppRouter extends _i13.RootStackRouter {
         routeData: routeData,
         child: _i9.SupplierProductsPage(
           key: args.key,
-          supplier: args.supplier,
+          inventory: args.inventory,
         ),
       );
     },
@@ -312,13 +311,13 @@ class SupplierProductsRoute
     extends _i13.PageRouteInfo<SupplierProductsRouteArgs> {
   SupplierProductsRoute({
     _i14.Key? key,
-    required _i16.Supplier supplier,
+    required List<Map<String, dynamic>> inventory,
     List<_i13.PageRouteInfo>? children,
   }) : super(
           SupplierProductsRoute.name,
           args: SupplierProductsRouteArgs(
             key: key,
-            supplier: supplier,
+            inventory: inventory,
           ),
           initialChildren: children,
         );
@@ -332,16 +331,16 @@ class SupplierProductsRoute
 class SupplierProductsRouteArgs {
   const SupplierProductsRouteArgs({
     this.key,
-    required this.supplier,
+    required this.inventory,
   });
 
   final _i14.Key? key;
 
-  final _i16.Supplier supplier;
+  final List<Map<String, dynamic>> inventory;
 
   @override
   String toString() {
-    return 'SupplierProductsRouteArgs{key: $key, supplier: $supplier}';
+    return 'SupplierProductsRouteArgs{key: $key, inventory: $inventory}';
   }
 }
 

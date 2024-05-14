@@ -219,13 +219,11 @@ class _SupplierPageState extends State<SupplierPage> {
   Future<void> _fetchSupplierInventory(Supplier supplier, context) async {
     try {
       var supplierResp = await supplierService.fetchSupplierInventory(supplier);
-      print(supplierResp);
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SuccessSnackBar(message: formatMessage(supplierResp)));
-
-      return supplierResp;
+      AutoRouter.of(context).push(SupplierProductsRoute(
+          inventory: supplierResp.cast<Map<String, dynamic>>()));
     } catch (error) {
+      print('$error aqui');
       if (error is http.ClientException) {
         ScaffoldMessenger.of(context)
             .showSnackBar(ErrorSnackBar(message: formatMessage(error.message)));

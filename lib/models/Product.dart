@@ -1,33 +1,45 @@
 class Product {
-  int produtoKey;
-  double quantidadeContada;
-  double quantidadeSistema;
-  double custoBruto;
-  double custoLiquido;
-  double custoContabil;
+  int id;
+  int supplierInventoryId;
+  String gtin;
+  String descricao;
+  String quantidade;
+  String sequencia;
+  String dataValidade;
+  String loteProduto;
+  String createdAt;
+  String updatedAt;
 
   Product({
-    required this.produtoKey,
-    required this.quantidadeContada,
-    required this.quantidadeSistema,
-    required this.custoBruto,
-    required this.custoContabil,
-    required this.custoLiquido,
+    required this.id,
+    required this.supplierInventoryId,
+    required this.gtin,
+    required this.descricao,
+    required this.quantidade,
+    required this.sequencia,
+    required this.dataValidade,
+    required this.loteProduto,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      produtoKey: json['produtoKey'],
-      quantidadeContada: json['quantidadeContada'],
-      quantidadeSistema: json['quantidadeSistema'],
-      custoBruto: json['custoBruto'],
-      custoLiquido: json['custoLiquido'],
-      custoContabil: json['custoContabil'],
+      id: json['id'] ?? 0,
+      supplierInventoryId: json['supplier_inventory_id'] ?? 0,
+      gtin: json['gtin'] ?? '0',
+      descricao: json['descricao'] ?? '0',
+      quantidade: json['quantidade'] ?? '0',
+      sequencia: json['sequencia'] ?? '0',
+      dataValidade: json['dataValidade'] ?? '0',
+      loteProduto: json['loteProduto'] ?? '0',
+      createdAt: json['created_at'] ?? '0',
+      updatedAt: json['updated_at'] ?? '0',
     );
   }
 
   @override
   String toString() {
-    return '{produtoKey: $produtoKey, quantidadeContada: $quantidadeContada, quantidadeSistema: $quantidadeSistema, custoBruto: $custoBruto, custoContabil: $custoContabil, custoLiquido: $custoLiquido }';
+    return '{id: $id, supplierInventoryId: $supplierInventoryId, gtin: $gtin, descricao: $descricao, quantidade: $quantidade, sequencia: $sequencia, dataValidade: $dataValidade, loteProduto: $loteProduto, createdAt: $createdAt, updatedAt: $updatedAt}';
   }
 }
