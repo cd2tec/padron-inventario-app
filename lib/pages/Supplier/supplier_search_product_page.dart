@@ -1,7 +1,7 @@
 import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart';
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
@@ -70,7 +70,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
           color: Colors.white,
         ),
         title: const Text(
-          'Inventário',
+          'Inventário Fornecedor',
           style: TextStyle(
             color: Colors.white,
           ),
@@ -110,26 +110,15 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              primaryColor: Colors.grey[300],
+                          child: TextField(
+                            controller: _productkeyController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Código do Produto',
                             ),
-                            child: TextField(
-                              controller: _productkeyController,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'Código do Produto',
-                              ),
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                            ),
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.camera_alt),
-                          onPressed: () {
-                            _scanBarcode();
-                          },
                         ),
                       ],
                     ),
@@ -191,20 +180,6 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
     );
   }
 
-  Future<void> _scanBarcode() async {
-    String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-      "#ff6666",
-      "Cancelar",
-      true,
-      ScanMode.DEFAULT,
-    );
-
-    if (!mounted) return;
-    _barcodeController.text = barcodeScanRes;
-
-    _searchProduct('gtin', _barcodeController.text);
-  }
-
   Future<void> _scanProductKey(String productkey) async {
     if (productkey.isEmpty) return;
     _searchProduct('gtin', productkey);
@@ -235,6 +210,8 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
         .then((productData) {
       var productStatus = jsonDecode(productData);
 
+      print('$productData aqui o produto');
+
       if (productStatus.containsKey('error')) {
         final errorSnackBar = ErrorSnackBar(
             message:
@@ -246,7 +223,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
       Map<String, dynamic> decodedProductData = jsonDecode(productData);
 
       AutoRouter.of(context)
-          .replace(InventoryDetailRoute(productData: decodedProductData));
+          .replace(SupplierDetailRoute(productData: decodedProductData));
     }).catchError((error) {
       _handleError(error);
     }).whenComplete(() {
@@ -267,8 +244,6 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
-      print(error);
-
       const snackBar = SnackBar(
         content: Text(
           'Problemas ao buscar produto.',
@@ -282,11 +257,5 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
 
   bool _isProductNotFoundError(ClientException error) {
     return error.message.contains("Failed to fetch product.");
-  }
-
-  void _openRegisterPage(BuildContext context) {
-    if (ModalRoute.of(context)!.settings.name != "inventory") {
-      AutoRouter.of(context).replace(const InventoryRoute());
-    }
   }
 }
