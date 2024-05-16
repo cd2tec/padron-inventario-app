@@ -35,7 +35,7 @@ class SupplierService {
     );
 
     /* if (response.statusCode != 200) {
-      print('erro na chamada');
+
       throw http.ClientException(response.body);
     } */
 

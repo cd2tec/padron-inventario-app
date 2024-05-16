@@ -221,9 +221,10 @@ class _SupplierPageState extends State<SupplierPage> {
       var supplierResp = await supplierService.fetchSupplierInventory(supplier);
 
       AutoRouter.of(context).push(SupplierProductsRoute(
-          inventory: supplierResp.cast<Map<String, dynamic>>()));
+        inventory: supplierResp.cast<Map<String, dynamic>>(),
+        updatedGtins: [],
+      ));
     } catch (error) {
-      print('$error aqui');
       if (error is http.ClientException) {
         ScaffoldMessenger.of(context)
             .showSnackBar(ErrorSnackBar(message: formatMessage(error.message)));

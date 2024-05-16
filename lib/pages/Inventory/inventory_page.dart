@@ -229,22 +229,23 @@ class _InventoryPageState extends State<InventoryPage> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
 
-    inventoryService.fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
-
+    inventoryService
+        .fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!)
+        .then((productData) {
       var productStatus = jsonDecode(productData);
 
       if (productStatus.containsKey('error')) {
         final errorSnackBar = ErrorSnackBar(
-            message: 'Houve um problema com a requisição. Por favor, verifique se o token é válido.'
-        );
+            message:
+                'Houve um problema com a requisição. Por favor, verifique se o token é válido.');
         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
         return;
       }
 
       Map<String, dynamic> decodedProductData = jsonDecode(productData);
 
-
-      AutoRouter.of(context).replace(InventoryDetailRoute(productData: decodedProductData));
+      AutoRouter.of(context)
+          .replace(InventoryDetailRoute(productData: decodedProductData));
     }).catchError((error) {
       _handleError(error);
     }).whenComplete(() {
@@ -265,8 +266,6 @@ class _InventoryPageState extends State<InventoryPage> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
-      print(error);
-
       const snackBar = SnackBar(
         content: Text(
           'Problemas ao buscar produto.',

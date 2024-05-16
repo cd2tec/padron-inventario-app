@@ -172,11 +172,6 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
 
   String? _getStringValue(String key) {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
-      // Regra dos múltiplos
-      if (key == 'quantidadeExposicao' && widget.productData?[key] > 3) {
-        widget.productData?[key] = widget.productData?[key] + 1;
-      }
-
       return widget.productData![key]?.toString();
     } else {
       return null;
@@ -223,42 +218,28 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
     final changes = <String, dynamic>{};
     Map<String, dynamic> product = {};
 
-    _currentData.forEach((key, value) {
-      final originalValue = _originalData[key];
-      final updatedValue = value;
+    final originalValue = _originalData['saldodisponivel'];
+    final updatedValue = _currentData['saldodisponivel'];
 
-      String? saldoDisponivel;
+    if (originalValue != updatedValue) {
+      changes['saldodisponivel'] = updatedValue;
+    }
 
-      if (originalValue != updatedValue) {
-        switch (key) {
-          case 'saldodisponivel':
-            saldoDisponivel = value;
-            break;
-        }
-      }
+    if (changes.isEmpty) {
+      final errorSnackBar = ErrorSnackBar(message: 'Nenhum dado alterado!');
+      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
 
-      if (saldoDisponivel != null) {
-        var saldoParse = int.parse(saldoDisponivel);
-        changes['saldodisponivel'] = saldoParse.toString();
-      }
-    });
-
-    print(changes);
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
 
     product = {
       'lojaKey': _getStringValue('lojaKey') ?? '',
       'produtoKey': _getStringValue('produtoKey') ?? '',
       'gtin': _getStringValue('gtinPrincipal') ?? ''
     };
-
-    if (changes.isEmpty && product.isEmpty) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      final errorSnackBar = ErrorSnackBar(message: 'Nenhum dado alterado!');
-      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
-    }
 
     _updateStockAvailable(changes, product);
   }
@@ -274,8 +255,10 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
           message: 'Alteração Enviada Para Fila De Processamento!');
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
 
-      final confirmedProductId = _getStringValue('produtoKey') ?? '';
-      Navigator.of(context).pop(confirmedProductId);
+      final confirmedProductGtin = _getStringValue('gtinPrincipal') ?? '';
+      print('gtin confirmado $confirmedProductGtin');
+
+      AutoRouter.of(context).pop(confirmedProductGtin);
     }).catchError((error) {
       setState(() {
         _isLoading = false;
@@ -284,8 +267,6 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
       final errorSnackBar =
           ErrorSnackBar(message: 'Erro Na Gravação Das Alterações!');
       ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
-
-      print(error);
     });
   }
 

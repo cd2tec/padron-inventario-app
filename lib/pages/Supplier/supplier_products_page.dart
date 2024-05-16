@@ -6,10 +6,10 @@ import 'package:padron_inventario_app/routes/app_router.gr.dart';
 @RoutePage()
 class SupplierProductsPage extends StatefulWidget {
   final List<Map<String, dynamic>> inventory;
-  final List<int> confirmedProductIds;
+  final List<String> updatedGtins;
 
   const SupplierProductsPage(
-      {Key? key, required this.inventory, required this.confirmedProductIds})
+      {Key? key, required this.inventory, required this.updatedGtins})
       : super(key: key);
 
   @override
@@ -17,8 +17,6 @@ class SupplierProductsPage extends StatefulWidget {
 }
 
 class _SupplierProductsPageState extends State<SupplierProductsPage> {
-  Set<String> confirmedProducts = {};
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,13 +47,14 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: widget.inventory.map((productData) {
                   final product = Product.fromJson(productData);
-                  final isConfirmed =
-                      widget.confirmedProductIds.contains((product.id));
+
+                  final isUpdated = widget.updatedGtins.contains(product.gtin);
+
                   return GestureDetector(
                     onTap: () {
-                      _navigateToSearchProduct(context, product);
+                      _navigateToSearchProduct(context);
                     },
-                    child: _buildProductItem(product, isConfirmed),
+                    child: _buildProductItem(product, isUpdated),
                   );
                 }).toList(),
               ),
@@ -66,12 +65,9 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
     );
   }
 
-  Widget _buildProductItem(Product product, bool isConfirmed) {
+  Widget _buildProductItem(Product product, bool isUpdated) {
     return Card(
-      color: isConfirmed
-          ? Colors.grey
-          : const Color(
-              0xFFA30000), // Mudar a cor se o produto estiver confirmado
+      color: isUpdated ? Colors.grey : const Color(0xFFA30000),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Row(
@@ -93,16 +89,9 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
     );
   }
 
-  void _navigateToSearchProduct(BuildContext context, Product product) async {
-    final confirmedProductId = await AutoRouter.of(context).push<int>(
+  void _navigateToSearchProduct(BuildContext context) async {
+    AutoRouter.of(context).push(
       const SupplierSearchProductRoute(),
     );
-
-    if (confirmedProductId != null) {
-      // Atualizar o estado para refletir a confirmação do produto
-      setState(() {
-        widget.confirmedProductIds.add(confirmedProductId);
-      });
-    }
   }
 }

@@ -22,7 +22,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   final _currentData = <String, dynamic>{};
   bool _isLoading = false;
 
-
   @override
   void initState() {
     super.initState();
@@ -32,9 +31,12 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   void _initializeControllers() {
     _controllers.addAll({
-      'Saldo Disponivel': TextEditingController(text: _getStringValue('qtdDisponivel')),
-      'Quantidade Ponto Extra': TextEditingController(text: _getStringValue('quantidadePontoExtra')),
-      'Quantidade Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
+      'Saldo Disponivel':
+          TextEditingController(text: _getStringValue('qtdDisponivel')),
+      'Quantidade Ponto Extra':
+          TextEditingController(text: _getStringValue('quantidadePontoExtra')),
+      'Quantidade Exposição':
+          TextEditingController(text: _getStringValue('quantidadeExposicao')),
     });
   }
 
@@ -102,7 +104,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           children: [
             _buildReadOnlyField('Loja (BlueSoft):', _getStringValue('lojaKey')),
             _buildReadOnlyField('GTIN:', _getStringValue('gtinPrincipal')),
-            _buildReadOnlyField('Código Produto:', _getStringValue('produtoKey')),
+            _buildReadOnlyField(
+                'Código Produto:', _getStringValue('produtoKey')),
             _buildReadOnlyField('Descrição Produto:', ''),
             Padding(
               padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
@@ -111,19 +114,21 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                 style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16.0
-                ),
+                    fontSize: 16.0),
               ),
             ),
-            _buildReadOnlyField('Preço Normal:', _getStringValue('precoNormal')),
-            _buildReadOnlyField('Preço Fidelidade:', _getStringValue('precoFidelidade')),
+            _buildReadOnlyField(
+                'Preço Normal:', _getStringValue('precoNormal')),
+            _buildReadOnlyField(
+                'Preço Fidelidade:', _getStringValue('precoFidelidade')),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextFormField(String labelText, TextEditingController controller) {
+  Widget _buildTextFormField(
+      String labelText, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
@@ -131,15 +136,19 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         keyboardType: TextInputType.number,
         onChanged: (value) {
           setState(() {
-            _currentData[removeSpecialCharacters(labelText.toLowerCase().replaceAll(' ', ''))] = formatData(value);
+            _currentData[removeSpecialCharacters(
+                    labelText.toLowerCase().replaceAll(' ', ''))] =
+                formatData(value);
           });
         },
         style: const TextStyle(fontSize: 20, color: Colors.black),
         decoration: InputDecoration(
           labelText: labelText,
-          labelStyle: const TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
+          labelStyle: const TextStyle(
+              fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),
           border: const OutlineInputBorder(),
-          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         ),
       ),
     );
@@ -152,7 +161,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         children: [
           Text(
             labelText,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -168,9 +178,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   String? _getStringValue(String key) {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
-
       // Regra dos múltiplos
-      if (key == 'quantidadeExposicao' && widget.productData?[key] > 3){
+      if (key == 'quantidadeExposicao' && widget.productData?[key] > 3) {
         widget.productData?[key] = widget.productData?[key] + 1;
       }
 
@@ -194,20 +203,20 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         ),
         child: _isLoading
             ? const SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        )
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
             : const Text(
-          'Confirmar',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-          ),
-        ),
+                'Confirmar',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
       ),
     );
   }
@@ -248,16 +257,17 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       }
 
       if (quantidadeExposicao != null || quantidadePontoExtra != null) {
-        var exposicaoParse = (quantidadeExposicao != null) ? int.parse(quantidadeExposicao) : _originalData['quantidadeexposicao'];
-        var pontoextraParse = (quantidadePontoExtra != null) ? int.parse(quantidadePontoExtra) : _originalData['quantidadepontoextra'];
+        var exposicaoParse = (quantidadeExposicao != null)
+            ? int.parse(quantidadeExposicao)
+            : _originalData['quantidadeexposicao'];
+        var pontoextraParse = (quantidadePontoExtra != null)
+            ? int.parse(quantidadePontoExtra)
+            : _originalData['quantidadepontoextra'];
 
         changes['quantidadeexposicao'] = exposicaoParse.toString();
         changes['quantidadepontoextra'] = pontoextraParse.toString();
       }
-
     });
-
-    print(changes);
 
     product = {
       'lojaKey': _getStringValue('lojaKey') ?? '',
@@ -287,29 +297,26 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     _updateStockAvailable(changes, product);
   }
 
-
-  void _updateStockAvailable(Map<String, dynamic> changes, Map<String, dynamic> product) {
+  void _updateStockAvailable(
+      Map<String, dynamic> changes, Map<String, dynamic> product) {
     inventoryService.createInventory(changes, product).then((response) {
-
       setState(() {
         _isLoading = false;
       });
 
-      final successSnackBar = SuccessSnackBar(message: 'Alteração Enviada Para Fila De Processamento!');
+      final successSnackBar = SuccessSnackBar(
+          message: 'Alteração Enviada Para Fila De Processamento!');
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
 
       AutoRouter.of(context).push(const InventoryRoute());
-
     }).catchError((error) {
-
       setState(() {
         _isLoading = false;
       });
 
-      final errorSnackBar = ErrorSnackBar(message: 'Erro Na Gravação Das Alterações!');
+      final errorSnackBar =
+          ErrorSnackBar(message: 'Erro Na Gravação Das Alterações!');
       ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
-
-      print(error);
     });
   }
 

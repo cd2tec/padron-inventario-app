@@ -114,6 +114,7 @@ abstract class $AppRouter extends _i14.RootStackRouter {
         child: _i10.SupplierProductsPage(
           key: args.key,
           inventory: args.inventory,
+          updatedGtins: args.updatedGtins,
         ),
       );
     },
@@ -363,12 +364,14 @@ class SupplierProductsRoute
   SupplierProductsRoute({
     _i15.Key? key,
     required List<Map<String, dynamic>> inventory,
+    required List<String> updatedGtins,
     List<_i14.PageRouteInfo>? children,
   }) : super(
           SupplierProductsRoute.name,
           args: SupplierProductsRouteArgs(
             key: key,
             inventory: inventory,
+            updatedGtins: updatedGtins,
           ),
           initialChildren: children,
         );
@@ -383,15 +386,18 @@ class SupplierProductsRouteArgs {
   const SupplierProductsRouteArgs({
     this.key,
     required this.inventory,
+    required this.updatedGtins,
   });
 
   final _i15.Key? key;
 
   final List<Map<String, dynamic>> inventory;
 
+  final List<String> updatedGtins;
+
   @override
   String toString() {
-    return 'SupplierProductsRouteArgs{key: $key, inventory: $inventory}';
+    return 'SupplierProductsRouteArgs{key: $key, inventory: $inventory, updatedGtins: $updatedGtins}';
   }
 }
 
