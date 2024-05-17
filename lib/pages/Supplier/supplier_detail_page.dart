@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../routes/app_router.gr.dart';
 import '../../services/InventoryService.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
@@ -76,7 +77,6 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
             children: [
               _buildInfoCard(),
               const SizedBox(height: 20),
-              // TextFormFields for editable fields
               for (final entry in _controllers.entries)
                 _buildTextFormField(entry.key, entry.value),
               const SizedBox(height: 20),
@@ -256,9 +256,10 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
 
       final confirmedProductGtin = _getStringValue('gtinPrincipal') ?? '';
-      print('gtin confirmado $confirmedProductGtin');
 
-      AutoRouter.of(context).pop(confirmedProductGtin);
+      _storeConfirmedProductGtin(confirmedProductGtin);
+
+      AutoRouter.of(context).pop();
     }).catchError((error) {
       setState(() {
         _isLoading = false;
@@ -280,5 +281,14 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
 
   String formatData(String value) {
     return value.replaceAll(RegExp(r'[^0-9]'), '');
+  }
+
+  Future<void> _storeConfirmedProductGtin(String gtin) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> confirmedGtins =
+        prefs.getStringList('confirmed_gtins') ?? [];
+    confirmedGtins.add(gtin);
+
+    await prefs.setStringList('confirmed_gtins', confirmedGtins);
   }
 }

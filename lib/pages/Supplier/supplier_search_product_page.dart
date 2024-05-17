@@ -210,8 +210,6 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
         .then((productData) {
       var productStatus = jsonDecode(productData);
 
-      print('$productData aqui o produto');
-
       if (productStatus.containsKey('error')) {
         final errorSnackBar = ErrorSnackBar(
             message:
@@ -223,7 +221,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
       Map<String, dynamic> decodedProductData = jsonDecode(productData);
 
       AutoRouter.of(context)
-          .replace(SupplierDetailRoute(productData: decodedProductData));
+          .push(SupplierDetailRoute(productData: decodedProductData));
     }).catchError((error) {
       _handleError(error);
     }).whenComplete(() {

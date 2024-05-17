@@ -222,7 +222,6 @@ class _SupplierPageState extends State<SupplierPage> {
 
       AutoRouter.of(context).push(SupplierProductsRoute(
         inventory: supplierResp.cast<Map<String, dynamic>>(),
-        updatedGtins: [],
       ));
     } catch (error) {
       if (error is http.ClientException) {
