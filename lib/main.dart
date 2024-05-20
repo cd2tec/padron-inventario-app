@@ -2,6 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:padron_inventario_app/routes/app_router.dart';
+import 'package:padron_inventario_app/services/AppLifecycleService.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,8 +17,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppRouter appRouter = AppRouter();
-    return MaterialApp.router(
-      routerConfig: appRouter.config(),
+    return AppLifecycleManager(
+      child: MaterialApp.router(
+        routerConfig: appRouter.config(),
+      ),
     );
   }
 }

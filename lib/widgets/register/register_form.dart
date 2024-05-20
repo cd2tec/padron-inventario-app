@@ -123,7 +123,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                      AutoRouter.of(context).push(const UserListRoute());
+                        AutoRouter.of(context).push(const UserListRoute());
                       })
                     .catchError((error) {
                         final snackBar = SnackBar(

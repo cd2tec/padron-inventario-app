@@ -7,7 +7,6 @@ class PermissionGuard extends AutoRouteGuard {
   Future<void> onNavigation(NavigationResolver resolver, StackRouter router) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isAdmin = prefs.getBool('isAdmin') ?? false;
-    print("to aqui no permission tbm mano");
 
     if (isAdmin != false) {
       resolver.next(true);

@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserService {
-
   static Future<SharedPreferences> getSharedPreferences() async {
     return await SharedPreferences.getInstance();
   }
@@ -40,7 +39,8 @@ class UserService {
     return userList;
   }
 
-  Future<Map<String, dynamic>> updateUser(int userId, String name, String email, String password, String cpf, bool isAdmin, bool isActive) async {
+  Future<Map<String, dynamic>> updateUser(int userId, String name, String email,
+      String password, String cpf, bool isAdmin, bool isActive) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 
@@ -63,7 +63,6 @@ class UserService {
     if (password.isEmpty) {
       userData.remove('password');
     }
-    print(userData);
 
     http.Response response = await http.put(
       apiUrl,
@@ -83,8 +82,8 @@ class UserService {
     return data;
   }
 
-
-  Future<String> userRegister(String name, String email, String password, String cpf, bool administrator, bool ativo) async {
+  Future<String> userRegister(String name, String email, String password,
+      String cpf, bool administrator, bool ativo) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 
@@ -104,14 +103,12 @@ class UserService {
       'ativo': ativo.toString(),
     };
 
-    http.Response response = await http.post(
-        apiUrl,
+    http.Response response = await http.post(apiUrl,
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
-        body: fields
-    );
+        body: fields);
 
     if (response.statusCode != 201 && response.statusCode != 200) {
       throw http.ClientException(response.body);
@@ -132,11 +129,11 @@ class UserService {
     );
 
     http.Response response = await http.delete(
-        apiUrl,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
+      apiUrl,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
     );
 
     if (response.statusCode != 201 && response.statusCode != 200) {
@@ -186,5 +183,3 @@ class UserService {
     return User.fromJson(jsonDecode(response.body));
   }
 }
-
-

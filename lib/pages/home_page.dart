@@ -105,6 +105,15 @@ class HomePage extends StatelessWidget {
           ),
           ListTile(
             onTap: () {
+              AutoRouter.of(context).push(const SupplierRoute()).catchError((error) {
+                Navigator.pop(context);
+              });
+            },
+            title: const Text("Inventário Fornecedor"),
+            leading: const Icon(Icons.inventory),
+          ),
+          ListTile(
+            onTap: () {
               _logout(context);
             },
             title: const Text("Sair"),
@@ -120,16 +129,6 @@ class HomePage extends StatelessWidget {
       return SharedPreferences.getInstance();
     }).then((prefs) {
       prefs.clear();
-    }).catchError((error) {
-      final snackBar = SnackBar(
-        content: Text(
-          'Ocorreu um erro durante o logout: $error',
-          style: const TextStyle(fontSize: 16),
-        ),
-        backgroundColor: Colors.red,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    });
+    }).catchError((error) {});
   }
 }

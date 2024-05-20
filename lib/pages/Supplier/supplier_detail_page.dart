@@ -1,21 +1,22 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../routes/app_router.gr.dart';
 import '../../services/InventoryService.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
 
 @RoutePage()
-class InventoryDetailPage extends StatefulWidget {
+class SupplierDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
 
-  const InventoryDetailPage({Key? key, this.productData}) : super(key: key);
+  const SupplierDetailPage({Key? key, this.productData}) : super(key: key);
 
   @override
-  _InventoryDetailPageState createState() => _InventoryDetailPageState();
+  _SupplierDetailPageState createState() => _SupplierDetailPageState();
 }
 
-class _InventoryDetailPageState extends State<InventoryDetailPage> {
+class _SupplierDetailPageState extends State<SupplierDetailPage> {
   InventoryService inventoryService = InventoryService();
   final _controllers = <String, TextEditingController>{};
   final _originalData = <String, dynamic>{};
@@ -33,18 +34,12 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     _controllers.addAll({
       'Saldo Disponivel':
           TextEditingController(text: _getStringValue('qtdDisponivel')),
-      'Quantidade Ponto Extra':
-          TextEditingController(text: _getStringValue('quantidadePontoExtra')),
-      'Quantidade Exposição':
-          TextEditingController(text: _getStringValue('quantidadeExposicao')),
     });
   }
 
   void _initializeData() {
     _originalData.addAll({
       'saldodisponivel': _getStringValue('qtdDisponivel'),
-      'quantidadeexposicao': _getStringValue('quantidadeExposicao'),
-      'quantidadepontoextra': _getStringValue('quantidadePontoExtra'),
     });
     _currentData.addAll(_originalData);
   }
@@ -61,7 +56,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
-            AutoRouter.of(context).replace(const InventoryRoute());
+            AutoRouter.of(context).replace(const SupplierSearchProductRoute());
           },
           child: const Icon(
             Icons.arrow_back,
@@ -82,7 +77,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
             children: [
               _buildInfoCard(),
               const SizedBox(height: 20),
-              // TextFormFields for editable fields
               for (final entry in _controllers.entries)
                 _buildTextFormField(entry.key, entry.value),
               const SizedBox(height: 20),
@@ -178,11 +172,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   String? _getStringValue(String key) {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
-      // Regra dos múltiplos
-      if (key == 'quantidadeExposicao' && widget.productData?[key] > 3) {
-        widget.productData?[key] = widget.productData?[key] + 1;
-      }
-
       return widget.productData![key]?.toString();
     } else {
       return null;
@@ -229,70 +218,28 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     final changes = <String, dynamic>{};
     Map<String, dynamic> product = {};
 
-    _currentData.forEach((key, value) {
-      final originalValue = _originalData[key];
-      final updatedValue = value;
+    final originalValue = _originalData['saldodisponivel'];
+    final updatedValue = _currentData['saldodisponivel'];
 
-      String? saldoDisponivel;
-      String? quantidadeExposicao;
-      String? quantidadePontoExtra;
+    if (originalValue != updatedValue) {
+      changes['saldodisponivel'] = updatedValue;
+    }
 
-      if (originalValue != updatedValue) {
-        switch (key) {
-          case 'saldodisponivel':
-            saldoDisponivel = value;
-            break;
-          case 'quantidadeexposicao':
-            quantidadeExposicao = value;
-            break;
-          case 'quantidadepontoextra':
-            quantidadePontoExtra = value;
-            break;
-        }
-      }
+    if (changes.isEmpty) {
+      final errorSnackBar = ErrorSnackBar(message: 'Nenhum dado alterado!');
+      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
 
-      if (saldoDisponivel != null) {
-        var saldoParse = int.parse(saldoDisponivel);
-        changes['saldodisponivel'] = saldoParse.toString();
-      }
-
-      if (quantidadeExposicao != null || quantidadePontoExtra != null) {
-        var exposicaoParse = (quantidadeExposicao != null)
-            ? int.parse(quantidadeExposicao)
-            : _originalData['quantidadeexposicao'];
-        var pontoextraParse = (quantidadePontoExtra != null)
-            ? int.parse(quantidadePontoExtra)
-            : _originalData['quantidadepontoextra'];
-
-        changes['quantidadeexposicao'] = exposicaoParse.toString();
-        changes['quantidadepontoextra'] = pontoextraParse.toString();
-      }
-    });
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
 
     product = {
       'lojaKey': _getStringValue('lojaKey') ?? '',
       'produtoKey': _getStringValue('produtoKey') ?? '',
       'gtin': _getStringValue('gtinPrincipal') ?? ''
     };
-
-    if (changes.isEmpty && product.isEmpty) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      final errorSnackBar = ErrorSnackBar(message: 'Nenhum dado alterado!');
-      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
-    }
-
-    // Regra de múltiplos
-    if (changes.containsKey('quantidadeexposicao')) {
-      var quantidadeexposicao = changes['quantidadeexposicao'];
-
-      if (quantidadeexposicao != null && int.parse(quantidadeexposicao) > 3) {
-        var novaQuantidade = int.parse(quantidadeexposicao) - 1;
-        changes['quantidadeexposicao'] = novaQuantidade.toString();
-      }
-    }
 
     _updateStockAvailable(changes, product);
   }
@@ -308,7 +255,11 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           message: 'Alteração Enviada Para Fila De Processamento!');
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
 
-      AutoRouter.of(context).push(const InventoryRoute());
+      final confirmedProductGtin = _getStringValue('gtinPrincipal') ?? '';
+
+      _storeConfirmedProductGtin(confirmedProductGtin);
+
+      AutoRouter.of(context).pop();
     }).catchError((error) {
       setState(() {
         _isLoading = false;
@@ -330,5 +281,14 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   String formatData(String value) {
     return value.replaceAll(RegExp(r'[^0-9]'), '');
+  }
+
+  Future<void> _storeConfirmedProductGtin(String gtin) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> confirmedGtins =
+        prefs.getStringList('confirmed_gtins') ?? [];
+    confirmedGtins.add(gtin);
+
+    await prefs.setStringList('confirmed_gtins', confirmedGtins);
   }
 }

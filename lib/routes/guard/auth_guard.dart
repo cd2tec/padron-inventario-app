@@ -8,7 +8,6 @@ class AuthGuard extends AutoRouteGuard {
   Future<void> onNavigation(NavigationResolver resolver, StackRouter router) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Object loggedIn = prefs.getString('token') ?? false;
-    print("to aqui no auth mano");
 
     if (loggedIn != false) {
       resolver.next(true);

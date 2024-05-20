@@ -23,7 +23,7 @@ class _PopupMenuButtonExample1State extends State {
             setState(() {
               selectedItem = value.toString();
             });
-            print(value);
+
             Navigator.pushNamed(context, value.toString());
           }, itemBuilder: (BuildContext bc) {
             return const [

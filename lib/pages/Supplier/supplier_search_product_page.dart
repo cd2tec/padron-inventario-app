@@ -1,7 +1,7 @@
 import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart';
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
@@ -11,14 +11,15 @@ import '../../services/InventoryService.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
 
 @RoutePage()
-class InventoryPage extends StatefulWidget {
-  const InventoryPage({Key? key}) : super(key: key);
+class SupplierSearchProductPage extends StatefulWidget {
+  const SupplierSearchProductPage({Key? key}) : super(key: key);
 
   @override
-  _InventoryPageState createState() => _InventoryPageState();
+  _SupplierSearchProductPageState createState() =>
+      _SupplierSearchProductPageState();
 }
 
-class _InventoryPageState extends State<InventoryPage> {
+class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
   InventoryService inventoryService = InventoryService();
   UserService userService = UserService();
 
@@ -69,7 +70,7 @@ class _InventoryPageState extends State<InventoryPage> {
           color: Colors.white,
         ),
         title: const Text(
-          'Inventário',
+          'Inventário Fornecedor',
           style: TextStyle(
             color: Colors.white,
           ),
@@ -109,26 +110,15 @@ class _InventoryPageState extends State<InventoryPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              primaryColor: Colors.grey[300],
+                          child: TextField(
+                            controller: _productkeyController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Código do Produto',
                             ),
-                            child: TextField(
-                              controller: _productkeyController,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'Código do Produto',
-                              ),
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                            ),
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.camera_alt),
-                          onPressed: () {
-                            _scanBarcode();
-                          },
                         ),
                       ],
                     ),
@@ -190,20 +180,6 @@ class _InventoryPageState extends State<InventoryPage> {
     );
   }
 
-  Future<void> _scanBarcode() async {
-    String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-      "#ff6666",
-      "Cancelar",
-      true,
-      ScanMode.DEFAULT,
-    );
-
-    if (!mounted) return;
-    _barcodeController.text = barcodeScanRes;
-
-    _searchProduct('gtin', _barcodeController.text);
-  }
-
   Future<void> _scanProductKey(String productkey) async {
     if (productkey.isEmpty) return;
     _searchProduct('gtin', productkey);
@@ -245,7 +221,7 @@ class _InventoryPageState extends State<InventoryPage> {
       Map<String, dynamic> decodedProductData = jsonDecode(productData);
 
       AutoRouter.of(context)
-          .replace(InventoryDetailRoute(productData: decodedProductData));
+          .push(SupplierDetailRoute(productData: decodedProductData));
     }).catchError((error) {
       _handleError(error);
     }).whenComplete(() {
@@ -279,11 +255,5 @@ class _InventoryPageState extends State<InventoryPage> {
 
   bool _isProductNotFoundError(ClientException error) {
     return error.message.contains("Failed to fetch product.");
-  }
-
-  void _openRegisterPage(BuildContext context) {
-    if (ModalRoute.of(context)!.settings.name != "inventory") {
-      AutoRouter.of(context).replace(const InventoryRoute());
-    }
   }
 }
