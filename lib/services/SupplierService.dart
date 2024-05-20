@@ -42,7 +42,10 @@ class SupplierService {
 
     Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
-    List<Map<String, dynamic>> inventory = jsonResponse['inventory'];
+    List<dynamic> inventoryDynamic = jsonResponse['inventory'];
+
+    List<Map<String, dynamic>> inventory =
+        inventoryDynamic.map((item) => item as Map<String, dynamic>).toList();
 
     return inventory;
   }
