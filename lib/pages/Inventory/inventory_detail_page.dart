@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import '../../routes/app_router.gr.dart';
 import '../../services/InventoryService.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
+import '../../utils/InventoryUtilsService.dart';
 
 @RoutePage()
 class InventoryDetailPage extends StatefulWidget {
-  final Map<String, dynamic>? productData;
+  final Map<String, dynamic> ?productData;
 
   const InventoryDetailPage({Key? key, this.productData}) : super(key: key);
 
@@ -17,6 +18,7 @@ class InventoryDetailPage extends StatefulWidget {
 
 class _InventoryDetailPageState extends State<InventoryDetailPage> {
   InventoryService inventoryService = InventoryService();
+  late InventoryUtilsService _utilsService;
   final _controllers = <String, TextEditingController>{};
   final _originalData = <String, dynamic>{};
   final _currentData = <String, dynamic>{};
@@ -25,18 +27,17 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   @override
   void initState() {
     super.initState();
+    _utilsService = InventoryUtilsService();
     _initializeControllers();
     _initializeData();
   }
 
   void _initializeControllers() {
     _controllers.addAll({
-      'Saldo Disponivel':
-          TextEditingController(text: _getStringValue('qtdDisponivel')),
-      'Quantidade Ponto Extra':
-          TextEditingController(text: _getStringValue('quantidadePontoExtra')),
-      'Quantidade Exposição':
-          TextEditingController(text: _getStringValue('quantidadeExposicao')),
+      'Saldo Disponivel': TextEditingController(text: _getStringValue('qtdDisponivel')),
+      'Quantidade Ponto Extra': TextEditingController(text: _getStringValue('quantidadePontoExtra')),
+      'Quantidade Exposição': TextEditingController(text: _getStringValue('quantidadeExposicao')),
+      'Multiplo': TextEditingController(text: _getStringValue('multiplo')),
     });
   }
 
@@ -45,6 +46,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       'saldodisponivel': _getStringValue('qtdDisponivel'),
       'quantidadeexposicao': _getStringValue('quantidadeExposicao'),
       'quantidadepontoextra': _getStringValue('quantidadePontoExtra'),
+      'multiplo': _getStringValue('multiplo'),
     });
     _currentData.addAll(_originalData);
   }
@@ -82,9 +84,10 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
             children: [
               _buildInfoCard(),
               const SizedBox(height: 20),
-              // TextFormFields for editable fields
               for (final entry in _controllers.entries)
-                _buildTextFormField(entry.key, entry.value),
+                entry.key == 'Multiplo'
+                    ? _buildTextFormField(entry.key, entry.value, editable: false)
+                    : _buildTextFormField(entry.key, entry.value),
               const SizedBox(height: 20),
               _buildConfirmButton(),
             ],
@@ -114,7 +117,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                 style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16.0),
+                    fontSize: 16.0
+                ),
               ),
             ),
             _buildReadOnlyField(
@@ -127,18 +131,17 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     );
   }
 
-  Widget _buildTextFormField(
-      String labelText, TextEditingController controller) {
+  Widget _buildTextFormField(String labelText, TextEditingController controller,  {bool editable = true}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
         controller: controller,
         keyboardType: TextInputType.number,
+        enabled: editable,
         onChanged: (value) {
           setState(() {
-            _currentData[removeSpecialCharacters(
-                    labelText.toLowerCase().replaceAll(' ', ''))] =
-                formatData(value);
+            _currentData[_utilsService.removeSpecialCharacters(
+                    labelText.toLowerCase().replaceAll(' ', ''))] = _utilsService.formatData(value);
           });
         },
         style: const TextStyle(fontSize: 20, color: Colors.black),
@@ -162,7 +165,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           Text(
             labelText,
             style: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -178,9 +182,39 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   String? _getStringValue(String key) {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
-      // Regra dos múltiplos
-      if (key == 'quantidadeExposicao' && widget.productData?[key] > 3) {
-        widget.productData?[key] = widget.productData?[key] + 1;
+
+      // Regra dos múltiplos para exibição ao usuario
+      if (key == 'quantidadeExposicao') {
+        final department = widget.productData?['departamento'];
+
+        if (widget.productData?[key] > 3 && int.parse(department) != 9){
+          widget.productData?[key] = widget.productData?[key] + 1;
+        }
+
+        if (int.parse(department) == 9) {
+          switch (widget.productData?[key]) {
+            case 3:
+              widget.productData?[key] = 6;
+              break;
+            case 4:
+              widget.productData?[key] = 10;
+              break;
+            case 7:
+              widget.productData?[key] = 12;
+              break;
+            case 13:
+              widget.productData?[key] = 18;
+              break;
+            case 19:
+              widget.productData?[key] = 24;
+              break;
+            case 29:
+              widget.productData?[key] = 36;
+              break;
+            default:
+              break;
+          }
+        }
       }
 
       return widget.productData![key]?.toString();
@@ -236,6 +270,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       String? saldoDisponivel;
       String? quantidadeExposicao;
       String? quantidadePontoExtra;
+      String? multiplo;
 
       if (originalValue != updatedValue) {
         switch (key) {
@@ -247,6 +282,9 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
             break;
           case 'quantidadepontoextra':
             quantidadePontoExtra = value;
+            break;
+          case 'multiplo':
+            multiplo = value;
             break;
         }
       }
@@ -267,6 +305,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
         changes['quantidadeexposicao'] = exposicaoParse.toString();
         changes['quantidadepontoextra'] = pontoextraParse.toString();
       }
+      changes['multiplo'] = multiplo.toString();
     });
 
     product = {
@@ -285,29 +324,29 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     }
 
     // Regra de múltiplos
+    final updatedChanges = changes;
     if (changes.containsKey('quantidadeexposicao')) {
       var quantidadeexposicao = changes['quantidadeexposicao'];
-
-      if (quantidadeexposicao != null && int.parse(quantidadeexposicao) > 3) {
-        var novaQuantidade = int.parse(quantidadeexposicao) - 1;
-        changes['quantidadeexposicao'] = novaQuantidade.toString();
-      }
+      final department = widget.productData?['departamento'];
+      final updatedChanges = _utilsService.multipleRules(quantidadeexposicao!, changes, department);
+    }else {
+      changes['multiplo'] = '2';
     }
 
-    _updateStockAvailable(changes, product);
+    _updateStockAvailable(updatedChanges, product);
   }
 
-  void _updateStockAvailable(
-      Map<String, dynamic> changes, Map<String, dynamic> product) {
+  void _updateStockAvailable(Map<String, dynamic> changes, Map<String, dynamic> product) {
     inventoryService.createInventory(changes, product).then((response) {
       setState(() {
         _isLoading = false;
       });
 
       final successSnackBar = SuccessSnackBar(
-          message: 'Alteração Enviada Para Fila De Processamento!');
-      ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+          message: 'Alteração Enviada Para Fila De Processamento!'
+      );
 
+      ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
       AutoRouter.of(context).push(const InventoryRoute());
     }).catchError((error) {
       setState(() {
@@ -320,15 +359,4 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     });
   }
 
-  String removeSpecialCharacters(String text) {
-    return text
-        .replaceAll('ã', 'a')
-        .replaceAll('õ', 'o')
-        .replaceAll('â', 'a')
-        .replaceAll(RegExp(r'[çÇ]'), 'c');
-  }
-
-  String formatData(String value) {
-    return value.replaceAll(RegExp(r'[^0-9]'), '');
-  }
 }

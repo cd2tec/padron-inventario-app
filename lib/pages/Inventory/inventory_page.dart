@@ -229,9 +229,7 @@ class _InventoryPageState extends State<InventoryPage> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
 
-    inventoryService
-        .fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!)
-        .then((productData) {
+    inventoryService.fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
       var productStatus = jsonDecode(productData);
 
       if (productStatus.containsKey('error')) {
@@ -243,9 +241,8 @@ class _InventoryPageState extends State<InventoryPage> {
       }
 
       Map<String, dynamic> decodedProductData = jsonDecode(productData);
+      AutoRouter.of(context).replace(InventoryDetailRoute(productData: decodedProductData));
 
-      AutoRouter.of(context)
-          .replace(InventoryDetailRoute(productData: decodedProductData));
     }).catchError((error) {
       _handleError(error);
     }).whenComplete(() {
