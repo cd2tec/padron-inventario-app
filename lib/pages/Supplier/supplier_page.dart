@@ -1,12 +1,14 @@
 import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:padron_inventario_app/models/Inventory.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
-import '../../models/Supplier.dart';
+import 'package:padron_inventario_app/widgets/app_bar_title.dart';
+import 'package:padron_inventario_app/widgets/inventory_list.dart';
+import 'package:padron_inventario_app/widgets/loader_overlay.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
 
 @RoutePage()
@@ -22,11 +24,13 @@ class _SupplierPageState extends State<SupplierPage> {
   UserService userService = UserService();
 
   bool isLoading = false;
+  List<Map<String, dynamic>> inventories = [];
 
-  final TextEditingController _inventarioController = TextEditingController();
-  final TextEditingController _localDeEstoqueController =
-      TextEditingController();
-  final TextEditingController _loteController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _fetchInventoriesList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,198 +39,162 @@ class _SupplierPageState extends State<SupplierPage> {
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: const Text(
-          'Inventário Fornecedor',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
+        title: const AppBarTitle(title: 'Inventário Fornecedor'),
         backgroundColor: const Color(0xFFA30000),
       ),
-      body: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Buscar Inventário',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                    const Divider(
-                      height: 20,
-                      thickness: 2,
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Código Inventário',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              primaryColor: Colors.grey[300],
-                            ),
-                            child: TextField(
-                              controller: _inventarioController,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'Código Inventário',
-                              ),
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Local De Estoque',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              primaryColor: Colors.grey[300],
-                            ),
-                            child: TextField(
-                              controller: _localDeEstoqueController,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'Local de Estoque',
-                              ),
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Código Lote',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              primaryColor: Colors.grey[300],
-                            ),
-                            child: TextField(
-                              controller: _loteController,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'Lote',
-                              ),
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                  ],
+      body: LoaderOverlay(
+        isLoading: isLoading,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'Inventários em aberto',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
                 ),
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _fetchInventory();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA30000),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      minimumSize: const Size(double.infinity, 60),
-                    ),
-                    child: const Text(
-                      'Buscar',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: CircularProgressIndicator(),
               ),
             ),
-        ],
+            const Divider(height: 10, thickness: 2),
+            InventoryList(
+              inventories: inventories,
+              onTap: (inventory) =>
+                  _navigateToInventoryDetails(context, inventory),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Future<void> _fetchInventory() async {
-    if (_inventarioController.text.isEmpty ||
-        _localDeEstoqueController.text.isEmpty ||
-        _loteController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(ErrorSnackBar(message: 'Preencha todos os campos!'));
+  void _navigateToInventoryDetails(
+      BuildContext context, Inventory inventory) async {
+    await AutoRouter.of(context).push(
+      SupplierInventoryDetailsRoute(inventory: inventory.toJson()),
+    );
+  }
 
-      return;
-    }
-
+  Future<void> _fetchInventoriesList() async {
     setState(() {
       isLoading = true;
     });
 
-    Supplier supplier = Supplier(
-      inventarioKey: _inventarioController.text,
-      localEstoque: _localDeEstoqueController.text,
-      loteKey: _loteController.text,
-    );
-
-    _fetchSupplierInventory(supplier, context);
-  }
-
-  Future<void> _fetchSupplierInventory(Supplier supplier, context) async {
     try {
-      var supplierResp = await supplierService.fetchSupplierInventory(supplier);
+      List<Map<String, dynamic>> fetchedInventories =
+          await supplierService.fetchSupplierInventoriesList();
 
-      AutoRouter.of(context).push(SupplierProductsRoute(
-        inventory: supplierResp.cast<Map<String, dynamic>>(),
-      ));
+      setState(() {
+        inventories = fetchedInventories;
+      });
     } catch (error) {
       if (error is http.ClientException) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(ErrorSnackBar(message: formatMessage(error.message)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          ErrorSnackBar(message: formatMessage(error.message)),
+        );
+      }
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+
+    try {
+      List<Map<String, dynamic>> mockInventories = [
+        {
+          'id': 1,
+          'descricao': 'Inventário 1',
+          'loja_key': 'loja1',
+          'fornecedor_key': 'fornecedor1',
+          'divisao': 'Divisão 1',
+          'status': 'Em Aberto',
+          'produtos': [
+            {
+              "id": 1,
+              "inventory_id": 2,
+              "product_key": 1,
+              "gtin": 3,
+              "descricao": 'Produto 1',
+              "coletado": "Sim",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 2,
+              "inventory_id": 2,
+              "product_key": 2,
+              "gtin": 3,
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            }
+          ],
+          "created_at": "2024-06-26T21:41:01.000000Z",
+          "updated_at": "2024-07-01T00:51:34.000000Z"
+        },
+        {
+          "id": 2,
+          "descricao": 'Inventário 2',
+          "divisao": 'Divisão 2',
+          "loja_key": '13',
+          "fornecedor_key": '2',
+          "status": 'Em aberto',
+          "produtos": [
+            {
+              "id": 1,
+              "inventory_id": 2,
+              "product_key": 1,
+              "gtin": 3,
+              "descricao": 'Produto 1',
+              "coletado": "Sim",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 2,
+              "inventory_id": 2,
+              "product_key": 2,
+              "gtin": 3,
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+          ],
+          "created_at": "2024-06-26T21:41:01.000000Z",
+          "updated_at": "2024-07-01T00:51:34.000000Z"
+        }
+        // Adicione outros mockInventories aqui
+      ];
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      setState(() {
+        inventories = mockInventories;
+      });
+    } catch (error) {
+      if (error is http.ClientException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          ErrorSnackBar(message: formatMessage(error.message)),
+        );
       }
     } finally {
       setState(() {
