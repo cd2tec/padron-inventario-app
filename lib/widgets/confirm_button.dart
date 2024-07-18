@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class FinalizeButton extends StatelessWidget {
+class ConfirmButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const FinalizeButton({Key? key, required this.onPressed}) : super(key: key);
+  const ConfirmButton({Key? key, required this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class FinalizeButton extends StatelessWidget {
           minimumSize: const Size(double.infinity, 60),
         ),
         child: const Text(
-          'Finalizar Inventário',
+          'Confirmar',
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,

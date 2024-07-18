@@ -91,7 +91,7 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
             minimumSize: const Size(double.infinity, 60),
           ),
           child: const Text(
-            'Buscar Produto',
+            'Confirmar',
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,

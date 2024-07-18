@@ -2,10 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
+import 'package:padron_inventario_app/widgets/add_more_items_button.dart';
 import 'package:padron_inventario_app/widgets/app_bar_title.dart';
 import 'package:padron_inventario_app/widgets/product_list.dart';
-import 'package:padron_inventario_app/widgets/finalize_button.dart';
-import 'package:padron_inventario_app/widgets/add_more_items_button.dart';
 
 @RoutePage()
 class SupplierProductsListPage extends StatefulWidget {

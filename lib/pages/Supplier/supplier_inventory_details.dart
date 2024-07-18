@@ -1,15 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:padron_inventario_app/models/Inventory.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
 import 'package:padron_inventario_app/widgets/app_bar_title.dart';
+import 'package:padron_inventario_app/widgets/confirm_button.dart';
 import 'package:padron_inventario_app/widgets/confirmation_finalize_inventory.dart';
-import 'package:padron_inventario_app/widgets/finalize_button.dart';
 import 'package:padron_inventario_app/widgets/inventory_details.dart';
-import 'package:padron_inventario_app/widgets/product_list_button.dart';
-import 'package:padron_inventario_app/widgets/total_products.dart';
+import 'package:padron_inventario_app/widgets/items_list_button.dart';
 
 @RoutePage()
 class SupplierInventoryDetailsPage extends StatefulWidget {
@@ -85,7 +83,7 @@ class _SupplierInventoryDetailsPageState
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: AppBarTitle(title: inventory.descricao),
+        title: AppBarTitle(title: 'Detalhes do ${inventory.descricao}'),
         backgroundColor: const Color(0xFFA30000),
       ),
       body: Stack(
@@ -94,17 +92,6 @@ class _SupplierInventoryDetailsPageState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    'Detalhes do Inventário',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                const Divider(height: 10, thickness: 2),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: InventoryDetails(
@@ -115,33 +102,26 @@ class _SupplierInventoryDetailsPageState
                     status: inventory.status,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TotalProducts(
-                    totalProducts: totalProducts,
-                    collectedProducts: collectedProducts,
-                    notCollectedProducts: notCollectedProducts,
-                  ),
-                ),
                 const Divider(height: 10, thickness: 2),
+                const SizedBox(height: 60),
+                Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: ConfirmButton(
+                        onPressed: () =>
+                            _showFinalizeConfirmationDialog(inventory.id),
+                      ),
+                    )),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: ProductListButton(
+                  child: ItemsListButton(
                     products: products,
                   ),
                 ),
-                const SizedBox(
-                    height: 60), // Espaço para o botão FinalizeButton
               ],
             ),
           ),
-          Expanded(
-              child: Align(
-            alignment: Alignment.bottomCenter,
-            child: FinalizeButton(
-              onPressed: () => _showFinalizeConfirmationDialog(inventory.id),
-            ),
-          )),
         ],
       ),
     );

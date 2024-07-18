@@ -21,14 +21,14 @@ class ProductListButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () => _navigateToSupplierProductsList(context),
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color.fromARGB(255, 4, 132, 23),
         minimumSize: const Size(double.infinity, 40),
       ),
       child: const Text(
-        'Visualizar Lista de Produtos',
+        'Lista de Itens',
         style: TextStyle(
           color: Colors.white,
-          fontSize: 16,
+          fontSize: 20,
         ),
       ),
     );

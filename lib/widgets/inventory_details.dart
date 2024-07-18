@@ -20,6 +20,7 @@ class InventoryDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
+      color: const Color(0xFFA30000),
       margin: const EdgeInsets.all(10),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -29,40 +30,40 @@ class InventoryDetails extends StatelessWidget {
             Text(
               'Descrição: $descricao',
               style: const TextStyle(
+                color: Color.fromARGB(255, 255, 252, 252),
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               'Loja: $lojaKey',
               style: const TextStyle(
+                color: Color.fromARGB(255, 255, 252, 252),
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               'Fornecedor: $fornecedorKey',
               style: const TextStyle(
+                color: Color.fromARGB(255, 255, 252, 252),
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               'Divisão: $divisao',
               style: const TextStyle(
+                color: Color.fromARGB(255, 255, 252, 252),
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               'Status: $status',
               style: const TextStyle(
+                color: Color.fromARGB(255, 255, 252, 252),
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
               ),
             ),
           ],

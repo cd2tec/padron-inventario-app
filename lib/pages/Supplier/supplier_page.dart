@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,6 +10,7 @@ import 'package:padron_inventario_app/services/UserService.dart';
 import 'package:padron_inventario_app/widgets/app_bar_title.dart';
 import 'package:padron_inventario_app/widgets/inventory_list.dart';
 import 'package:padron_inventario_app/widgets/loader_overlay.dart';
+
 import '../../widgets/notifications/snackbar_widgets.dart';
 
 @RoutePage()
@@ -39,7 +41,7 @@ class _SupplierPageState extends State<SupplierPage> {
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: const AppBarTitle(title: 'Inventário Fornecedor'),
+        title: const AppBarTitle(title: 'Inventários por Fornecedor'),
         backgroundColor: const Color(0xFFA30000),
       ),
       body: LoaderOverlay(
@@ -47,17 +49,6 @@ class _SupplierPageState extends State<SupplierPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                'Inventários em aberto',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ),
-            const Divider(height: 10, thickness: 2),
             InventoryList(
               inventories: inventories,
               onTap: (inventory) =>
