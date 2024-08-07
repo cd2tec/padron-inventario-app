@@ -1,8 +1,8 @@
 class Product {
   int id;
   int inventoryId;
-  int productKey;
-  int gtin;
+  String productKey;
+  String gtin;
   String descricao;
   int quantidadeExposicao;
   int quantidadePontoExtra;

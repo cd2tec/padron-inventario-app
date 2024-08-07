@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/models/Supplier.dart';
@@ -17,7 +18,7 @@ class SupplierService {
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
       port: 8080,
-      path: '/inventory/index',
+      path: '/inventory/status/',
     );
 
     http.Response response = await http.get(apiUrl, headers: {
@@ -87,7 +88,8 @@ class SupplierService {
     return inventory;
   }
 
-  Future<void> fetchFinalizeInventory(int inventoryId) async {
+  Future<void> fetchFinalizeInventory(
+      int inventoryId, Map<String, dynamic> inventory) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 

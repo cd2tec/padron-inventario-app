@@ -7,9 +7,9 @@ import 'package:padron_inventario_app/models/Inventory.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
-import 'package:padron_inventario_app/widgets/app_bar_title.dart';
-import 'package:padron_inventario_app/widgets/inventory_list.dart';
-import 'package:padron_inventario_app/widgets/loader_overlay.dart';
+import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
+import 'package:padron_inventario_app/widgets/supplier/inventory_list.dart';
+import 'package:padron_inventario_app/widgets/supplier/loader_overlay.dart';
 
 import '../../widgets/notifications/snackbar_widgets.dart';
 
@@ -104,11 +104,11 @@ class _SupplierPageState extends State<SupplierPage> {
             {
               "id": 1,
               "inventory_id": 2,
-              "product_key": 1,
-              "gtin": 3,
+              "product_key": '1',
+              "gtin": '3',
               "descricao": 'Produto 1',
               "coletado": "Sim",
-              "quantidade_exposicao": 4,
+              "quantidade_exposicao": 0,
               "quantidade_ponto_extra": 5,
               "saldo_disponivel": "2.4",
               "multiplo": 6,
@@ -118,8 +118,8 @@ class _SupplierPageState extends State<SupplierPage> {
             {
               "id": 2,
               "inventory_id": 2,
-              "product_key": 2,
-              "gtin": 3,
+              "product_key": '2',
+              "gtin": '3',
               "descricao": 'Produto 2',
               "coletado": "Não",
               "quantidade_exposicao": 4,
@@ -128,7 +128,91 @@ class _SupplierPageState extends State<SupplierPage> {
               "multiplo": 6,
               "created_at": "2024-07-03T16:16:37.000000Z",
               "updated_at": "2024-07-03T16:16:37.000000Z"
-            }
+            },
+            {
+              "id": 3,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 3,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 4,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 5,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 0,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 6,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 0,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 7,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 0,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 8,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 1,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
           ],
           "created_at": "2024-06-26T21:41:01.000000Z",
           "updated_at": "2024-07-01T00:51:34.000000Z"
@@ -144,8 +228,8 @@ class _SupplierPageState extends State<SupplierPage> {
             {
               "id": 1,
               "inventory_id": 2,
-              "product_key": 1,
-              "gtin": 3,
+              "product_key": '1',
+              "gtin": '3',
               "descricao": 'Produto 1',
               "coletado": "Sim",
               "quantidade_exposicao": 4,
@@ -158,8 +242,8 @@ class _SupplierPageState extends State<SupplierPage> {
             {
               "id": 2,
               "inventory_id": 2,
-              "product_key": 2,
-              "gtin": 3,
+              "product_key": '2',
+              "gtin": '3',
               "descricao": 'Produto 2',
               "coletado": "Não",
               "quantidade_exposicao": 4,
@@ -172,8 +256,207 @@ class _SupplierPageState extends State<SupplierPage> {
           ],
           "created_at": "2024-06-26T21:41:01.000000Z",
           "updated_at": "2024-07-01T00:51:34.000000Z"
-        }
-        // Adicione outros mockInventories aqui
+        },
+        {
+          "id": 3,
+          "descricao": 'Inventário 2',
+          "divisao": 'Divisão 2',
+          "loja_key": '13',
+          "fornecedor_key": '2',
+          "status": 'Em aberto',
+          "produtos": [
+            {
+              "id": 1,
+              "inventory_id": 2,
+              "product_key": '1',
+              "gtin": '3',
+              "descricao": 'Produto 1',
+              "coletado": "Sim",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 2,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+          ],
+          "created_at": "2024-06-26T21:41:01.000000Z",
+          "updated_at": "2024-07-01T00:51:34.000000Z"
+        },
+        {
+          "id": 4,
+          "descricao": 'Inventário 2',
+          "divisao": 'Divisão 2',
+          "loja_key": '13',
+          "fornecedor_key": '2',
+          "status": 'Em aberto',
+          "produtos": [
+            {
+              "id": 1,
+              "inventory_id": 2,
+              "product_key": '1',
+              "gtin": '3',
+              "descricao": 'Produto 1',
+              "coletado": "Sim",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 2,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+          ],
+          "created_at": "2024-06-26T21:41:01.000000Z",
+          "updated_at": "2024-07-01T00:51:34.000000Z"
+        },
+        {
+          "id": 5,
+          "descricao": 'Inventário 2',
+          "divisao": 'Divisão 2',
+          "loja_key": '13',
+          "fornecedor_key": '2',
+          "status": 'Em aberto',
+          "produtos": [
+            {
+              "id": 1,
+              "inventory_id": 2,
+              "product_key": '1',
+              "gtin": '3',
+              "descricao": 'Produto 1',
+              "coletado": "Sim",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 2,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+          ],
+          "created_at": "2024-06-26T21:41:01.000000Z",
+          "updated_at": "2024-07-01T00:51:34.000000Z"
+        },
+        {
+          "id": 6,
+          "descricao": 'Inventário 2',
+          "divisao": 'Divisão 2',
+          "loja_key": '13',
+          "fornecedor_key": '2',
+          "status": 'Em aberto',
+          "produtos": [
+            {
+              "id": 1,
+              "inventory_id": 2,
+              "product_key": '1',
+              "gtin": '3',
+              "descricao": 'Produto 1',
+              "coletado": "Sim",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 2,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+          ],
+          "created_at": "2024-06-26T21:41:01.000000Z",
+          "updated_at": "2024-07-01T00:51:34.000000Z"
+        },
+        {
+          "id": 7,
+          "descricao": 'Inventário 2',
+          "divisao": 'Divisão 2',
+          "loja_key": '13',
+          "fornecedor_key": '2',
+          "status": 'Em aberto',
+          "produtos": [
+            {
+              "id": 1,
+              "inventory_id": 2,
+              "product_key": '1',
+              "gtin": '3',
+              "descricao": 'Produto 1',
+              "coletado": "Sim",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+            {
+              "id": 2,
+              "inventory_id": 2,
+              "product_key": '2',
+              "gtin": '3',
+              "descricao": 'Produto 2',
+              "coletado": "Não",
+              "quantidade_exposicao": 4,
+              "quantidade_ponto_extra": 5,
+              "saldo_disponivel": "2.4",
+              "multiplo": 6,
+              "created_at": "2024-07-03T16:16:37.000000Z",
+              "updated_at": "2024-07-03T16:16:37.000000Z"
+            },
+          ],
+          "created_at": "2024-06-26T21:41:01.000000Z",
+          "updated_at": "2024-07-01T00:51:34.000000Z"
+        },
       ];
 
       await Future.delayed(const Duration(seconds: 2));

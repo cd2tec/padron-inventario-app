@@ -1,17 +1,24 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/models/Product.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
-import 'package:padron_inventario_app/widgets/add_more_items_button.dart';
-import 'package:padron_inventario_app/widgets/app_bar_title.dart';
-import 'package:padron_inventario_app/widgets/product_list.dart';
+import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
+import 'package:padron_inventario_app/widgets/supplier/confirmation_finalize_inventory.dart';
+import 'package:padron_inventario_app/widgets/supplier/finalize_button.dart';
+import 'package:padron_inventario_app/widgets/supplier/product_list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class SupplierProductsListPage extends StatefulWidget {
+  final Map<String, dynamic> inventory;
   final List<Map<String, dynamic>> products;
 
   const SupplierProductsListPage({
     Key? key,
+    required this.inventory,
     required this.products,
   }) : super(key: key);
 
@@ -21,14 +28,7 @@ class SupplierProductsListPage extends StatefulWidget {
 }
 
 class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
-  late List<Map<String, dynamic>> products;
   final SupplierService supplierService = SupplierService();
-
-  @override
-  void initState() {
-    super.initState();
-    products = widget.products;
-  }
 
   void _navigateToSearchProduct(BuildContext context) async {
     await AutoRouter.of(context).push(
@@ -47,41 +47,46 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmar Finalização'),
-          content:
-              const Text('Você tem certeza que deseja finalizar o inventário?'),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red,
-                side: const BorderSide(color: Colors.red),
-              ),
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.red,
-              ),
-              child: const Text('Sim'),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await _finalizeInventory(inventoryId);
-              },
-            ),
-          ],
+        return ConfirmationFinalizeInventory(
+          onConfirm: () async {
+            await _finalizeInventory(inventoryId);
+          },
         );
       },
     );
   }
 
   Future<void> _finalizeInventory(int inventoryId) async {
+    bool allProductsValid = true;
+    for (var productData in widget.products) {
+      final product = Product.fromJson(productData);
+      if (product.quantidadeExposicao <= 0) {
+        allProductsValid = false;
+        break;
+      }
+    }
+
+    if (!allProductsValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Todos os produtos devem ter quantidade maior que zero.'),
+        ),
+      );
+      return;
+    }
+
+    Map<String, dynamic> inventory = {...widget.inventory};
     try {
-      await supplierService.fetchFinalizeInventory(inventoryId);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      for (var productData in widget.products) {
+        final product = Product.fromJson(productData);
+        String productKey = product.productKey ?? '';
+        String savedData = prefs.getString(productKey) ?? '{}';
+        Map<String, dynamic> savedProductData = json.decode(savedData);
+        productData.addAll(savedProductData);
+      }
+      await supplierService.fetchFinalizeInventory(inventoryId, inventory);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Inventário finalizado com sucesso!'),
@@ -103,6 +108,20 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
 
   @override
   Widget build(BuildContext context) {
+    widget.products.sort((a, b) {
+      final productA = Product.fromJson(a);
+      final productB = Product.fromJson(b);
+      if (productA.quantidadeExposicao == 0 &&
+          productB.quantidadeExposicao > 0) {
+        return -1;
+      } else if (productA.quantidadeExposicao > 0 &&
+          productB.quantidadeExposicao == 0) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(
@@ -114,22 +133,24 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                AddMoreItemsButton(
-                  onPressed: () => _navigateToSearchProduct(context),
-                ),
-              ],
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.products.length,
+              itemBuilder: (context, index) {
+                final productData = widget.products[index];
+                return ProductList(
+                  products: [productData],
+                  onTap: (product) =>
+                      _navigateToProductDetail(context, product),
+                );
+              },
             ),
           ),
-          const Divider(height: 10, thickness: 2),
-          Expanded(
-            child: ProductList(
-              products: products,
-              onTap: (product) => _navigateToProductDetail(context, product),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: FinalizeButton(
+              onPressed: () =>
+                  _showFinalizeConfirmationDialog(widget.inventory['id']),
             ),
           ),
         ],

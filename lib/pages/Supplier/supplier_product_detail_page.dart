@@ -1,12 +1,10 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
-import 'package:padron_inventario_app/widgets/app_bar_title.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../routes/app_router.gr.dart';
-import '../../services/InventoryService.dart';
-import '../../widgets/notifications/snackbar_widgets.dart';
+import 'dart:convert';
 
-@RoutePage()
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../widgets/supplier/app_bar_title.dart';
+
 class SupplierProductDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
 
@@ -19,11 +17,9 @@ class SupplierProductDetailPage extends StatefulWidget {
 }
 
 class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
-  InventoryService inventoryService = InventoryService();
   final _controllers = <String, TextEditingController>{};
   final _originalData = <String, dynamic>{};
   final _currentData = <String, dynamic>{};
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -54,47 +50,56 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
-        title: const AppBarTitle(title: 'Detalhes do Produto'),
-        backgroundColor: const Color(0xFFA30000),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildInfoCard(),
-              const SizedBox(height: 20),
-              for (final entry in _controllers.entries)
-                _buildTextFormField(entry.key, entry.value),
-              const SizedBox(height: 20),
-            ],
+    return WillPopScope(
+      onWillPop: () async {
+        // Voltar para SupplierProductsListPage quando o botão de voltar do dispositivo for pressionado
+        Navigator.pop(context);
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          iconTheme: const IconThemeData(
+            color: Colors.white,
           ),
+          title: const AppBarTitle(title: 'Detalhes do Produto'),
+          backgroundColor: const Color(0xFFA30000),
         ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ElevatedButton(
-          onPressed: () {
-            AutoRouter.of(context).push(const SupplierSearchProductRoute());
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFA30000),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoCard(),
+                const SizedBox(height: 20),
+                for (final entry in _controllers.entries)
+                  _buildTextFormField(entry.key, entry.value),
+                const SizedBox(height: 20),
+              ],
             ),
-            minimumSize: const Size(double.infinity, 60),
           ),
-          child: const Text(
-            'Confirmar',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
+        ),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: ElevatedButton(
+            onPressed: () {
+              _saveLocalChanges();
+              // Navegar de volta para SupplierProductsListPage após salvar localmente
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFA30000),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+              minimumSize: const Size(double.infinity, 60),
+            ),
+            child: const Text(
+              'Confirmar',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
             ),
           ),
         ),
@@ -202,5 +207,24 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
   String formatData(String value) {
     return value.replaceAll(RegExp(r'[^0-9]'), '');
+  }
+
+  void _saveLocalChanges() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String productKey = _getStringValue('produtoKey') ?? '';
+      prefs.setString(productKey, json.encode(_currentData));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Alterações salvas localmente!'),
+        ),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao salvar alterações: $error'),
+        ),
+      );
+    }
   }
 }

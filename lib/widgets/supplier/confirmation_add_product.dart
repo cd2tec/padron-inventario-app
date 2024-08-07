@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class ConfirmationFinalizeInventory extends StatelessWidget {
+class ConfirmationAddProductInventory extends StatelessWidget {
   final VoidCallback onConfirm;
 
-  const ConfirmationFinalizeInventory({
+  const ConfirmationAddProductInventory({
     Key? key,
     required this.onConfirm,
   }) : super(key: key);
@@ -11,9 +11,9 @@ class ConfirmationFinalizeInventory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Confirmar Finalização'),
-      content:
-          const Text('Você tem certeza que deseja finalizar o inventário?'),
+      title: const Text('Adicionar Produto ao Inventário'),
+      content: const Text(
+          'Você tem certeza que deseja adicionar o produto ao inventário?'),
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
