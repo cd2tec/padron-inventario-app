@@ -17,7 +17,7 @@ class SupplierService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/inventory/status/',
     );
 
@@ -55,7 +55,7 @@ class SupplierService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/inventory/supplier',
     );
 
@@ -96,7 +96,7 @@ class SupplierService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/inventory/supplier',
     );
 
