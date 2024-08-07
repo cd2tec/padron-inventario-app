@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../models/Supplier.dart';
 
 class SupplierService {
@@ -17,7 +18,7 @@ class SupplierService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/inventory/supplier',
     );
 

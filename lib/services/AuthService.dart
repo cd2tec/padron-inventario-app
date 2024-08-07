@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -18,19 +19,16 @@ class AuthService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/login',
     );
 
-    http.Response response = await http.post(
-        apiUrl,
-        body: {
-          'name': email,
-          'password': password,
-        }
-    );
+    http.Response response = await http.post(apiUrl, body: {
+      'name': email,
+      'password': password,
+    });
 
-    if(response.statusCode != 200) {
+    if (response.statusCode != 200) {
       if (response.statusCode == 401) {
         Map<String, dynamic> errorMap = {
           'message': 'Credenciais inválidas!',
@@ -56,11 +54,11 @@ class AuthService {
     prefs.setBool('isAdmin', isAdmin);
   }
 
-  Future<bool> verifyToken() async{
+  Future<bool> verifyToken() async {
     SharedPreferences prefs = await getSharedPreferences();
     String? token = prefs.getString('token');
 
-    if(token != null) {
+    if (token != null) {
       return true;
     }
 
@@ -74,18 +72,18 @@ class AuthService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/revoke',
     );
 
-    http.Response response = await http.post(
-      apiUrl,
-      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
-      body: null
-    );
+    http.Response response = await http.post(apiUrl,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json'
+        },
+        body: null);
 
     if (response.statusCode != 200) {
-
       prefs.clear();
       AutoRouter.of(context).replace(LoginRoute(onResult: (result) {
         return false;

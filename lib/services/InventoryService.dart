@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InventoryService {
-
   static Future<SharedPreferences> getSharedPreferences() async {
     return await SharedPreferences.getInstance();
   }
@@ -18,7 +17,7 @@ class InventoryService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/inventory/product',
     );
 
@@ -28,10 +27,7 @@ class InventoryService {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
       },
-      body: {
-        'lojaKey': store,
-        filter: code
-      },
+      body: {'lojaKey': store, filter: code},
     );
 
     if (response.statusCode != 200) {
@@ -48,7 +44,7 @@ class InventoryService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/linker/store',
     );
 
@@ -78,14 +74,15 @@ class InventoryService {
     return storeList;
   }
 
-  Future createInventory(Map<String, dynamic> data, Map<String, dynamic> product) async {
+  Future createInventory(
+      Map<String, dynamic> data, Map<String, dynamic> product) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/inventory',
     );
 
