@@ -1,8 +1,9 @@
 import 'dart:convert';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/models/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserService {
   static Future<SharedPreferences> getSharedPreferences() async {
@@ -16,7 +17,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/user',
     );
 
@@ -47,7 +48,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/user/$userId',
     );
 
@@ -90,7 +91,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/register',
     );
 
@@ -124,7 +125,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/user/${userId}',
     );
 
@@ -152,7 +153,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/linker/module',
     );
 
@@ -171,7 +172,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8080,
+      port: 8081,
       path: '/me',
     );
 
