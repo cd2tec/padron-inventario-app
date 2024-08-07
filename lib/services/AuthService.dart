@@ -19,7 +19,7 @@ class AuthService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8081,
+      port: int.parse(dotenv.env['API_SERVER_PORT'] ?? '0'),
       path: '/login',
     );
 
@@ -72,7 +72,7 @@ class AuthService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8081,
+      port: int.parse(dotenv.env['API_SERVER_PORT'] ?? '0'),
       path: '/revoke',
     );
 

@@ -17,7 +17,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8081,
+      port: int.parse(dotenv.env['API_SERVER_PORT'] ?? '0'),
       path: '/user',
     );
 
@@ -48,7 +48,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8081,
+      port: int.parse(dotenv.env['API_SERVER_PORT'] ?? '0'),
       path: '/user/$userId',
     );
 
@@ -91,7 +91,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8081,
+      port: int.parse(dotenv.env['API_SERVER_PORT'] ?? '0'),
       path: '/register',
     );
 
@@ -125,7 +125,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8081,
+      port: int.parse(dotenv.env['API_SERVER_PORT'] ?? '0'),
       path: '/user/${userId}',
     );
 
@@ -153,7 +153,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8081,
+      port: int.parse(dotenv.env['API_SERVER_PORT'] ?? '0'),
       path: '/linker/module',
     );
 
@@ -172,7 +172,7 @@ class UserService {
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
-      port: 8081,
+      port: int.parse(dotenv.env['API_SERVER_PORT'] ?? '0'),
       path: '/me',
     );
 
