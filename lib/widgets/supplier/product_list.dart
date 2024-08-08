@@ -20,7 +20,7 @@ class ProductList extends StatelessWidget {
         return GestureDetector(
           onTap: () => onTap(productData),
           child: Card(
-            color: product.quantidadeExposicao > 0
+            color: (product.quantidadeExposicao ?? 0) > 0
                 ? const Color.fromARGB(255, 4, 132, 23)
                 : const Color(0xFFA30000),
             child: Padding(
@@ -33,21 +33,6 @@ class ProductList extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Descrição: ${product.descricao}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'EAN: ${product.gtin}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
                         const SizedBox(height: 5),
                         Text(
                           'Código: ${product.productKey}',

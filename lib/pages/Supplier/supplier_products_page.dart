@@ -75,7 +75,7 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: inventory.map((productData) {
                   final product = Product.fromJson(productData);
-                  final isUpdated = updatedGtins.contains(product.gtin);
+                  final isUpdated = updatedGtins.contains(product.productKey);
 
                   return GestureDetector(
                     onTap: () {
@@ -103,7 +103,7 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
             Expanded(
               flex: 3,
               child: Text(
-                product.descricao,
+                product.productKey,
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white,

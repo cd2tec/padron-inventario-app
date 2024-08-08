@@ -60,7 +60,8 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
     bool allProductsValid = true;
     for (var productData in widget.products) {
       final product = Product.fromJson(productData);
-      if (product.quantidadeExposicao <= 0) {
+      if (product.quantidadeExposicao != null &&
+          product.quantidadeExposicao! > 0) {
         allProductsValid = false;
         break;
       }
@@ -111,11 +112,13 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
     widget.products.sort((a, b) {
       final productA = Product.fromJson(a);
       final productB = Product.fromJson(b);
-      if (productA.quantidadeExposicao == 0 &&
-          productB.quantidadeExposicao > 0) {
+
+      final quantidadeExposicaoA = productA.quantidadeExposicao ?? 0;
+      final quantidadeExposicaoB = productB.quantidadeExposicao ?? 0;
+
+      if (quantidadeExposicaoA == 0 && quantidadeExposicaoB > 0) {
         return -1;
-      } else if (productA.quantidadeExposicao > 0 &&
-          productB.quantidadeExposicao == 0) {
+      } else if (quantidadeExposicaoA > 0 && quantidadeExposicaoB == 0) {
         return 1;
       } else {
         return 0;

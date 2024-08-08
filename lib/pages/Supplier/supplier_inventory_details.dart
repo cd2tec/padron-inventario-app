@@ -13,7 +13,7 @@ import 'package:padron_inventario_app/services/UserService.dart';
 import 'package:padron_inventario_app/widgets/notifications/snackbar_widgets.dart';
 import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
 import 'package:padron_inventario_app/widgets/supplier/confirm_button.dart';
-import 'package:padron_inventario_app/widgets/supplier/confirmation_finalize_inventory.dart';
+import 'package:padron_inventario_app/widgets/supplier/confirmation_add_product.dart';
 import 'package:padron_inventario_app/widgets/supplier/inventory_details.dart';
 import 'package:padron_inventario_app/widgets/supplier/items_list_button.dart';
 import 'package:padron_inventario_app/widgets/supplier/product_detail.dart';
@@ -92,7 +92,7 @@ class _SupplierInventoryDetailsPageState
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return ConfirmationFinalizeInventory(
+        return ConfirmationAddProductInventory(
           onConfirm: () async {
             await _addProductInventory(
                 inventoryId, int.parse(_quantityController.text));

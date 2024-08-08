@@ -18,7 +18,7 @@ class SupplierService {
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
       port: 8081,
-      path: '/inventory/status/',
+      path: '/inventory/local/index',
     );
 
     http.Response response = await http.get(apiUrl, headers: {
@@ -42,7 +42,7 @@ class SupplierService {
         .map((item) => item as Map<String, dynamic>)
         .where((item) {
       DateTime createdAt = DateTime.parse(item['created_at']);
-      return item['status'] == 'Em Aberto' && createdAt.isAfter(thirtyDaysAgo);
+      return item['status'] == 'PENDENTE' && createdAt.isAfter(thirtyDaysAgo);
     }).toList();
 
     return inventory;
@@ -98,6 +98,31 @@ class SupplierService {
       host: dotenv.env['API_SERVER_IP'],
       port: 8081,
       path: '/inventory/supplier',
+    );
+
+    http.Response response = await http.post(
+      apiUrl,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json; charset=utf-8',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to finalize inventory');
+    }
+  }
+
+  Future<void> addProductLocalInventory(
+      int inventoryId, Map<String, dynamic> inventory) async {
+    SharedPreferences prefs = await getSharedPreferences();
+    var token = prefs.getString('token');
+
+    var apiUrl = Uri(
+      scheme: 'http',
+      host: dotenv.env['API_SERVER_IP'],
+      port: 8081,
+      path: '/inventory/local/product-inventory',
     );
 
     http.Response response = await http.post(
