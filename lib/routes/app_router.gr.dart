@@ -132,6 +132,7 @@ abstract class $AppRouter extends _i17.RootStackRouter {
         child: _i11.SupplierProductDetailPage(
           key: args.key,
           productData: args.productData,
+          additionalData: args.additionalData,
         ),
       );
     },
@@ -441,12 +442,14 @@ class SupplierProductDetailRoute
   SupplierProductDetailRoute({
     _i18.Key? key,
     Map<String, dynamic>? productData,
+    Map<String, dynamic>? additionalData,
     List<_i17.PageRouteInfo>? children,
   }) : super(
           SupplierProductDetailRoute.name,
           args: SupplierProductDetailRouteArgs(
             key: key,
             productData: productData,
+            additionalData: additionalData,
           ),
           initialChildren: children,
         );
@@ -461,15 +464,18 @@ class SupplierProductDetailRouteArgs {
   const SupplierProductDetailRouteArgs({
     this.key,
     this.productData,
+    this.additionalData,
   });
 
   final _i18.Key? key;
 
   final Map<String, dynamic>? productData;
 
+  final Map<String, dynamic>? additionalData;
+
   @override
   String toString() {
-    return 'SupplierProductDetailRouteArgs{key: $key, productData: $productData}';
+    return 'SupplierProductDetailRouteArgs{key: $key, productData: $productData, additionalData: $additionalData}';
   }
 }
 

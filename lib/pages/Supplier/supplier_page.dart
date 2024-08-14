@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Inventory.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
@@ -41,7 +42,7 @@ class _SupplierPageState extends State<SupplierPage> {
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: const AppBarTitle(title: 'Inventários por Fornecedor'),
+        title: const AppBarTitle(title: supplierByInventoryTitle),
         backgroundColor: const Color(0xFFA30000),
       ),
       body: LoaderOverlay(

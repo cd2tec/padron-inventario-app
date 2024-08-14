@@ -4,8 +4,10 @@ class Product {
   String productKey;
   int? quantidadeExposicao;
   int? quantidadePontoExtra;
-  int? saldoDisponivel;
+  String? saldoDisponivel;
+  String? gtin;
   int? multiplo;
+  bool? flagUpdated;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -16,7 +18,9 @@ class Product {
     this.quantidadeExposicao,
     this.quantidadePontoExtra,
     this.saldoDisponivel,
+    this.gtin,
     this.multiplo,
+    this.flagUpdated,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -29,7 +33,9 @@ class Product {
       quantidadeExposicao: json['quantidade_exposicao'],
       quantidadePontoExtra: json['quantidade_ponto_extra'],
       saldoDisponivel: json['saldo_disponivel'],
+      gtin: json['gtin'],
       multiplo: json['multiplo'],
+      flagUpdated: json['flg_updated'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -43,7 +49,9 @@ class Product {
       'quantidade_exposicao': quantidadeExposicao,
       'quantidade_ponto_extra': quantidadePontoExtra,
       'saldo_disponivel': saldoDisponivel,
+      'gtin': gtin,
       'multiplo': multiplo,
+      'flg_updated': flagUpdated,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };

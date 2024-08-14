@@ -20,7 +20,7 @@ class ProductList extends StatelessWidget {
         return GestureDetector(
           onTap: () => onTap(productData),
           child: Card(
-            color: (product.quantidadeExposicao ?? 0) > 0
+            color: (product.flagUpdated == true)
                 ? const Color.fromARGB(255, 4, 132, 23)
                 : const Color(0xFFA30000),
             child: Padding(
@@ -43,7 +43,7 @@ class ProductList extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          'Quantidade: ${product.quantidadeExposicao}',
+                          'Quantidade: ${product.saldoDisponivel?.toString()}',
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,

@@ -57,9 +57,6 @@ class _SupplierInventoryDetailsPageState
   void initState() {
     super.initState();
     products = widget.inventory['produtos'] ?? [];
-    _fetchUser().then((_) {
-      _fetchStores();
-    });
   }
 
   @override
@@ -70,43 +67,48 @@ class _SupplierInventoryDetailsPageState
     super.dispose();
   }
 
-  Future<void> _fetchStores() async {
-    List<Store> fetchedStores = await inventoryService.fetchStores();
-    setState(() {
-      stores = fetchedStores;
-
-      if (defaultStore != null) {
-        selectedStore = stores.firstWhere((store) => store.id == defaultStore);
-      }
-    });
-  }
-
-  Future<void> _fetchUser() async {
-    User fetchedUser = await userService.fetchUserData();
-    setState(() {
-      defaultStore = fetchedUser.store_id;
-    });
-  }
-
-  void _showAddConfirmationDialog(int inventoryId) {
+  void _showAddConfirmationDialog(
+      int inventoryId, String storeKey, String gtin, String fornecedorKey) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return ConfirmationAddProductInventory(
           onConfirm: () async {
             await _addProductInventory(
-                inventoryId, int.parse(_quantityController.text));
+              inventoryId: inventoryId,
+              storeKey: storeKey,
+              gtin: gtin,
+              fornecedorKey: fornecedorKey,
+              estoqueDisponivel: int.parse(_quantityController.text),
+            );
           },
         );
       },
     );
   }
 
-  Future<void> _addProductInventory(int inventoryId, int quantity) async {
+  Future<void> _addProductInventory({
+    required int inventoryId,
+    required String storeKey,
+    required String gtin,
+    required String fornecedorKey,
+    required int estoqueDisponivel,
+  }) async {
     try {
-      print('Finalizando inventário $inventoryId com quantidade $quantity');
-      // Exemplo de chamada para a API:
-      // await supplierService.addProductInventory(inventoryId, quantity);
+      await supplierService.addProductLocalInventory(
+        inventoryId: inventoryId,
+        storeKey: storeKey,
+        gtin: gtin,
+        fornecedorKey: fornecedorKey,
+        estoqueDisponivel: estoqueDisponivel,
+      );
+
+      await supplierService.updateProductLocalInventory(
+        inventoryId: inventoryId,
+        gtin: gtin,
+        estoqueDisponivel: estoqueDisponivel,
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Produto adicionado ao inventário com sucesso!'),
@@ -252,7 +254,11 @@ class _SupplierInventoryDetailsPageState
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: ConfirmButton(
-                      onPressed: () => _showAddConfirmationDialog(inventory.id),
+                      onPressed: () => _showAddConfirmationDialog(
+                          inventory.id,
+                          inventory.lojaKey,
+                          _productkeyController.text,
+                          inventory.fornecedorKey),
                     ),
                   ),
                 ),

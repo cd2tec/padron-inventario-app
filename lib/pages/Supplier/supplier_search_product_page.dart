@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
+
 import '../../models/User.dart';
 import '../../services/InventoryService.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
@@ -70,7 +72,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
           color: Colors.white,
         ),
         title: const Text(
-          'Inventário Fornecedor',
+          supplierInventoryTitle,
           style: TextStyle(
             color: Colors.white,
           ),

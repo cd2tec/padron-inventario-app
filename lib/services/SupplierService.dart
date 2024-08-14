@@ -48,6 +48,27 @@ class SupplierService {
     return inventory;
   }
 
+  Future<Map<String, dynamic>> fetchSupplierInventoryById(
+      int inventoryId) async {
+    List<Map<String, dynamic>> inventories =
+        await fetchSupplierInventoriesList();
+
+    try {
+      Map<String, dynamic>? selectedInventory = inventories.firstWhere(
+        (inventory) => inventory['id'] == inventoryId,
+        orElse: () => {},
+      );
+
+      if (selectedInventory.isEmpty) {
+        throw Exception('Inventário não encontrado.');
+      }
+
+      return selectedInventory;
+    } catch (error) {
+      throw Exception('Erro ao filtrar inventário: $error');
+    }
+  }
+
   Future fetchSupplierInventory(Supplier supplier) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
@@ -113,8 +134,13 @@ class SupplierService {
     }
   }
 
-  Future<void> addProductLocalInventory(
-      int inventoryId, Map<String, dynamic> inventory) async {
+  Future<void> addProductLocalInventory({
+    required int inventoryId,
+    required String storeKey,
+    required String gtin,
+    required String fornecedorKey,
+    required int estoqueDisponivel,
+  }) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 
@@ -122,8 +148,16 @@ class SupplierService {
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
       port: 8081,
-      path: '/inventory/local/product-inventory',
+      path: '/inventory/local/product-inventory/add',
     );
+
+    var requestBody = {
+      'inventory_id': inventoryId.toString(),
+      'store_key': storeKey,
+      'gtin': gtin,
+      'fornecedor_key': fornecedorKey,
+      'estoque_disponivel': estoqueDisponivel.toString(),
+    };
 
     http.Response response = await http.post(
       apiUrl,
@@ -131,10 +165,53 @@ class SupplierService {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json; charset=utf-8',
       },
+      body: requestBody,
+    );
+
+    print(response);
+    print(response.statusCode);
+
+    if (response.statusCode != 201) {
+      print(response.body);
+      throw Exception(
+          'Falha ao adicionar produto no inventário: $response.body');
+    }
+  }
+
+  Future<void> updateProductLocalInventory({
+    required int inventoryId,
+    required String gtin,
+    required int estoqueDisponivel,
+  }) async {
+    SharedPreferences prefs = await getSharedPreferences();
+    var token = prefs.getString('token');
+
+    String idInventory = inventoryId.toString();
+
+    var apiUrl = Uri(
+      scheme: 'http',
+      host: dotenv.env['API_SERVER_IP'],
+      port: 8081,
+      path: '/inventory/local/product-inventory/$idInventory',
+    );
+
+    var requestBody = {
+      'gtin': gtin,
+      'saldo_disponivel': estoqueDisponivel.toString(),
+    };
+
+    http.Response response = await http.put(
+      apiUrl,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json; charset=utf-8',
+      },
+      body: requestBody,
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to finalize inventory');
+      throw Exception(
+          'Falha ao atualizar produto no inventário: $response.body');
     }
   }
 }

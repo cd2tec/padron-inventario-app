@@ -1,15 +1,18 @@
-import 'dart:convert';
-
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:padron_inventario_app/services/SupplierService.dart';
+import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
 
-import '../../widgets/supplier/app_bar_title.dart';
-
+@RoutePage()
 class SupplierProductDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
+  final Map<String, dynamic>? additionalData;
 
-  const SupplierProductDetailPage({Key? key, this.productData})
-      : super(key: key);
+  const SupplierProductDetailPage({
+    Key? key,
+    this.productData,
+    this.additionalData,
+  }) : super(key: key);
 
   @override
   _SupplierProductDetailPageState createState() =>
@@ -31,13 +34,13 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
   void _initializeControllers() {
     _controllers.addAll({
       'Saldo Disponivel':
-          TextEditingController(text: _getStringValue('qtdDisponivel')),
+          TextEditingController(text: _getStringValue('saldo_disponivel')),
     });
   }
 
   void _initializeData() {
     _originalData.addAll({
-      'saldodisponivel': _getStringValue('qtdDisponivel'),
+      'saldoDisponivel': _getStringValue('saldo_disponivel'),
     });
     _currentData.addAll(_originalData);
   }
@@ -52,7 +55,6 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Voltar para SupplierProductsListPage quando o botão de voltar do dispositivo for pressionado
         Navigator.pop(context);
         return true;
       },
@@ -83,8 +85,7 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
           padding: const EdgeInsets.all(20.0),
           child: ElevatedButton(
             onPressed: () {
-              _saveLocalChanges();
-              // Navegar de volta para SupplierProductsListPage após salvar localmente
+              _updateProductInInventory();
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
@@ -115,25 +116,14 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildReadOnlyField('Loja (BlueSoft):', _getStringValue('lojaKey')),
-            _buildReadOnlyField('GTIN:', _getStringValue('gtinPrincipal')),
+            _buildReadOnlyField('Divisão:', _getStringValue('divisao')),
             _buildReadOnlyField(
-                'Código Produto:', _getStringValue('produtoKey')),
-            _buildReadOnlyField('Descrição Produto:', ''),
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
-              child: Text(
-                _getStringValue('descricao')!,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0),
-              ),
-            ),
-            _buildReadOnlyField(
-                'Preço Normal:', _getStringValue('precoNormal')),
-            _buildReadOnlyField(
-                'Preço Fidelidade:', _getStringValue('precoFidelidade')),
+                'Código Produto:', _getStringValue('product_key')),
+            _buildReadOnlyField('GTIN:', _getStringValue('gtin')),
+            _buildReadOnlyField('Quantidade Exposição:',
+                _getStringValue('quantidade_exposicao')),
+            _buildReadOnlyField('Quantidade Ponto Extra:',
+                _getStringValue('quantidade_ponto_extra')),
           ],
         ),
       ),
@@ -209,20 +199,23 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
     return value.replaceAll(RegExp(r'[^0-9]'), '');
   }
 
-  void _saveLocalChanges() async {
+  void _updateProductInInventory() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String productKey = _getStringValue('produtoKey') ?? '';
-      prefs.setString(productKey, json.encode(_currentData));
+      await SupplierService().updateProductLocalInventory(
+        inventoryId: widget.additionalData?['inventoryId'],
+        gtin: widget.productData?['gtin'],
+        estoqueDisponivel: int.parse(_currentData['saldodisponivel']),
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Alterações salvas localmente!'),
+          content: Text('Alterações enviadas com sucesso!'),
         ),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro ao salvar alterações: $error'),
+          content: Text('Erro ao enviar alterações: $error'),
         ),
       );
     }

@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Product.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
@@ -9,7 +8,6 @@ import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
 import 'package:padron_inventario_app/widgets/supplier/confirmation_finalize_inventory.dart';
 import 'package:padron_inventario_app/widgets/supplier/finalize_button.dart';
 import 'package:padron_inventario_app/widgets/supplier/product_list.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class SupplierProductsListPage extends StatefulWidget {
@@ -39,7 +37,13 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
   void _navigateToProductDetail(
       BuildContext context, Map<String, dynamic> product) {
     AutoRouter.of(context).push(
-      SupplierProductDetailRoute(productData: product),
+      SupplierProductDetailRoute(
+        productData: product,
+        additionalData: {
+          'inventoryId': widget.inventory['id'],
+          'products': widget.products,
+        },
+      ),
     );
   }
 
@@ -60,8 +64,8 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
     bool allProductsValid = true;
     for (var productData in widget.products) {
       final product = Product.fromJson(productData);
-      if (product.quantidadeExposicao != null &&
-          product.quantidadeExposicao! > 0) {
+
+      if (product.flagUpdated == false) {
         allProductsValid = false;
         break;
       }
@@ -79,14 +83,6 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
 
     Map<String, dynamic> inventory = {...widget.inventory};
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      for (var productData in widget.products) {
-        final product = Product.fromJson(productData);
-        String productKey = product.productKey ?? '';
-        String savedData = prefs.getString(productKey) ?? '{}';
-        Map<String, dynamic> savedProductData = json.decode(savedData);
-        productData.addAll(savedProductData);
-      }
       await supplierService.fetchFinalizeInventory(inventoryId, inventory);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -113,12 +109,12 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
       final productA = Product.fromJson(a);
       final productB = Product.fromJson(b);
 
-      final quantidadeExposicaoA = productA.quantidadeExposicao ?? 0;
-      final quantidadeExposicaoB = productB.quantidadeExposicao ?? 0;
+      final flgUpdatedA = productA.flagUpdated ?? true;
+      final flgUpdatedB = productB.flagUpdated ?? true;
 
-      if (quantidadeExposicaoA == 0 && quantidadeExposicaoB > 0) {
+      if (!flgUpdatedA && flgUpdatedB) {
         return -1;
-      } else if (quantidadeExposicaoA > 0 && quantidadeExposicaoB == 0) {
+      } else if (flgUpdatedA && !flgUpdatedB) {
         return 1;
       } else {
         return 0;
@@ -130,7 +126,7 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: const AppBarTitle(title: 'Lista de Produtos'),
+        title: const AppBarTitle(title: productsListTitle),
         backgroundColor: const Color(0xFFA30000),
       ),
       body: Column(
@@ -141,10 +137,17 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
               itemCount: widget.products.length,
               itemBuilder: (context, index) {
                 final productData = widget.products[index];
-                return ProductList(
-                  products: [productData],
-                  onTap: (product) =>
-                      _navigateToProductDetail(context, product),
+                final product = Product.fromJson(productData);
+
+                return Container(
+                  color: product.flagUpdated == false
+                      ? Colors.red[100]
+                      : Colors.transparent,
+                  child: ProductList(
+                    products: [productData],
+                    onTap: (product) =>
+                        _navigateToProductDetail(context, product),
+                  ),
                 );
               },
             ),
