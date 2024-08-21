@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 
 class InventoryDetails extends StatelessWidget {
   final String descricao;
@@ -23,14 +24,14 @@ class InventoryDetails extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       child: Card(
         elevation: 4,
-        color: const Color(0xFFA30000),
+        color: const Color(redColor),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Descrição: $descricao',
+                '$descriptionTittle $descricao',
                 style: const TextStyle(
                   color: Color.fromARGB(255, 255, 252, 252),
                   fontSize: 18,
@@ -38,7 +39,7 @@ class InventoryDetails extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Loja: $lojaKey',
+                '$storeTittle $lojaKey',
                 style: const TextStyle(
                   color: Color.fromARGB(255, 255, 252, 252),
                   fontSize: 18,
@@ -46,7 +47,7 @@ class InventoryDetails extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Fornecedor: $fornecedorKey',
+                '$supplierTittle $fornecedorKey',
                 style: const TextStyle(
                   color: Color.fromARGB(255, 255, 252, 252),
                   fontSize: 18,
@@ -54,7 +55,7 @@ class InventoryDetails extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Divisão: $divisao',
+                '$divisionTittle $divisao',
                 style: const TextStyle(
                   color: Color.fromARGB(255, 255, 252, 252),
                   fontSize: 18,
@@ -62,7 +63,7 @@ class InventoryDetails extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Status: $status',
+                '$statusTittle: $status',
                 style: const TextStyle(
                   color: Color.fromARGB(255, 255, 252, 252),
                   fontSize: 18,

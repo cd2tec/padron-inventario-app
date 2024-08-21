@@ -25,8 +25,83 @@ class SupplierProductsListPage extends StatefulWidget {
       _SupplierProductsListPageState();
 }
 
-class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
+class _SupplierProductsListPageState extends State<SupplierProductsListPage>
+    with RouteAware {
   final SupplierService supplierService = SupplierService();
+  bool isLoading = false;
+  late List<Map<String, dynamic>> products;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInventoryDetails();
+    products = widget.products;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AutoRouter.of(context).addListener(_onRouteChanged);
+  }
+
+  @override
+  void dispose() {
+    AutoRouter.of(context).removeListener(_onRouteChanged);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadInventoryDetails();
+  }
+
+  Future<void> _loadInventoryDetails() async {
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final List<Map<String, dynamic>> updatedInventories =
+          await supplierService
+              .fetchSupplierInventoryById(widget.inventory['id']);
+
+      if (updatedInventories.isNotEmpty) {
+        final Map<String, dynamic> inventory = updatedInventories.first;
+        if (mounted) {
+          setState(() {
+            products =
+                List<Map<String, dynamic>>.from(inventory['produtos'] ?? []);
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            products = [];
+          });
+        }
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$errorLoadingInventoryDetails $error'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _onRouteChanged() {
+    _loadInventoryDetails();
+  }
 
   void _navigateToSearchProduct(BuildContext context) async {
     await AutoRouter.of(context).push(
@@ -41,7 +116,7 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
         productData: product,
         additionalData: {
           'inventoryId': widget.inventory['id'],
-          'products': widget.products,
+          'products': products,
         },
       ),
     );
@@ -62,9 +137,8 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
 
   Future<void> _finalizeInventory(int inventoryId) async {
     bool allProductsValid = true;
-    for (var productData in widget.products) {
+    for (var productData in products) {
       final product = Product.fromJson(productData);
-
       if (product.flagUpdated == false) {
         allProductsValid = false;
         break;
@@ -74,30 +148,25 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
     if (!allProductsValid) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content:
-              Text('Todos os produtos devem ter quantidade maior que zero.'),
+          content: Text(allProductsNeedToBeUpdated),
         ),
       );
-      return;
     }
 
-    Map<String, dynamic> inventory = {...widget.inventory};
     try {
-      await supplierService.fetchFinalizeInventory(inventoryId, inventory);
+      await supplierService.fetchFinalizeInventory(inventoryId);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Inventário finalizado com sucesso!'),
+          content: Text(inventoryCompletedSuccessfully),
         ),
       );
 
-      AutoRouter.of(context).pushAndPopUntil(
-        const SupplierRoute(),
-        predicate: (route) => false,
-      );
+      isLoading = true;
+      AutoRouter.of(context).replace(const SupplierRoute());
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro ao finalizar inventário: $error'),
+          content: Text('$errorCompletingInventory $error'),
         ),
       );
     }
@@ -105,7 +174,7 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    widget.products.sort((a, b) {
+    products.sort((a, b) {
       final productA = Product.fromJson(a);
       final productB = Product.fromJson(b);
 
@@ -127,16 +196,16 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
           color: Colors.white,
         ),
         title: const AppBarTitle(title: productsListTitle),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: widget.products.length,
+              itemCount: products.length,
               itemBuilder: (context, index) {
-                final productData = widget.products[index];
+                final productData = products[index];
                 final product = Product.fromJson(productData);
 
                 return Container(
@@ -146,18 +215,16 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage> {
                   child: ProductList(
                     products: [productData],
                     onTap: (product) =>
-                        _navigateToProductDetail(context, product),
+                        _navigateToProductDetail(context, productData),
                   ),
                 );
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: FinalizeButton(
-              onPressed: () =>
-                  _showFinalizeConfirmationDialog(widget.inventory['id']),
-            ),
+          FinalizeButton(
+            onPressed: () {
+              _showFinalizeConfirmationDialog(widget.inventory['id']);
+            },
           ),
         ],
       ),

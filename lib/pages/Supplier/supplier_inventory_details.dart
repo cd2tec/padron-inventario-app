@@ -3,13 +3,11 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Inventory.dart';
 import 'package:padron_inventario_app/models/Store.dart';
-import 'package:padron_inventario_app/models/User.dart';
-import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/InventoryService.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
-import 'package:padron_inventario_app/services/UserService.dart';
 import 'package:padron_inventario_app/widgets/notifications/snackbar_widgets.dart';
 import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
 import 'package:padron_inventario_app/widgets/supplier/confirm_button.dart';
@@ -36,10 +34,9 @@ class SupplierInventoryDetailsPage extends StatefulWidget {
 
 class _SupplierInventoryDetailsPageState
     extends State<SupplierInventoryDetailsPage> {
-  late List<Map<String, dynamic>> products;
+  late List<Map<String, dynamic>> products = [];
   final SupplierService supplierService = SupplierService();
   final InventoryService inventoryService = InventoryService();
-  final UserService userService = UserService();
 
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
@@ -50,13 +47,10 @@ class _SupplierInventoryDetailsPageState
   Store? selectedStore;
   int? defaultStore;
 
-  List<Store> stores = [];
-  List<User> user = [];
-
   @override
   void initState() {
     super.initState();
-    products = widget.inventory['produtos'] ?? [];
+    _loadInventoryDetails();
   }
 
   @override
@@ -65,6 +59,40 @@ class _SupplierInventoryDetailsPageState
     _productkeyController.dispose();
     _quantityController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadInventoryDetails() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final List<Map<String, dynamic>> updatedInventories =
+          await supplierService
+              .fetchSupplierInventoryById(widget.inventory['id']);
+
+      if (updatedInventories.isNotEmpty) {
+        final Map<String, dynamic> inventory = updatedInventories.first;
+        setState(() {
+          products =
+              List<Map<String, dynamic>>.from(inventory['produtos'] ?? []);
+        });
+      } else {
+        setState(() {
+          products = [];
+        });
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$errorLoadingInventoryDetails $error'),
+        ),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void _showAddConfirmationDialog(
@@ -81,6 +109,7 @@ class _SupplierInventoryDetailsPageState
               fornecedorKey: fornecedorKey,
               estoqueDisponivel: int.parse(_quantityController.text),
             );
+            await _loadInventoryDetails();
           },
         );
       },
@@ -103,60 +132,35 @@ class _SupplierInventoryDetailsPageState
         estoqueDisponivel: estoqueDisponivel,
       );
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(productAddedToInventorySuccessfully),
+        ),
+      );
       await supplierService.updateProductLocalInventory(
         inventoryId: inventoryId,
         gtin: gtin,
         estoqueDisponivel: estoqueDisponivel,
       );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Produto adicionado ao inventário com sucesso!'),
-        ),
-      );
-
-      AutoRouter.of(context).pushAndPopUntil(
-        const SupplierRoute(),
-        predicate: (route) => false,
-      );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro ao adicionar o produto ao inventário: $error'),
+          content: Text('$errorAddingProductToInventory $error'),
         ),
       );
     }
   }
 
-  Future<void> _searchProduct(String filter, String value) async {
+  Future<void> _searchProduct(String lojaKey, String gtin) async {
     setState(() {
       isLoading = true;
     });
 
-    if (selectedStore!.nroEmpresaBluesoft == null) {
-      setState(() {
-        isLoading = false;
-      });
-
-      const snackBar = SnackBar(
-        content: Text(
-          'Loja padrão não cadastrada.',
-          style: TextStyle(fontSize: 16),
-        ),
-        backgroundColor: Colors.redAccent,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-
-    inventoryService
-        .fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!)
-        .then((productData) {
+    inventoryService.fetchListProduct(lojaKey, gtin).then((productData) {
       var productStatus = jsonDecode(productData);
 
       if (productStatus.containsKey('error')) {
-        final errorSnackBar = ErrorSnackBar(
-            message:
-                'Houve um problema com a requisição. Por favor, verifique se o token é válido.');
+        final errorSnackBar = ErrorSnackBar(message: problemWithRequest);
         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
         return;
       }
@@ -177,7 +181,7 @@ class _SupplierInventoryDetailsPageState
     if (error is http.ClientException) {
       final snackBar = SnackBar(
         content: Text(
-          _isProductNotFoundError(error) ? 'Produto não encontrado.' : '$error',
+          _isProductNotFoundError(error) ? productNotFound : '$error',
           style: const TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,
@@ -186,7 +190,7 @@ class _SupplierInventoryDetailsPageState
     } else {
       const snackBar = SnackBar(
         content: Text(
-          'Problemas ao buscar produto.',
+          problemsSearchingForProduct,
           style: TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,
@@ -201,11 +205,14 @@ class _SupplierInventoryDetailsPageState
 
   Future<void> _scanProductKey(String productKey) async {
     if (productKey.isEmpty) return;
-    _searchProduct('gtin', productKey);
+    _searchProduct(widget.inventory['loja_key'], productKey);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (products == null) {
+      return const CircularProgressIndicator();
+    }
     final inventory = Inventory.fromJson(widget.inventory);
 
     return Scaffold(
@@ -214,7 +221,7 @@ class _SupplierInventoryDetailsPageState
           color: Colors.white,
         ),
         title: AppBarTitle(title: 'Detalhes do ${inventory.descricao}'),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       body: Stack(
         children: [

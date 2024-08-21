@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 
 class ConfirmationAddProductInventory extends StatelessWidget {
   final VoidCallback onConfirm;
@@ -11,9 +12,8 @@ class ConfirmationAddProductInventory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Adicionar Produto ao Inventário'),
-      content: const Text(
-          'Você tem certeza que deseja adicionar o produto ao inventário?'),
+      title: const Text(addProductToInventory),
+      content: const Text(wantToAddTheProductToInventory),
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
@@ -30,7 +30,10 @@ class ConfirmationAddProductInventory extends StatelessWidget {
             foregroundColor: Colors.white,
             backgroundColor: Colors.red,
           ),
-          onPressed: onConfirm,
+          onPressed: () {
+            onConfirm();
+            Navigator.of(context).pop();
+          },
           child: const Text('Sim'),
         ),
       ],

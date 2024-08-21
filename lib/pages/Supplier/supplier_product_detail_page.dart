@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
 import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
 
@@ -63,8 +64,8 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
           iconTheme: const IconThemeData(
             color: Colors.white,
           ),
-          title: const AppBarTitle(title: 'Detalhes do Produto'),
-          backgroundColor: const Color(0xFFA30000),
+          title: const AppBarTitle(title: detailsOfProductTitle),
+          backgroundColor: const Color(redColor),
         ),
         body: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -86,10 +87,14 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
           child: ElevatedButton(
             onPressed: () {
               _updateProductInInventory();
-              Navigator.pop(context);
+              Navigator.pop(context, {
+                'gtin': widget.productData?['gtin'],
+                'saldoDisponivel': _controllers['Saldo Disponivel']?.text,
+                'flagUpdated': true,
+              });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFA30000),
+              backgroundColor: const Color(redColor),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.zero,
               ),
@@ -110,7 +115,7 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
   Widget _buildInfoCard() {
     return Card(
-      color: const Color(0xFFA30000),
+      color: const Color(redColor),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -209,13 +214,13 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Alterações enviadas com sucesso!'),
+          content: Text(changesSubmittedSuccessfully),
         ),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro ao enviar alterações: $error'),
+          content: Text('$errorSubmittingChanges $error'),
         ),
       );
     }

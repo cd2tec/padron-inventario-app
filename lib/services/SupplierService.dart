@@ -26,8 +26,6 @@ class SupplierService {
       'Accept': 'application/json; charset=utf-8',
     });
 
-    print(response.body);
-
     if (response.statusCode != 200) {
       throw http.ClientException(response.body);
     }
@@ -48,7 +46,7 @@ class SupplierService {
     return inventory;
   }
 
-  Future<Map<String, dynamic>> fetchSupplierInventoryById(
+  Future<List<Map<String, dynamic>>> fetchSupplierInventoryById(
       int inventoryId) async {
     List<Map<String, dynamic>> inventories =
         await fetchSupplierInventoriesList();
@@ -60,10 +58,14 @@ class SupplierService {
       );
 
       if (selectedInventory.isEmpty) {
-        throw Exception('Inventário não encontrado.');
+        return [];
       }
 
-      return selectedInventory;
+      List<Map<String, dynamic>> products = List<Map<String, dynamic>>.from(
+        selectedInventory['produtos'] ?? [],
+      );
+
+      return [selectedInventory];
     } catch (error) {
       throw Exception('Erro ao filtrar inventário: $error');
     }
@@ -109,17 +111,20 @@ class SupplierService {
     return inventory;
   }
 
-  Future<void> fetchFinalizeInventory(
-      int inventoryId, Map<String, dynamic> inventory) async {
-    SharedPreferences prefs = await getSharedPreferences();
+  Future<bool> fetchFinalizeInventory(int inventoryId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('token');
 
     var apiUrl = Uri(
       scheme: 'http',
       host: dotenv.env['API_SERVER_IP'],
       port: 8081,
-      path: '/inventory/supplier',
+      path: '/inventory/bulk',
     );
+
+    var requestBody = {
+      'inventory_id': inventoryId.toString(),
+    };
 
     http.Response response = await http.post(
       apiUrl,
@@ -127,11 +132,16 @@ class SupplierService {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json; charset=utf-8',
       },
+      body: requestBody,
     );
 
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
     if (response.statusCode != 200) {
-      throw Exception('Failed to finalize inventory');
+      throw Exception('Erro ao finalizar o inventário: $jsonResponse');
     }
+
+    return true;
   }
 
   Future<void> addProductLocalInventory({
@@ -141,6 +151,8 @@ class SupplierService {
     required String fornecedorKey,
     required int estoqueDisponivel,
   }) async {
+    print(
+        'estou aqui agora $inventoryId, $storeKey, $gtin, $fornecedorKey $estoqueDisponivel');
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 
@@ -156,7 +168,7 @@ class SupplierService {
       'store_key': storeKey,
       'gtin': gtin,
       'fornecedor_key': fornecedorKey,
-      'estoque_disponivel': estoqueDisponivel.toString(),
+      'saldo_disponivel': estoqueDisponivel.toString(),
     };
 
     http.Response response = await http.post(
@@ -168,13 +180,11 @@ class SupplierService {
       body: requestBody,
     );
 
-    print(response);
-    print(response.statusCode);
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode != 201) {
-      print(response.body);
       throw Exception(
-          'Falha ao adicionar produto no inventário: $response.body');
+          'Falha ao adicionar produto no inventário: $jsonResponse');
     }
   }
 
@@ -209,9 +219,11 @@ class SupplierService {
       body: requestBody,
     );
 
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
     if (response.statusCode != 200) {
       throw Exception(
-          'Falha ao atualizar produto no inventário: $response.body');
+          'Falha ao atualizar produto no inventário: $jsonResponse');
     }
   }
 }

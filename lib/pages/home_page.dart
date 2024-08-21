@@ -1,13 +1,9 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:padron_inventario_app/pages/Inventory/inventory_page.dart';
-import 'package:padron_inventario_app/pages/User/user_management_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
-import 'package:padron_inventario_app/pages/register_page.dart';
 import 'package:padron_inventario_app/services/AuthService.dart';
-
-import '../routes/guard/module_guard.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class HomePage extends StatelessWidget {
@@ -23,12 +19,12 @@ class HomePage extends StatelessWidget {
           color: Colors.white,
         ),
         title: const Text(
-          'Bem-vindo!',
+          welcomeMessage,
           style: TextStyle(
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       drawer: FutureBuilder<SharedPreferences>(
         future: SharedPreferences.getInstance(),
@@ -91,32 +87,36 @@ class HomePage extends StatelessWidget {
               onTap: () {
                 AutoRouter.of(context).push(const UserListRoute());
               },
-              title: const Text("Gerenciar Usuários"),
+              title: const Text(manageUsersTittle),
               leading: const Icon(Icons.supervised_user_circle),
             ),
           ListTile(
             onTap: () {
-              AutoRouter.of(context).push(const InventoryRoute()).catchError((error) {
+              AutoRouter.of(context)
+                  .push(const InventoryRoute())
+                  .catchError((error) {
                 Navigator.pop(context);
               });
             },
-            title: const Text("Gerenciar Inventário"),
+            title: const Text(manageInventoryTittle),
             leading: const Icon(Icons.inventory),
           ),
           ListTile(
             onTap: () {
-              AutoRouter.of(context).push(const SupplierRoute()).catchError((error) {
+              AutoRouter.of(context)
+                  .push(const SupplierRoute())
+                  .catchError((error) {
                 Navigator.pop(context);
               });
             },
-            title: const Text("Inventário Fornecedor"),
+            title: const Text(supplierByInventoryTitle),
             leading: const Icon(Icons.inventory),
           ),
           ListTile(
             onTap: () {
               _logout(context);
             },
-            title: const Text("Sair"),
+            title: const Text(exitApp),
             leading: const Icon(Icons.logout),
           )
         ],

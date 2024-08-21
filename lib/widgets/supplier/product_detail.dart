@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 
 class ProductDetail extends StatelessWidget {
   final Map<String, dynamic>? productData;
@@ -23,7 +24,7 @@ class ProductDetail extends StatelessWidget {
         children: [
           Card(
             elevation: 4,
-            color: const Color(0xFFA30000),
+            color: const Color(redColor),
             margin: const EdgeInsets.symmetric(horizontal: 0),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
@@ -31,7 +32,7 @@ class ProductDetail extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Descrição: ${productData!['descricao'] ?? 'N/A'}',
+                    '$descriptionTittle ${productData!['descricao'] ?? 'N/A'}',
                     style: const TextStyle(
                       color: Color.fromARGB(255, 255, 252, 252),
                       fontSize: 18,

@@ -43,7 +43,7 @@ class _SupplierPageState extends State<SupplierPage> {
           color: Colors.white,
         ),
         title: const AppBarTitle(title: supplierByInventoryTitle),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       body: LoaderOverlay(
         isLoading: isLoading,
@@ -66,6 +66,10 @@ class _SupplierPageState extends State<SupplierPage> {
     await AutoRouter.of(context).push(
       SupplierInventoryDetailsRoute(inventory: inventory.toJson()),
     );
+
+    if (mounted) {
+      _fetchInventoriesList();
+    }
   }
 
   Future<void> _fetchInventoriesList() async {

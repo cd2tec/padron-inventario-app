@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 
 class SearchButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -17,13 +18,13 @@ class SearchButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFA30000),
+          backgroundColor: const Color(redColor),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
         ),
         child: const Text(
-          'Buscar',
+          searchTitle,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,

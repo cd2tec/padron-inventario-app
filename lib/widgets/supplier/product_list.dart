@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Product.dart';
 
 class ProductList extends StatelessWidget {
@@ -22,7 +23,7 @@ class ProductList extends StatelessWidget {
           child: Card(
             color: (product.flagUpdated == true)
                 ? const Color.fromARGB(255, 4, 132, 23)
-                : const Color(0xFFA30000),
+                : const Color(redColor),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
@@ -35,7 +36,7 @@ class ProductList extends StatelessWidget {
                       children: [
                         const SizedBox(height: 5),
                         Text(
-                          'Código: ${product.productKey}',
+                          '$codeTittle ${product.productKey}',
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -43,7 +44,23 @@ class ProductList extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          'Quantidade: ${product.saldoDisponivel?.toString()}',
+                          '$eanCodeTittle ${product.gtin?.toString()}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          '$descriptionTittle ${product.descricao?.toString() ?? descriptionUnavailableTittle}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          '$amountTittle ${product.saldoDisponivel?.toString()}',
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,

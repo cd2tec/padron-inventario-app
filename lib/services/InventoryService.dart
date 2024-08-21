@@ -37,6 +37,33 @@ class InventoryService {
     return response.body;
   }
 
+  Future fetchListProduct(String lojaKey, String gtin) async {
+    SharedPreferences prefs = await getSharedPreferences();
+    var token = prefs.getString('token');
+
+    var apiUrl = Uri(
+      scheme: 'http',
+      host: dotenv.env['API_SERVER_IP'],
+      port: 8081,
+      path: '/inventory/product',
+    );
+
+    http.Response response = await http.post(
+      apiUrl,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+      body: {'lojaKey': lojaKey, 'gtin': gtin},
+    );
+
+    if (response.statusCode != 200) {
+      throw http.ClientException(response.body);
+    }
+
+    return response.body;
+  }
+
   Future<List<Store>> fetchStores() async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');

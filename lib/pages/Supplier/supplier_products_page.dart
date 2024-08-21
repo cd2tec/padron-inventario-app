@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Product.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class SupplierProductsPage extends StatefulWidget {
@@ -25,7 +25,6 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
   void initState() {
     super.initState();
     inventory = widget.inventory;
-    _getConfirmedProductGtins();
     _setupNavigatorListener();
   }
 
@@ -44,9 +43,7 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
   }
 
   void _onRouteChanged() {
-    if (AutoRouter.of(context).current.name == 'SupplierProductsRoute') {
-      _getConfirmedProductGtins();
-    }
+    if (AutoRouter.of(context).current.name == 'SupplierProductsRoute') {}
   }
 
   @override
@@ -57,12 +54,12 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
           color: Colors.white,
         ),
         title: const Text(
-          'Lista de Produtos',
+          productsListTitle,
           style: TextStyle(
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -94,7 +91,7 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
 
   Widget _buildProductItem(Product product, bool isUpdated) {
     return Card(
-      color: isUpdated ? Colors.grey : const Color(0xFFA30000),
+      color: isUpdated ? Colors.grey : const Color(redColor),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Row(
@@ -120,12 +117,5 @@ class _SupplierProductsPageState extends State<SupplierProductsPage> {
     final result = await AutoRouter.of(context).push(
       const SupplierSearchProductRoute(),
     );
-  }
-
-  Future<void> _getConfirmedProductGtins() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      updatedGtins = prefs.getStringList('confirmed_gtins') ?? [];
-    });
   }
 }

@@ -2,6 +2,7 @@ class Product {
   int id;
   String? divisao;
   String productKey;
+  String? descricao;
   int? quantidadeExposicao;
   int? quantidadePontoExtra;
   String? saldoDisponivel;
@@ -15,6 +16,7 @@ class Product {
     required this.id,
     this.divisao,
     required this.productKey,
+    this.descricao,
     this.quantidadeExposicao,
     this.quantidadePontoExtra,
     this.saldoDisponivel,
@@ -30,6 +32,7 @@ class Product {
       id: json['id'],
       divisao: json['divisao'],
       productKey: json['product_key'],
+      descricao: json['descricao'],
       quantidadeExposicao: json['quantidade_exposicao'],
       quantidadePontoExtra: json['quantidade_ponto_extra'],
       saldoDisponivel: json['saldo_disponivel'],
@@ -46,6 +49,7 @@ class Product {
       'id': id,
       'divisao': divisao,
       'product_key': productKey,
+      'descricao': descricao,
       'quantidade_exposicao': quantidadeExposicao,
       'quantidade_ponto_extra': quantidadePontoExtra,
       'saldo_disponivel': saldoDisponivel,

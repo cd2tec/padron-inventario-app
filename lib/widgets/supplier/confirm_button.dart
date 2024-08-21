@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 
 class ConfirmButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -12,14 +13,14 @@ class ConfirmButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFA30000),
+          backgroundColor: const Color(redColor),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.zero,
           ),
           minimumSize: const Size(double.infinity, 60),
         ),
         child: const Text(
-          'Confirmar',
+          confirmTitle,
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
