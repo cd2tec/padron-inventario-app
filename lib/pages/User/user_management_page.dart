@@ -1,7 +1,6 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:padron_inventario_app/pages/User/user_management_details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
 
 import '../../routes/app_router.gr.dart';
@@ -35,7 +34,6 @@ class _UserListScreenState extends State<UserListScreen> {
         users = fetchedUsers;
         filteredUsers = List.from(users);
       });
-
     } catch (error) {
       final snackBar = SnackBar(
         content: Text(
@@ -53,9 +51,9 @@ class _UserListScreenState extends State<UserListScreen> {
     setState(() {
       filteredUsers = users
           .where((user) =>
-      user['name'].toLowerCase().contains(query.toLowerCase()) ||
-          user['email'].toLowerCase().contains(query.toLowerCase()) ||
-          user['id'].toString().contains(query))
+              user['name'].toLowerCase().contains(query.toLowerCase()) ||
+              user['email'].toLowerCase().contains(query.toLowerCase()) ||
+              user['id'].toString().contains(query))
           .toList();
     });
   }
@@ -68,7 +66,7 @@ class _UserListScreenState extends State<UserListScreen> {
           color: Colors.white,
         ),
         title: const Text(
-          'Gerenciador de Usuários',
+          userManagerTittle,
           style: TextStyle(
             color: Colors.white,
           ),
@@ -82,8 +80,7 @@ class _UserListScreenState extends State<UserListScreen> {
               }
             },
             itemBuilder: (BuildContext context) {
-              return {'Cadastrar Usuario'}
-                  .map((String choice) {
+              return {'Cadastrar Usuario'}.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice.toLowerCase().replaceAll(' ', ''),
                   child: Text(choice),
@@ -92,7 +89,7 @@ class _UserListScreenState extends State<UserListScreen> {
             },
           ),
         ],
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       body: Column(
         children: [
@@ -116,7 +113,8 @@ class _UserListScreenState extends State<UserListScreen> {
                   title: Text(filteredUsers[index]['name']),
                   subtitle: Text(filteredUsers[index]['email']),
                   onTap: () {
-                    AutoRouter.of(context).push(UserDetailsRoute(user: filteredUsers[index]));
+                    AutoRouter.of(context)
+                        .push(UserDetailsRoute(user: filteredUsers[index]));
                   },
                 );
               },

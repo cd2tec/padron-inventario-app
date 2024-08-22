@@ -1,7 +1,8 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../routes/app_router.gr.dart';
 import '../../services/InventoryService.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
@@ -64,10 +65,10 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
           ),
         ),
         title: const Text(
-          'Detalhes',
+          detailsTitle,
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -90,7 +91,7 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
 
   Widget _buildInfoCard() {
     return Card(
-      color: const Color(0xFFA30000),
+      color: const Color(redColor),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -184,7 +185,7 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _confirmChanges,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFA30000),
+          backgroundColor: const Color(redColor),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.zero,
           ),
@@ -200,7 +201,7 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
                 ),
               )
             : const Text(
-                'Confirmar',
+                confirmTitle,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -226,7 +227,7 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
     }
 
     if (changes.isEmpty) {
-      final errorSnackBar = ErrorSnackBar(message: 'Nenhum dado alterado!');
+      final errorSnackBar = ErrorSnackBar(message: noDataChanged);
       ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
 
       setState(() {
@@ -251,8 +252,8 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
         _isLoading = false;
       });
 
-      final successSnackBar = SuccessSnackBar(
-          message: 'Alteração Enviada Para Fila De Processamento!');
+      final successSnackBar =
+          SuccessSnackBar(message: changeSentToProcessingQueue);
       ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
 
       final confirmedProductGtin = _getStringValue('gtinPrincipal') ?? '';
@@ -265,8 +266,7 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
         _isLoading = false;
       });
 
-      final errorSnackBar =
-          ErrorSnackBar(message: 'Erro Na Gravação Das Alterações!');
+      final errorSnackBar = ErrorSnackBar(message: errorSavingChanges);
       ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
     });
   }

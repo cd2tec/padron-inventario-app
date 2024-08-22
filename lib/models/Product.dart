@@ -1,45 +1,63 @@
 class Product {
   int id;
-  int supplierInventoryId;
-  String gtin;
-  String descricao;
-  String quantidade;
-  String sequencia;
-  String dataValidade;
-  String loteProduto;
-  String createdAt;
-  String updatedAt;
+  String? divisao;
+  String productKey;
+  String? descricao;
+  int? quantidadeExposicao;
+  int? quantidadePontoExtra;
+  String? saldoDisponivel;
+  String? gtin;
+  int? multiplo;
+  bool? flagUpdated;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   Product({
     required this.id,
-    required this.supplierInventoryId,
-    required this.gtin,
-    required this.descricao,
-    required this.quantidade,
-    required this.sequencia,
-    required this.dataValidade,
-    required this.loteProduto,
+    this.divisao,
+    required this.productKey,
+    this.descricao,
+    this.quantidadeExposicao,
+    this.quantidadePontoExtra,
+    this.saldoDisponivel,
+    this.gtin,
+    this.multiplo,
+    this.flagUpdated,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'] ?? 0,
-      supplierInventoryId: json['supplier_inventory_id'] ?? 0,
-      gtin: json['gtin'] ?? '0',
-      descricao: json['descricao'] ?? '0',
-      quantidade: json['quantidade'] ?? '0',
-      sequencia: json['sequencia'] ?? '0',
-      dataValidade: json['dataValidade'] ?? '0',
-      loteProduto: json['loteProduto'] ?? '0',
-      createdAt: json['created_at'] ?? '0',
-      updatedAt: json['updated_at'] ?? '0',
+      id: json['id'],
+      divisao: json['divisao'],
+      productKey: json['product_key'],
+      descricao: json['descricao'],
+      quantidadeExposicao: json['quantidade_exposicao'],
+      quantidadePontoExtra: json['quantidade_ponto_extra'],
+      saldoDisponivel: json['saldo_disponivel'],
+      gtin: json['gtin'],
+      multiplo: json['multiplo'],
+      flagUpdated: json['flg_updated'],
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
     );
   }
 
-  @override
-  String toString() {
-    return '{id: $id, supplierInventoryId: $supplierInventoryId, gtin: $gtin, descricao: $descricao, quantidade: $quantidade, sequencia: $sequencia, dataValidade: $dataValidade, loteProduto: $loteProduto, createdAt: $createdAt, updatedAt: $updatedAt}';
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'divisao': divisao,
+      'product_key': productKey,
+      'descricao': descricao,
+      'quantidade_exposicao': quantidadeExposicao,
+      'quantidade_ponto_extra': quantidadePontoExtra,
+      'saldo_disponivel': saldoDisponivel,
+      'gtin': gtin,
+      'multiplo': multiplo,
+      'flg_updated': flagUpdated,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+    };
   }
 }

@@ -1,5 +1,7 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
+
 import '../widgets/register/register_form.dart';
 
 @RoutePage()
@@ -13,12 +15,13 @@ class RegisterPage extends StatelessWidget {
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: const Text('Cadastrar Usuário',
+        title: const Text(
+          registerUserTitle,
           style: TextStyle(
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       body: SingleChildScrollView(
         child: Container(
