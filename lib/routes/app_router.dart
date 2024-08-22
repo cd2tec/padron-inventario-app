@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:padron_inventario_app/routes/guard/module_guard.dart';
 import 'package:padron_inventario_app/routes/guard/permission_guard.dart';
+
 import 'app_router.gr.dart';
 import 'guard/auth_guard.dart';
 

@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
+
 import '../../models/User.dart';
 import '../../services/InventoryService.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
@@ -70,12 +72,12 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
           color: Colors.white,
         ),
         title: const Text(
-          'Inventário Fornecedor',
+          supplierInventoryTitle,
           style: TextStyle(
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       body: Stack(
         children: [
@@ -88,7 +90,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
-                      'Estoque de Produtos',
+                      productStockTitle,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -100,7 +102,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Buscar Produto',
+                      searcProductTitle,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -114,7 +116,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
                             controller: _productkeyController,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              hintText: 'Código do Produto',
+                              hintText: productCode,
                             ),
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
@@ -150,14 +152,14 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
                       _scanProductKey(_productkeyController.text);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA30000),
+                      backgroundColor: const Color(redColor),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero,
                       ),
                       minimumSize: const Size(double.infinity, 60),
                     ),
                     child: const Text(
-                      'Buscar',
+                      searchTitle,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -197,7 +199,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
 
       const snackBar = SnackBar(
         content: Text(
-          'Loja padrão não cadastrada.',
+          defaultStoreNotRegistered,
           style: TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,
@@ -211,9 +213,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
       var productStatus = jsonDecode(productData);
 
       if (productStatus.containsKey('error')) {
-        final errorSnackBar = ErrorSnackBar(
-            message:
-                'Houve um problema com a requisição. Por favor, verifique se o token é válido.');
+        final errorSnackBar = ErrorSnackBar(message: problemWithRequest);
         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
         return;
       }
@@ -235,7 +235,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
     if (error is ClientException) {
       final snackBar = SnackBar(
         content: Text(
-          _isProductNotFoundError(error) ? 'Produto não encontrado.' : '$error',
+          _isProductNotFoundError(error) ? productNotFound : '$error',
           style: const TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,
@@ -244,7 +244,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
     } else {
       const snackBar = SnackBar(
         content: Text(
-          'Problemas ao buscar produto.',
+          problemsSearchingForProduct,
           style: TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,

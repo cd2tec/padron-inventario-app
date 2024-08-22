@@ -4,15 +4,17 @@ import 'package:padron_inventario_app/routes/app_router.gr.dart';
 
 class ProductListButton extends StatelessWidget {
   final List<Map<String, dynamic>> products;
+  final Map<String, dynamic> inventory;
 
   const ProductListButton({
     Key? key,
     required this.products,
+    required this.inventory,
   }) : super(key: key);
 
   void _navigateToSupplierProductsList(BuildContext context) async {
     await AutoRouter.of(context).push(
-      SupplierProductsListRoute(products: products),
+      SupplierProductsListRoute(products: products, inventory: inventory),
     );
   }
 

@@ -1,28 +1,28 @@
 class Product {
   int id;
-  int inventoryId;
-  int productKey;
-  int gtin;
-  String descricao;
-  int quantidadeExposicao;
-  int quantidadePontoExtra;
-  String saldoDisponivel;
-  int multiplo;
-  String coletado;
+  String? divisao;
+  String productKey;
+  String? descricao;
+  int? quantidadeExposicao;
+  int? quantidadePontoExtra;
+  String? saldoDisponivel;
+  String? gtin;
+  int? multiplo;
+  bool? flagUpdated;
   DateTime createdAt;
   DateTime updatedAt;
 
   Product({
     required this.id,
-    required this.inventoryId,
+    this.divisao,
     required this.productKey,
-    required this.gtin,
-    required this.descricao,
-    required this.quantidadeExposicao,
-    required this.quantidadePontoExtra,
-    required this.saldoDisponivel,
-    required this.multiplo,
-    required this.coletado,
+    this.descricao,
+    this.quantidadeExposicao,
+    this.quantidadePontoExtra,
+    this.saldoDisponivel,
+    this.gtin,
+    this.multiplo,
+    this.flagUpdated,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -30,15 +30,15 @@ class Product {
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
       id: json['id'],
-      inventoryId: json['inventory_id'],
+      divisao: json['divisao'],
       productKey: json['product_key'],
-      gtin: json['gtin'],
       descricao: json['descricao'],
       quantidadeExposicao: json['quantidade_exposicao'],
       quantidadePontoExtra: json['quantidade_ponto_extra'],
       saldoDisponivel: json['saldo_disponivel'],
+      gtin: json['gtin'],
       multiplo: json['multiplo'],
-      coletado: json['coletado'],
+      flagUpdated: json['flg_updated'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -47,15 +47,15 @@ class Product {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'inventory_id': inventoryId,
+      'divisao': divisao,
       'product_key': productKey,
-      'gtin': gtin,
       'descricao': descricao,
       'quantidade_exposicao': quantidadeExposicao,
       'quantidade_ponto_extra': quantidadePontoExtra,
       'saldo_disponivel': saldoDisponivel,
+      'gtin': gtin,
       'multiplo': multiplo,
-      'coletado': coletado,
+      'flg_updated': flagUpdated,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };

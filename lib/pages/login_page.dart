@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/AuthService.dart';
+
 import '../widgets/widgets.dart';
 
 @RoutePage()
@@ -27,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFA30000),
+      backgroundColor: const Color(redColor),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -60,23 +62,24 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildLoginButton() {
-    return _isButtonEnabled ? FutureBuilder<bool?>(
-      future: _loginFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else {
-          return LoginButtonWidget(
-            onPressed: () => _performLogin(context),
+    return _isButtonEnabled
+        ? FutureBuilder<bool?>(
+            future: _loginFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else {
+                return LoginButtonWidget(
+                  onPressed: () => _performLogin(context),
+                  isEnabled: _isButtonEnabled,
+                );
+              }
+            },
+          )
+        : LoginButtonWidget(
+            onPressed: () {},
             isEnabled: _isButtonEnabled,
           );
-        }
-      },
-    )
-        : LoginButtonWidget(
-      onPressed: () {},
-      isEnabled: _isButtonEnabled,
-    );
   }
 
   void _updateButtonState() {
@@ -106,8 +109,6 @@ class _LoginPageState extends State<LoginPage> {
         AutoRouter.of(context).push(HomeRoute());
       }
     }).catchError((error, stackTrace) {
-
-
       if (error is http.ClientException) {
         Map<String, dynamic> errorMap = jsonDecode(error.message);
         int statusCode = errorMap['statusCode'];

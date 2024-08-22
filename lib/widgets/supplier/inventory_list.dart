@@ -19,8 +19,9 @@ class InventoryList extends StatelessWidget {
         itemCount: inventories.length,
         itemBuilder: (context, index) {
           final inventory = Inventory.fromJson(inventories[index]);
-          String formattedDate =
-              DateFormat('dd/MM/yyyy').format(inventory.createdAt);
+          String formattedDate = inventory.createdAt != null
+              ? DateFormat('dd/MM/yyyy').format(inventory.createdAt!)
+              : 'Data não disponível';
 
           return GestureDetector(
             onTap: () => onTap(inventory),
@@ -48,7 +49,7 @@ class InventoryList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Descrição: ${inventory.descricao}',
+                    'Descrição: ${inventory.descricao ?? "Descrição não disponível"}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -56,7 +57,7 @@ class InventoryList extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Loja: ${inventory.lojaKey}',
+                    'Loja: ${inventory.lojaKey ?? "Loja não disponível"}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -72,7 +73,7 @@ class InventoryList extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Fornecedor: ${inventory.fornecedorKey}',
+                    'Fornecedor: ${inventory.fornecedorKey ?? "Fornecedor não disponível"}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -80,7 +81,7 @@ class InventoryList extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Divisão: ${inventory.divisao}',
+                    'Divisão: ${inventory.divisao ?? "Divisão não disponível"}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

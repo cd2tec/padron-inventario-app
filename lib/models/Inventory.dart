@@ -30,11 +30,11 @@ class Inventory {
 
     return Inventory(
       id: json['id'],
-      descricao: json['descricao'],
-      lojaKey: json['loja_key'],
-      fornecedorKey: json['fornecedor_key'],
-      divisao: json['divisao'],
-      status: json['status'],
+      descricao: json['descricao'] ?? '',
+      lojaKey: json['loja_key'] ?? '',
+      fornecedorKey: json['fornecedor_key'] ?? '',
+      divisao: json['divisao'] ?? '',
+      status: json['status'] ?? '',
       produtos: productListParsed,
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),

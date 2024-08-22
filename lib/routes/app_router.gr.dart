@@ -132,6 +132,7 @@ abstract class $AppRouter extends _i17.RootStackRouter {
         child: _i11.SupplierProductDetailPage(
           key: args.key,
           productData: args.productData,
+          additionalData: args.additionalData,
         ),
       );
     },
@@ -141,6 +142,7 @@ abstract class $AppRouter extends _i17.RootStackRouter {
         routeData: routeData,
         child: _i12.SupplierProductsListPage(
           key: args.key,
+          inventory: args.inventory,
           products: args.products,
         ),
       );
@@ -440,12 +442,14 @@ class SupplierProductDetailRoute
   SupplierProductDetailRoute({
     _i18.Key? key,
     Map<String, dynamic>? productData,
+    Map<String, dynamic>? additionalData,
     List<_i17.PageRouteInfo>? children,
   }) : super(
           SupplierProductDetailRoute.name,
           args: SupplierProductDetailRouteArgs(
             key: key,
             productData: productData,
+            additionalData: additionalData,
           ),
           initialChildren: children,
         );
@@ -460,15 +464,18 @@ class SupplierProductDetailRouteArgs {
   const SupplierProductDetailRouteArgs({
     this.key,
     this.productData,
+    this.additionalData,
   });
 
   final _i18.Key? key;
 
   final Map<String, dynamic>? productData;
 
+  final Map<String, dynamic>? additionalData;
+
   @override
   String toString() {
-    return 'SupplierProductDetailRouteArgs{key: $key, productData: $productData}';
+    return 'SupplierProductDetailRouteArgs{key: $key, productData: $productData, additionalData: $additionalData}';
   }
 }
 
@@ -478,12 +485,14 @@ class SupplierProductsListRoute
     extends _i17.PageRouteInfo<SupplierProductsListRouteArgs> {
   SupplierProductsListRoute({
     _i18.Key? key,
+    required Map<String, dynamic> inventory,
     required List<Map<String, dynamic>> products,
     List<_i17.PageRouteInfo>? children,
   }) : super(
           SupplierProductsListRoute.name,
           args: SupplierProductsListRouteArgs(
             key: key,
+            inventory: inventory,
             products: products,
           ),
           initialChildren: children,
@@ -498,16 +507,19 @@ class SupplierProductsListRoute
 class SupplierProductsListRouteArgs {
   const SupplierProductsListRouteArgs({
     this.key,
+    required this.inventory,
     required this.products,
   });
 
   final _i18.Key? key;
 
+  final Map<String, dynamic> inventory;
+
   final List<Map<String, dynamic>> products;
 
   @override
   String toString() {
-    return 'SupplierProductsListRouteArgs{key: $key, products: $products}';
+    return 'SupplierProductsListRouteArgs{key: $key, inventory: $inventory, products: $products}';
   }
 }
 

@@ -1,11 +1,14 @@
 import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
+
 import '../../models/User.dart';
 import '../../services/InventoryService.dart';
 import '../../widgets/notifications/snackbar_widgets.dart';
@@ -69,12 +72,12 @@ class _InventoryPageState extends State<InventoryPage> {
           color: Colors.white,
         ),
         title: const Text(
-          'Inventário',
+          InventoryTitle,
           style: TextStyle(
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
       ),
       body: Stack(
         children: [
@@ -87,7 +90,7 @@ class _InventoryPageState extends State<InventoryPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
-                      'Estoque de Produtos',
+                      productStockTitle,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -99,7 +102,7 @@ class _InventoryPageState extends State<InventoryPage> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Buscar Produto',
+                      searcProductTitle,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -160,14 +163,14 @@ class _InventoryPageState extends State<InventoryPage> {
                       _scanProductKey(_productkeyController.text);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA30000),
+                      backgroundColor: const Color(redColor),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero,
                       ),
                       minimumSize: const Size(double.infinity, 60),
                     ),
                     child: const Text(
-                      'Buscar',
+                      searchTitle,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -229,7 +232,9 @@ class _InventoryPageState extends State<InventoryPage> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
 
-    inventoryService.fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!).then((productData) {
+    inventoryService
+        .fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!)
+        .then((productData) {
       var productStatus = jsonDecode(productData);
 
       if (productStatus.containsKey('error')) {
@@ -241,8 +246,8 @@ class _InventoryPageState extends State<InventoryPage> {
       }
 
       Map<String, dynamic> decodedProductData = jsonDecode(productData);
-      AutoRouter.of(context).replace(InventoryDetailRoute(productData: decodedProductData));
-
+      AutoRouter.of(context)
+          .replace(InventoryDetailRoute(productData: decodedProductData));
     }).catchError((error) {
       _handleError(error);
     }).whenComplete(() {

@@ -1,17 +1,19 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:padron_inventario_app/widgets/app_bar_title.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../routes/app_router.gr.dart';
-import '../../services/InventoryService.dart';
-import '../../widgets/notifications/snackbar_widgets.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
+import 'package:padron_inventario_app/services/SupplierService.dart';
+import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
 
 @RoutePage()
 class SupplierProductDetailPage extends StatefulWidget {
   final Map<String, dynamic>? productData;
+  final Map<String, dynamic>? additionalData;
 
-  const SupplierProductDetailPage({Key? key, this.productData})
-      : super(key: key);
+  const SupplierProductDetailPage({
+    Key? key,
+    this.productData,
+    this.additionalData,
+  }) : super(key: key);
 
   @override
   _SupplierProductDetailPageState createState() =>
@@ -19,11 +21,9 @@ class SupplierProductDetailPage extends StatefulWidget {
 }
 
 class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
-  InventoryService inventoryService = InventoryService();
   final _controllers = <String, TextEditingController>{};
   final _originalData = <String, dynamic>{};
   final _currentData = <String, dynamic>{};
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -35,13 +35,13 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
   void _initializeControllers() {
     _controllers.addAll({
       'Saldo Disponivel':
-          TextEditingController(text: _getStringValue('qtdDisponivel')),
+          TextEditingController(text: _getStringValue('saldo_disponivel')),
     });
   }
 
   void _initializeData() {
     _originalData.addAll({
-      'saldodisponivel': _getStringValue('qtdDisponivel'),
+      'saldoDisponivel': _getStringValue('saldo_disponivel'),
     });
     _currentData.addAll(_originalData);
   }
@@ -54,47 +54,58 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
-        title: const AppBarTitle(title: 'Detalhes do Produto'),
-        backgroundColor: const Color(0xFFA30000),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildInfoCard(),
-              const SizedBox(height: 20),
-              for (final entry in _controllers.entries)
-                _buildTextFormField(entry.key, entry.value),
-              const SizedBox(height: 20),
-            ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          iconTheme: const IconThemeData(
+            color: Colors.white,
           ),
+          title: const AppBarTitle(title: detailsOfProductTitle),
+          backgroundColor: const Color(redColor),
         ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ElevatedButton(
-          onPressed: () {
-            AutoRouter.of(context).push(const SupplierSearchProductRoute());
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFA30000),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoCard(),
+                const SizedBox(height: 20),
+                for (final entry in _controllers.entries)
+                  _buildTextFormField(entry.key, entry.value),
+                const SizedBox(height: 20),
+              ],
             ),
-            minimumSize: const Size(double.infinity, 60),
           ),
-          child: const Text(
-            'Confirmar',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
+        ),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: ElevatedButton(
+            onPressed: () {
+              _updateProductInInventory();
+              Navigator.pop(context, {
+                'gtin': widget.productData?['gtin'],
+                'saldoDisponivel': _controllers['Saldo Disponivel']?.text,
+                'flagUpdated': true,
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(redColor),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+              minimumSize: const Size(double.infinity, 60),
+            ),
+            child: const Text(
+              'Confirmar',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
             ),
           ),
         ),
@@ -104,31 +115,20 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
   Widget _buildInfoCard() {
     return Card(
-      color: const Color(0xFFA30000),
+      color: const Color(redColor),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildReadOnlyField('Loja (BlueSoft):', _getStringValue('lojaKey')),
-            _buildReadOnlyField('GTIN:', _getStringValue('gtinPrincipal')),
+            _buildReadOnlyField('Divisão:', _getStringValue('divisao')),
             _buildReadOnlyField(
-                'Código Produto:', _getStringValue('produtoKey')),
-            _buildReadOnlyField('Descrição Produto:', ''),
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
-              child: Text(
-                _getStringValue('descricao')!,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0),
-              ),
-            ),
-            _buildReadOnlyField(
-                'Preço Normal:', _getStringValue('precoNormal')),
-            _buildReadOnlyField(
-                'Preço Fidelidade:', _getStringValue('precoFidelidade')),
+                'Código Produto:', _getStringValue('product_key')),
+            _buildReadOnlyField('GTIN:', _getStringValue('gtin')),
+            _buildReadOnlyField('Quantidade Exposição:',
+                _getStringValue('quantidade_exposicao')),
+            _buildReadOnlyField('Quantidade Ponto Extra:',
+                _getStringValue('quantidade_ponto_extra')),
           ],
         ),
       ),
@@ -202,5 +202,27 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
   String formatData(String value) {
     return value.replaceAll(RegExp(r'[^0-9]'), '');
+  }
+
+  void _updateProductInInventory() async {
+    try {
+      await SupplierService().updateProductLocalInventory(
+        inventoryId: widget.additionalData?['inventoryId'],
+        gtin: widget.productData?['gtin'],
+        estoqueDisponivel: int.parse(_currentData['saldodisponivel']),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(changesSubmittedSuccessfully),
+        ),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$errorSubmittingChanges $error'),
+        ),
+      );
+    }
   }
 }
