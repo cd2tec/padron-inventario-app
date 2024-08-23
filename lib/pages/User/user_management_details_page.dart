@@ -1,7 +1,8 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
+
 import '../../services/UserService.dart';
 
 @RoutePage()
@@ -44,12 +45,12 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
           color: Colors.white,
         ),
         title: const Text(
-          'Detalhes do Usuário',
+          userDetailsTittle,
           style: TextStyle(
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFFA30000),
+        backgroundColor: const Color(redColor),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
@@ -121,7 +122,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState?.validate() ?? false) {
-                        service.updateUser(
+                        service
+                            .updateUser(
                           widget.user['id'],
                           nameController.text,
                           emailController.text,
@@ -129,7 +131,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                           cpfController.text,
                           isAdmin,
                           ativo,
-                        ).then((data) {
+                        )
+                            .then((data) {
                           final snackBar = SnackBar(
                             content: Text(
                               data['message'],
@@ -155,7 +158,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA30000),
+                      backgroundColor: const Color(redColor),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero,
                       ),

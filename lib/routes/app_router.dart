@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:padron_inventario_app/routes/guard/module_guard.dart';
 import 'package:padron_inventario_app/routes/guard/permission_guard.dart';
+
 import 'app_router.gr.dart';
 import 'guard/auth_guard.dart';
 
@@ -40,6 +41,15 @@ class AppRouter extends $AppRouter {
             guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
         AutoRoute(
             page: SupplierDetailRoute.page,
+            guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+        AutoRoute(
+            page: SupplierInventoryDetailsRoute.page,
+            guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+        AutoRoute(
+            page: SupplierProductsListRoute.page,
+            guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
+        AutoRoute(
+            page: SupplierProductDetailRoute.page,
             guards: [AuthGuard(), ModuleGuard(selectedModule: 'inventory')]),
         // Mapping Keys
         //AutoRoute(page: MappingKeysRoute.page,      guards: [AuthGuard()]),

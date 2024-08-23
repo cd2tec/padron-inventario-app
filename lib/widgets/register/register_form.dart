@@ -1,10 +1,11 @@
 import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
-import 'package:padron_inventario_app/pages/User/user_management_page.dart';
+import 'package:flutter/material.dart';
+import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/services/UserService.dart';
 import 'package:padron_inventario_app/widgets/register/register_check_box.dart';
 import 'package:padron_inventario_app/widgets/register/register_text_field.dart';
-import 'package:flutter/material.dart';
 
 import '../../routes/app_router.gr.dart';
 
@@ -41,7 +42,8 @@ class _RegisterFormState extends State<RegisterForm> {
                 return 'Por favor, digite seu nome completo';
               }
               return null;
-            }, icon: const Icon(Icons.supervised_user_circle_outlined),
+            },
+            icon: const Icon(Icons.supervised_user_circle_outlined),
           ),
           const SizedBox(height: 16.0),
           RegisterTextField(
@@ -52,7 +54,8 @@ class _RegisterFormState extends State<RegisterForm> {
                 return 'Por favor, digite seu email';
               }
               return null;
-            }, icon: const Icon(Icons.email),
+            },
+            icon: const Icon(Icons.email),
           ),
           const SizedBox(height: 16.0),
           RegisterTextField(
@@ -64,7 +67,8 @@ class _RegisterFormState extends State<RegisterForm> {
                 return 'Por favor, digite sua senha';
               }
               return null;
-            }, icon: const Icon(Icons.password),
+            },
+            icon: const Icon(Icons.password),
           ),
           const SizedBox(height: 16.0),
           RegisterTextField(
@@ -75,7 +79,8 @@ class _RegisterFormState extends State<RegisterForm> {
                 return 'Por favor, digite seu CPF';
               }
               return null;
-            }, icon: const Icon(Icons.credit_card),
+            },
+            icon: const Icon(Icons.credit_card),
           ),
           const SizedBox(height: 16.0),
           RegisterCheckBox(
@@ -101,7 +106,6 @@ class _RegisterFormState extends State<RegisterForm> {
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState?.validate() ?? false) {
-
                 String name = _nomeController.text;
                 String email = _emailController.text;
                 String password = _senhaController.text;
@@ -109,33 +113,34 @@ class _RegisterFormState extends State<RegisterForm> {
                 bool administrator = _isAdmin;
                 bool ativo = _isActive;
 
-                service.userRegister(name, email, password, cpf, administrator, ativo)
+                service
+                    .userRegister(
+                        name, email, password, cpf, administrator, ativo)
                     .then((response) {
-                      Map<String, dynamic> data = jsonDecode(response);
+                  Map<String, dynamic> data = jsonDecode(response);
 
-                        final snackBar = SnackBar(
-                          content: Text(
-                            data['message'],
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          backgroundColor: Colors.greenAccent,
-                        );
+                  final snackBar = SnackBar(
+                    content: Text(
+                      data['message'],
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    backgroundColor: Colors.greenAccent,
+                  );
 
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                        AutoRouter.of(context).push(const UserListRoute());
-                      })
-                    .catchError((error) {
-                        final snackBar = SnackBar(
-                          content: Text(
-                            '$error',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          backgroundColor: Colors.redAccent,
-                        );
+                  AutoRouter.of(context).push(const UserListRoute());
+                }).catchError((error) {
+                  final snackBar = SnackBar(
+                    content: Text(
+                      '$error',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    backgroundColor: Colors.redAccent,
+                  );
 
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      });
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                });
               }
             },
             style: ElevatedButton.styleFrom(
@@ -143,11 +148,10 @@ class _RegisterFormState extends State<RegisterForm> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(0.0),
               ),
-              backgroundColor: const Color(0xFFA30000),
-
+              backgroundColor: const Color(redColor),
             ),
             child: const Text(
-              'Cadastrar',
+              registerTittle,
               style: TextStyle(
                 fontSize: 18.0,
                 color: Colors.white,
