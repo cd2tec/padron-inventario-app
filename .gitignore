@@ -9,8 +9,7 @@
 .history
 .svn/
 migrate_working_dir/
-.lock
-.gitignore
+
 
 # IntelliJ related
 *.iml
