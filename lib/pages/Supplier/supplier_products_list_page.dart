@@ -151,6 +151,7 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage>
           content: Text(allProductsNeedToBeUpdated),
         ),
       );
+      return;
     }
 
     try {
