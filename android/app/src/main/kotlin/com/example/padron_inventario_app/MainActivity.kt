@@ -1,4 +1,4 @@
-package com.example.delmoro_estoque_app
+package com.example.padron_inventario_app
 
 import io.flutter.embedding.android.FlutterActivity
 
