@@ -151,8 +151,6 @@ class SupplierService {
     required String fornecedorKey,
     required int estoqueDisponivel,
   }) async {
-    print(
-        'estou aqui agora $inventoryId, $storeKey, $gtin, $fornecedorKey $estoqueDisponivel');
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 
