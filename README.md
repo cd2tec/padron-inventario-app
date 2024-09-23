@@ -1,4 +1,4 @@
-# delmoro_estoque_app
+# padron_inventario_app
 
 A new Flutter project.
 

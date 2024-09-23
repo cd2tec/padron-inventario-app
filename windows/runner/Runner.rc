@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "delmoro_estoque_app" "\0"
+            VALUE "FileDescription", padron_inventario_app" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "delmoro_estoque_app" "\0"
+            VALUE "InternalName", padron_inventario_app" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "delmoro_estoque_app.exe" "\0"
-            VALUE "ProductName", "delmoro_estoque_app" "\0"
+            VALUE "OriginalFilename", padron_inventario_app.exe" "\0"
+            VALUE "ProductName", padron_inventario_app" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
