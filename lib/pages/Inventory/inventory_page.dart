@@ -29,6 +29,9 @@ class _InventoryPageState extends State<InventoryPage> {
   List<User> user = [];
 
   Store? selectedStore;
+  int? selectedStoreId;
+  List<int> storeIds = [1, 2, 3, 4];
+  List<int> storesNotSelected = [];
   int? defaultStore;
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
@@ -152,6 +155,7 @@ class _InventoryPageState extends State<InventoryPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
+                    _buildStoreSelection(),
                   ],
                 ),
               ),
@@ -188,6 +192,55 @@ class _InventoryPageState extends State<InventoryPage> {
                 child: CircularProgressIndicator(),
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStoreSelection() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Selecione a loja',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+                ),
+                width: 300,
+                child: DropdownButton<int>(
+                  isExpanded: true,
+                  value: selectedStoreId,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedStoreId = value;
+                    });
+                    storesNotSelected =
+                        storeIds.where((id) => id != selectedStoreId).toList();
+                  },
+                  underline: Container(
+                    height: 0,
+                  ),
+                  items: storeIds.map<DropdownMenuItem<int>>((int value) {
+                    return DropdownMenuItem<int>(
+                      value: value,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('Loja $value'),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

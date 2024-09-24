@@ -41,6 +41,7 @@ class _SupplierInventoryDetailsPageState
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
   bool isLoading = false;
   Map<String, dynamic>? searchedProductData;
@@ -58,6 +59,7 @@ class _SupplierInventoryDetailsPageState
     _barcodeController.dispose();
     _productkeyController.dispose();
     _quantityController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -252,9 +254,24 @@ class _SupplierInventoryDetailsPageState
                   ),
                 ),
                 if (searchedProductData != null)
-                  ProductDetail(
-                    productData: searchedProductData,
-                    quantityController: _quantityController,
+                  Column(
+                    children: [
+                      ProductDetail(
+                        productData: searchedProductData,
+                        quantityController: _quantityController,
+                      ),
+                      if (widget.inventory['loja_key'] == '99')
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextField(
+                            controller: _addressController,
+                            decoration: const InputDecoration(
+                              labelText: 'Endereço',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),

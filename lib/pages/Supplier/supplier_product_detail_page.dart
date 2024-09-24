@@ -77,6 +77,15 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
                 const SizedBox(height: 20),
                 for (final entry in _controllers.entries)
                   _buildTextFormField(entry.key, entry.value),
+                if (widget.additionalData?['lojaKey'] == '99') ...[
+                  const SizedBox(height: 20),
+                  _buildTextFormField(
+                    'Endereço',
+                    TextEditingController(
+                        text: _getStringValue('endereco') ??
+                            'Endereço indefinido'),
+                  ),
+                ],
                 const SizedBox(height: 20),
               ],
             ),
@@ -187,9 +196,10 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
   String? _getStringValue(String key) {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
       return widget.productData![key]?.toString();
-    } else {
-      return null;
+    } else if (key == 'endereco' && widget.additionalData != null) {
+      return widget.additionalData![key]?.toString() ?? ' ';
     }
+    return null;
   }
 
   String removeSpecialCharacters(String text) {

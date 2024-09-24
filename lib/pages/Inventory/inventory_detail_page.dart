@@ -41,7 +41,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           TextEditingController(text: _getStringValue('quantidadePontoExtra')),
       'Quantidade Exposição':
           TextEditingController(text: _getStringValue('quantidadeExposicao')),
-      'Multiplo': TextEditingController(text: _getStringValue('multiplo')),
+      //'Multiplo': TextEditingController(text: _getStringValue('multiplo')),
     });
   }
 
@@ -50,7 +50,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       'saldodisponivel': _getStringValue('qtdDisponivel'),
       'quantidadeexposicao': _getStringValue('quantidadeExposicao'),
       'quantidadepontoextra': _getStringValue('quantidadePontoExtra'),
-      'multiplo': _getStringValue('multiplo'),
+      // 'multiplo': _getStringValue('multiplo'),
     });
     _currentData.addAll(_originalData);
   }
@@ -63,6 +63,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool showAddressField = _getStringValue('lojaKey') == '102';
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -89,11 +90,17 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
               _buildInfoCard(),
               const SizedBox(height: 20),
               for (final entry in _controllers.entries)
-                entry.key == 'Multiplo'
+                /*  entry.key == 'Multiplo'
                     ? _buildTextFormField(entry.key, entry.value,
-                        editable: false)
-                    : _buildTextFormField(entry.key, entry.value),
+                        editable: false) */
+                _buildTextFormField(entry.key, entry.value),
               const SizedBox(height: 20),
+              if (showAddressField)
+                _buildTextFormField(
+                  'Endereço',
+                  TextEditingController(),
+                  editable: true,
+                ),
               _buildConfirmButton(),
             ],
           ),
