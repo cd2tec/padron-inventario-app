@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Inventory.dart';
@@ -260,7 +261,7 @@ class _SupplierInventoryDetailsPageState
                         productData: searchedProductData,
                         quantityController: _quantityController,
                       ),
-                      if (widget.inventory['loja_key'] == '99')
+                      if (widget.inventory['loja_key'] == dotenv.env['STORE'])
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: TextField(

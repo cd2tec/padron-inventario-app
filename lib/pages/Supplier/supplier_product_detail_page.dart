@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
 import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
@@ -77,7 +78,8 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
                 const SizedBox(height: 20),
                 for (final entry in _controllers.entries)
                   _buildTextFormField(entry.key, entry.value),
-                if (widget.additionalData?['lojaKey'] == '99') ...[
+                if (widget.additionalData?['lojaKey'] ==
+                    dotenv.env['STORE']) ...[
                   const SizedBox(height: 20),
                   _buildTextFormField(
                     'Endereço',

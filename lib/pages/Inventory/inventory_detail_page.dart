@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:padron_inventario_app/constants/constants.dart';
 
 import '../../routes/app_router.gr.dart';
@@ -41,7 +42,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           TextEditingController(text: _getStringValue('quantidadePontoExtra')),
       'Quantidade Exposição':
           TextEditingController(text: _getStringValue('quantidadeExposicao')),
-      //'Multiplo': TextEditingController(text: _getStringValue('multiplo')),
+      'Multiplo': TextEditingController(text: _getStringValue('multiplo')),
     });
   }
 
@@ -50,7 +51,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       'saldodisponivel': _getStringValue('qtdDisponivel'),
       'quantidadeexposicao': _getStringValue('quantidadeExposicao'),
       'quantidadepontoextra': _getStringValue('quantidadePontoExtra'),
-      // 'multiplo': _getStringValue('multiplo'),
+      'multiplo': _getStringValue('multiplo'),
     });
     _currentData.addAll(_originalData);
   }
@@ -63,7 +64,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool showAddressField = _getStringValue('lojaKey') == '102';
+    bool showAddressField = _getStringValue('lojaKey') == dotenv.env['STORE'];
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(

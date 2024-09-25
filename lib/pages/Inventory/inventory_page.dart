@@ -30,7 +30,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   Store? selectedStore;
   int? selectedStoreId;
-  List<int> storeIds = [1, 2, 3, 4];
+  List<int> storeIds = [];
   List<int> storesNotSelected = [];
   int? defaultStore;
   final TextEditingController _barcodeController = TextEditingController();
@@ -49,6 +49,11 @@ class _InventoryPageState extends State<InventoryPage> {
     List<Store> fetchedStores = await inventoryService.fetchStores();
     setState(() {
       stores = fetchedStores;
+      storeIds = stores
+          .map((store) => int.tryParse(store.nroEmpresaBluesoft ?? ''))
+          .where((nro) => nro != null)
+          .cast<int>()
+          .toList();
 
       if (defaultStore != null) {
         selectedStore = stores.firstWhere((store) => store.id == defaultStore);
@@ -105,7 +110,7 @@ class _InventoryPageState extends State<InventoryPage> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      searcProductTitle,
+                      searchProductTitle,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -203,7 +208,7 @@ class _InventoryPageState extends State<InventoryPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
-            'Selecione a loja',
+            selectStoreTittle,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -270,30 +275,33 @@ class _InventoryPageState extends State<InventoryPage> {
       isLoading = true;
     });
 
-    if (selectedStore!.nroEmpresaBluesoft == null) {
+    int? storeIdToUse = selectedStoreId ?? defaultStore;
+
+    if (storeIdToUse == null) {
       setState(() {
         isLoading = false;
       });
 
       const snackBar = SnackBar(
         content: Text(
-          'Loja padrão não cadastrada.',
+          'Loja não selecionada e loja padrão não disponível.',
           style: TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
     }
 
     inventoryService
-        .fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!)
+        .fetchInfoProduct(filter, value, storeIdToUse.toString())
         .then((productData) {
       var productStatus = jsonDecode(productData);
 
       if (productStatus.containsKey('error')) {
         final errorSnackBar = ErrorSnackBar(
             message:
-                'Houve um problema com a requisição. Por favor, verifique se o token é válido.');
+                'Houve um problema com a requisição. Por favor, verifique se o token é válido ou tente selecionar uma outra loja.');
         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
         return;
       }
