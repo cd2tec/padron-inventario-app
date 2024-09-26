@@ -264,6 +264,13 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       _isLoading = true;
     });
 
+    if (_areMapsEqual(_currentData, _originalData)) {
+      final errorSnackBar = ErrorSnackBar(message: 'Nenhum dado alterado!');
+      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+      AutoRouter.of(context).push(const InventoryRoute());
+      return;
+    }
+
     final changes = <String, dynamic>{};
     Map<String, dynamic> product = {};
 
@@ -362,5 +369,17 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
           ErrorSnackBar(message: 'Erro Na Gravação Das Alterações!');
       ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
     });
+  }
+
+  bool _areMapsEqual(Map<String, dynamic> map1, Map<String, dynamic> map2) {
+    if (map1.length != map2.length) return false;
+
+    for (String key in map1.keys) {
+      if (map1[key] != map2[key]) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
