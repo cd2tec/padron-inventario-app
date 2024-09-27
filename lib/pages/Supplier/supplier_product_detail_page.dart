@@ -121,6 +121,7 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildReadOnlyField('Descrição:', _getStringValue('descricao')),
             _buildReadOnlyField('Divisão:', _getStringValue('divisao')),
             _buildReadOnlyField(
                 'Código Produto:', _getStringValue('product_key')),
