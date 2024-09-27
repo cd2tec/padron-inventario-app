@@ -36,6 +36,14 @@ class ProductList extends StatelessWidget {
                       children: [
                         const SizedBox(height: 5),
                         Text(
+                          '$descriptionTittle ${product.descricao?.toString() ?? descriptionUnavailableTittle}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
                           '$codeTittle ${product.productKey}',
                           style: const TextStyle(
                             fontSize: 16,
@@ -45,14 +53,6 @@ class ProductList extends StatelessWidget {
                         const SizedBox(height: 5),
                         Text(
                           '$eanCodeTittle ${product.gtin?.toString()}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          '$descriptionTittle ${product.descricao?.toString() ?? descriptionUnavailableTittle}',
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,
