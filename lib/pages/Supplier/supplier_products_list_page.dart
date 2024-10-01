@@ -151,6 +151,7 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage>
           content: Text(allProductsNeedToBeUpdated),
         ),
       );
+      return;
     }
 
     try {
@@ -186,7 +187,9 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage>
       } else if (flgUpdatedA && !flgUpdatedB) {
         return 1;
       } else {
-        return 0;
+        final descriptionA = productA.descricao?.toLowerCase() ?? '';
+        final descriptionB = productB.descricao?.toLowerCase() ?? '';
+        return descriptionA.compareTo(descriptionB);
       }
     });
 

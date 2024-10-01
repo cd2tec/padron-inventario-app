@@ -59,7 +59,7 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 30),
             Text(
-              'APP Inventário V1.2.2',
+              'APP Inventário V1.3.1',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
