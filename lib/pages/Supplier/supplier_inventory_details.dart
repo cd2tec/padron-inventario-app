@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Inventory.dart';
@@ -46,19 +47,35 @@ class _SupplierInventoryDetailsPageState
   Map<String, dynamic>? searchedProductData;
   Store? selectedStore;
   int? defaultStore;
+  String? _previousProductKey;
+  bool showProductDetail = false;
 
   @override
   void initState() {
     super.initState();
     _loadInventoryDetails();
+    _previousProductKey = null;
+
+    _productkeyController.addListener(_onProductKeyChanged);
   }
 
   @override
   void dispose() {
     _barcodeController.dispose();
+    _productkeyController.removeListener(_onProductKeyChanged);
     _productkeyController.dispose();
     _quantityController.dispose();
     super.dispose();
+  }
+
+  void _onProductKeyChanged() {
+    if (_productkeyController.text.length == 13 &&
+        _productkeyController.text != _previousProductKey) {
+      _previousProductKey = _productkeyController.text;
+      _productkeyController.clear();
+      _quantityController.clear();
+      _scanProductKey(_previousProductKey!);
+    }
   }
 
   Future<void> _loadInventoryDetails() async {
@@ -142,6 +159,9 @@ class _SupplierInventoryDetailsPageState
         gtin: gtin,
         estoqueDisponivel: estoqueDisponivel,
       );
+      setState(() {
+        showProductDetail = false;
+      });
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -149,6 +169,20 @@ class _SupplierInventoryDetailsPageState
         ),
       );
     }
+  }
+
+  Future<void> _scanBarcode() async {
+    String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+      "#ff6666",
+      "Cancelar",
+      true,
+      ScanMode.DEFAULT,
+    );
+
+    if (!mounted) return;
+    _productkeyController.text = barcodeScanRes;
+
+    _scanProductKey(_productkeyController.text);
   }
 
   Future<void> _searchProduct(String lojaKey, String gtin) async {
@@ -205,6 +239,11 @@ class _SupplierInventoryDetailsPageState
 
   Future<void> _scanProductKey(String productKey) async {
     if (productKey.isEmpty) return;
+
+    setState(() {
+      showProductDetail =
+          true; // Mostrar o ProductDetail quando um produto é pesquisado
+    });
     _searchProduct(widget.inventory['loja_key'], productKey);
   }
 
@@ -243,6 +282,10 @@ class _SupplierInventoryDetailsPageState
                       ProductSearchField(
                         productKeyController: _productkeyController,
                         barcodeController: _barcodeController,
+                        onScan: _scanBarcode,
+                        onSubmit: (value) {
+                          _scanProductKey(value);
+                        },
                       ),
                       SearchButton(
                         onPressed: () =>
@@ -251,7 +294,7 @@ class _SupplierInventoryDetailsPageState
                     ],
                   ),
                 ),
-                if (searchedProductData != null)
+                if (showProductDetail && searchedProductData != null)
                   ProductDetail(
                     productData: searchedProductData,
                     quantityController: _quantityController,
@@ -264,7 +307,7 @@ class _SupplierInventoryDetailsPageState
                       onPressed: () => _showAddConfirmationDialog(
                           inventory.id,
                           inventory.lojaKey,
-                          _productkeyController.text,
+                          _previousProductKey!,
                           inventory.fornecedorKey),
                     ),
                   ),
