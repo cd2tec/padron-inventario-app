@@ -144,13 +144,13 @@ class SupplierService {
     return true;
   }
 
-  Future<void> addProductLocalInventory({
-    required int inventoryId,
-    required String storeKey,
-    required String gtin,
-    required String fornecedorKey,
-    required int estoqueDisponivel,
-  }) async {
+  Future<void> addProductLocalInventory(
+      {required int inventoryId,
+      required String storeKey,
+      required String gtin,
+      required String fornecedorKey,
+      required int estoqueDisponivel,
+      required String description}) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
 
@@ -167,6 +167,7 @@ class SupplierService {
       'gtin': gtin,
       'fornecedor_key': fornecedorKey,
       'saldo_disponivel': estoqueDisponivel.toString(),
+      'descricao': description
     };
 
     http.Response response = await http.post(

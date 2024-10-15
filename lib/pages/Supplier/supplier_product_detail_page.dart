@@ -187,6 +187,9 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
   String? _getStringValue(String key) {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
+      if (key == 'quantidade_exposicao' || key == 'quantidade_ponto_extra') {
+        return widget.productData![key]?.toString() ?? '0';
+      }
       return widget.productData![key]?.toString();
     } else {
       return null;
