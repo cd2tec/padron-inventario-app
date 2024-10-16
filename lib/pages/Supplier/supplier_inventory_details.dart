@@ -112,20 +112,23 @@ class _SupplierInventoryDetailsPageState
     }
   }
 
-  void _showAddConfirmationDialog(
-      int inventoryId, String storeKey, String gtin, String fornecedorKey) {
+  void _showAddConfirmationDialog(int inventoryId, String storeKey, String gtin,
+      String fornecedorKey, Map<String, dynamic>? searchedProductData) {
+    String description =
+        searchedProductData?['descricao'] ?? 'Descrição indisponível';
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return ConfirmationAddProductInventory(
           onConfirm: () async {
             await _addProductInventory(
-              inventoryId: inventoryId,
-              storeKey: storeKey,
-              gtin: gtin,
-              fornecedorKey: fornecedorKey,
-              estoqueDisponivel: int.parse(_quantityController.text),
-            );
+                inventoryId: inventoryId,
+                storeKey: storeKey,
+                gtin: gtin,
+                fornecedorKey: fornecedorKey,
+                estoqueDisponivel: int.parse(_quantityController.text),
+                description: description);
             await _loadInventoryDetails();
           },
         );
@@ -133,21 +136,21 @@ class _SupplierInventoryDetailsPageState
     );
   }
 
-  Future<void> _addProductInventory({
-    required int inventoryId,
-    required String storeKey,
-    required String gtin,
-    required String fornecedorKey,
-    required int estoqueDisponivel,
-  }) async {
+  Future<void> _addProductInventory(
+      {required int inventoryId,
+      required String storeKey,
+      required String gtin,
+      required String fornecedorKey,
+      required int estoqueDisponivel,
+      required String description}) async {
     try {
       await supplierService.addProductLocalInventory(
-        inventoryId: inventoryId,
-        storeKey: storeKey,
-        gtin: gtin,
-        fornecedorKey: fornecedorKey,
-        estoqueDisponivel: estoqueDisponivel,
-      );
+          inventoryId: inventoryId,
+          storeKey: storeKey,
+          gtin: gtin,
+          fornecedorKey: fornecedorKey,
+          estoqueDisponivel: estoqueDisponivel,
+          description: description);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -308,7 +311,8 @@ class _SupplierInventoryDetailsPageState
                           inventory.id,
                           inventory.lojaKey,
                           _previousProductKey!,
-                          inventory.fornecedorKey),
+                          inventory.fornecedorKey,
+                          searchedProductData),
                     ),
                   ),
                 ),
