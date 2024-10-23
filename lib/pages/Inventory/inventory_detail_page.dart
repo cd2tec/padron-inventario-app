@@ -302,20 +302,22 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
       if (saldoDisponivel != null) {
         var saldoParse = int.parse(saldoDisponivel);
+        var saldoOldParse = int.parse(_originalData['saldodisponivel']);
+
         changes['saldodisponivel'] = saldoParse.toString();
+        changes['saldo_disponivel_old'] = saldoOldParse.toString();
       }
 
-      if (quantidadeExposicao != null || quantidadePontoExtra != null) {
-        var exposicaoParse = (quantidadeExposicao != null)
-            ? int.parse(quantidadeExposicao)
-            : _originalData['quantidadeexposicao'];
-        var pontoextraParse = (quantidadePontoExtra != null)
-            ? int.parse(quantidadePontoExtra)
-            : _originalData['quantidadepontoextra'];
-
+      if (quantidadeExposicao != null) {
+        var exposicaoParse = int.parse(quantidadeExposicao!);
         changes['quantidadeexposicao'] = exposicaoParse.toString();
+      }
+
+      if (quantidadePontoExtra != null) {
+        var pontoextraParse = int.parse(quantidadePontoExtra!);
         changes['quantidadepontoextra'] = pontoextraParse.toString();
       }
+
       changes['multiplo'] = multiplo.toString();
     });
 
@@ -345,6 +347,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       changes['multiplo'] = '2';
     }
 
+    updatedChanges['saldodisponivel'] = '2';
     _updateStockAvailable(updatedChanges, product);
   }
 
