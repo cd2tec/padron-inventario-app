@@ -1,7 +1,7 @@
 name: padron_inventario_app
 description: "A new Flutter project."
 publish_to: "none"
-version: 1.3.3+8
+version: 1.3.4+9
 
 environment:
   sdk: ">=3.2.5 <4.0.0"

@@ -3,10 +3,12 @@ import 'package:padron_inventario_app/constants/constants.dart';
 
 class ConfirmationAddProductInventory extends StatelessWidget {
   final VoidCallback onConfirm;
+  final VoidCallback onCancel;
 
   const ConfirmationAddProductInventory({
     Key? key,
     required this.onConfirm,
+    required this.onCancel,
   }) : super(key: key);
 
   @override
@@ -22,6 +24,7 @@ class ConfirmationAddProductInventory extends StatelessWidget {
           ),
           child: const Text('Cancelar'),
           onPressed: () {
+            onCancel();
             Navigator.of(context).pop();
           },
         ),
