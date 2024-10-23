@@ -30,7 +30,6 @@ const String supplierTittle = 'Fornecedor: ';
 const String divisionTittle = 'Divisão: ';
 const String statusTittle = 'Status: ';
 const String addProductToInventory = 'Adicionar Produto ao Inventário';
-const String updateProductInInventory = 'Atualizar Produto no Inventário';
 
 //Messages
 const String welcomeMessage = 'Bem-vindo!';
@@ -65,8 +64,6 @@ const String wantToCompleteTheInventory =
     'Deseja realmente finalizar o inventário?';
 const String wantToAddTheProductToInventory =
     'Você tem certeza que deseja adicionar o produto ao inventário?';
-const String wantToUpdateTheProductInInventory =
-    'Você tem certeza que deseja atualizar o produto no inventário?';
 
 //Colors
 const int redColor = 0xFFA30000;

@@ -43,6 +43,7 @@ class _SupplierInventoryDetailsPageState
   final TextEditingController _productkeyController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
 
+  final FocusNode _productKeyFocusNode = FocusNode();
   bool isLoading = false;
   Map<String, dynamic>? searchedProductData;
   Store? selectedStore;
@@ -64,6 +65,7 @@ class _SupplierInventoryDetailsPageState
     _productkeyController.removeListener(_onProductKeyChanged);
     _productkeyController.dispose();
     _quantityController.dispose();
+    _productKeyFocusNode.dispose();
     super.dispose();
   }
 
@@ -99,20 +101,32 @@ class _SupplierInventoryDetailsPageState
         });
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$errorLoadingInventoryDetails $error'),
-        ),
-      );
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$errorLoadingInventoryDetails $error'),
+            ),
+          );
+        });
+      }
     } finally {
       setState(() {
         isLoading = false;
       });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(_productKeyFocusNode);
+      });
     }
   }
 
-  void _showAddConfirmationDialog(int inventoryId, String storeKey, String gtin,
-      String fornecedorKey, Map<String, dynamic>? searchedProductData) {
+  Future<void> _showAddConfirmationDialog(
+      int inventoryId,
+      String storeKey,
+      String gtin,
+      String fornecedorKey,
+      Map<String, dynamic>? searchedProductData) async {
     bool isUpdating = products.any((product) => product['gtin'] == gtin);
 
     if (isUpdating) {
@@ -140,6 +154,15 @@ class _SupplierInventoryDetailsPageState
               );
               await _loadInventoryDetails();
             },
+            onCancel: () {
+              _productkeyController.clear();
+              _quantityController.clear();
+              setState(() {
+                searchedProductData = null;
+                showProductDetail = false;
+              });
+              _loadInventoryDetails();
+            },
           );
         },
       );
@@ -162,11 +185,16 @@ class _SupplierInventoryDetailsPageState
           estoqueDisponivel: estoqueDisponivel,
           description: description);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(productAddedToInventorySuccessfully),
-        ),
-      );
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(productAddedToInventorySuccessfully),
+            ),
+          );
+        });
+      }
+
       await supplierService.updateProductLocalInventory(
         inventoryId: inventoryId,
         gtin: gtin,
@@ -176,11 +204,15 @@ class _SupplierInventoryDetailsPageState
         showProductDetail = false;
       });
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$errorAddingProductToInventory $error'),
-        ),
-      );
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$errorAddingProductToInventory $error'),
+            ),
+          );
+        });
+      }
     }
   }
 
@@ -196,21 +228,31 @@ class _SupplierInventoryDetailsPageState
         gtin: gtin,
         estoqueDisponivel: estoqueDisponivel,
       );
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(productUpdatedInInventorySuccessfully),
+            ),
+          );
+        });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(productUpdatedInInventorySuccessfully),
-        ),
-      );
-      setState(() {
-        showProductDetail = false;
-      });
+        setState(() {
+          showProductDetail = false;
+        });
+
+        await _loadInventoryDetails();
+      }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$errorUpdatingProductInInventory $error'),
-        ),
-      );
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$errorAddingProductToInventory $error'),
+            ),
+          );
+        });
+      }
     }
   }
 
@@ -238,7 +280,12 @@ class _SupplierInventoryDetailsPageState
 
       if (productStatus.containsKey('error')) {
         final errorSnackBar = ErrorSnackBar(message: problemWithRequest);
-        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+        if (mounted) {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+          });
+        }
+
         return;
       }
 
@@ -263,7 +310,11 @@ class _SupplierInventoryDetailsPageState
         ),
         backgroundColor: Colors.redAccent,
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
+      }
     } else {
       const snackBar = SnackBar(
         content: Text(
@@ -272,7 +323,11 @@ class _SupplierInventoryDetailsPageState
         ),
         backgroundColor: Colors.redAccent,
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
+      }
     }
   }
 
@@ -291,8 +346,8 @@ class _SupplierInventoryDetailsPageState
 
   @override
   Widget build(BuildContext context) {
-    if (products == null) {
-      return const CircularProgressIndicator();
+    if (products.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
     }
     final inventory = Inventory.fromJson(widget.inventory);
 
@@ -324,6 +379,7 @@ class _SupplierInventoryDetailsPageState
                       ProductSearchField(
                         productKeyController: _productkeyController,
                         barcodeController: _barcodeController,
+                        focusNode: _productKeyFocusNode,
                         onScan: _scanBarcode,
                         onSubmit: (value) {
                           _scanProductKey(value);

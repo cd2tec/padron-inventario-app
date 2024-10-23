@@ -5,6 +5,7 @@ class ProductSearchField extends StatefulWidget {
   final TextEditingController barcodeController;
   final Future<void> Function() onScan;
   final void Function(String) onSubmit;
+  final FocusNode focusNode; // Adicionando FocusNode como um parâmetro
 
   const ProductSearchField({
     Key? key,
@@ -12,6 +13,7 @@ class ProductSearchField extends StatefulWidget {
     required this.barcodeController,
     required this.onScan,
     required this.onSubmit,
+    required this.focusNode, // Inicializando o FocusNode
   }) : super(key: key);
 
   @override
@@ -19,21 +21,8 @@ class ProductSearchField extends StatefulWidget {
 }
 
 class _ProductSearchFieldState extends State<ProductSearchField> {
-  late FocusNode _productKeyFocusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    _productKeyFocusNode = FocusNode();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _productKeyFocusNode.requestFocus();
-    });
-  }
-
   @override
   void dispose() {
-    _productKeyFocusNode.dispose();
     super.dispose();
   }
 
@@ -47,7 +36,7 @@ class _ProductSearchFieldState extends State<ProductSearchField> {
             Expanded(
               child: TextField(
                 controller: widget.productKeyController,
-                focusNode: _productKeyFocusNode,
+                focusNode: widget.focusNode,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   hintText: 'Código do Produto',
