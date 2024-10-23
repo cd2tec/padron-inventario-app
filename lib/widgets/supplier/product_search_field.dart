@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ProductSearchField extends StatelessWidget {
+class ProductSearchField extends StatefulWidget {
   final TextEditingController productKeyController;
   final TextEditingController barcodeController;
   final Future<void> Function() onScan;
@@ -15,6 +15,29 @@ class ProductSearchField extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ProductSearchFieldState createState() => _ProductSearchFieldState();
+}
+
+class _ProductSearchFieldState extends State<ProductSearchField> {
+  late FocusNode _productKeyFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _productKeyFocusNode = FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _productKeyFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _productKeyFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -23,7 +46,8 @@ class ProductSearchField extends StatelessWidget {
           children: [
             Expanded(
               child: TextField(
-                controller: productKeyController,
+                controller: widget.productKeyController,
+                focusNode: _productKeyFocusNode,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   hintText: 'Código do Produto',
@@ -32,7 +56,7 @@ class ProductSearchField extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.camera_alt),
-                        onPressed: onScan,
+                        onPressed: widget.onScan,
                       ),
                     ],
                   ),
@@ -40,19 +64,19 @@ class ProductSearchField extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.done,
                 textAlign: TextAlign.center,
-                onSubmitted: onSubmit,
+                onSubmitted: widget.onSubmit,
               ),
             ),
           ],
         ),
         Visibility(
-          visible: barcodeController.text.isNotEmpty,
+          visible: widget.barcodeController.text.isNotEmpty,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 30),
               Text(
-                "Código de barras: ${barcodeController.text}",
+                "Código de barras: ${widget.barcodeController.text}",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,

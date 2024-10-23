@@ -55,7 +55,6 @@ class _SupplierInventoryDetailsPageState
     super.initState();
     _loadInventoryDetails();
     _previousProductKey = null;
-
     _productkeyController.addListener(_onProductKeyChanged);
   }
 
@@ -114,26 +113,37 @@ class _SupplierInventoryDetailsPageState
 
   void _showAddConfirmationDialog(int inventoryId, String storeKey, String gtin,
       String fornecedorKey, Map<String, dynamic>? searchedProductData) {
-    String description =
-        searchedProductData?['descricao'] ?? 'Descrição indisponível';
+    bool isUpdating = products.any((product) => product['gtin'] == gtin);
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ConfirmationAddProductInventory(
-          onConfirm: () async {
-            await _addProductInventory(
+    if (isUpdating) {
+      _updateProductInventory(
+        inventoryId: inventoryId,
+        storeKey: storeKey,
+        gtin: gtin,
+        fornecedorKey: fornecedorKey,
+        estoqueDisponivel: int.parse(_quantityController.text),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ConfirmationAddProductInventory(
+            onConfirm: () async {
+              await _addProductInventory(
                 inventoryId: inventoryId,
                 storeKey: storeKey,
                 gtin: gtin,
                 fornecedorKey: fornecedorKey,
                 estoqueDisponivel: int.parse(_quantityController.text),
-                description: description);
-            await _loadInventoryDetails();
-          },
-        );
-      },
-    );
+                description: searchedProductData?['descricao'] ??
+                    'Descrição indisponível',
+              );
+              await _loadInventoryDetails();
+            },
+          );
+        },
+      );
+    }
   }
 
   Future<void> _addProductInventory(
@@ -169,6 +179,36 @@ class _SupplierInventoryDetailsPageState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$errorAddingProductToInventory $error'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _updateProductInventory(
+      {required int inventoryId,
+      required String storeKey,
+      required String gtin,
+      required String fornecedorKey,
+      required int estoqueDisponivel}) async {
+    try {
+      await supplierService.updateProductLocalInventory(
+        inventoryId: inventoryId,
+        gtin: gtin,
+        estoqueDisponivel: estoqueDisponivel,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(productUpdatedInInventorySuccessfully),
+        ),
+      );
+      setState(() {
+        showProductDetail = false;
+      });
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$errorUpdatingProductInInventory $error'),
         ),
       );
     }
@@ -244,8 +284,7 @@ class _SupplierInventoryDetailsPageState
     if (productKey.isEmpty) return;
 
     setState(() {
-      showProductDetail =
-          true; // Mostrar o ProductDetail quando um produto é pesquisado
+      showProductDetail = true;
     });
     _searchProduct(widget.inventory['loja_key'], productKey);
   }
@@ -301,6 +340,14 @@ class _SupplierInventoryDetailsPageState
                   ProductDetail(
                     productData: searchedProductData,
                     quantityController: _quantityController,
+                    onSubmitQuantity: (value) {
+                      _showAddConfirmationDialog(
+                          inventory.id,
+                          inventory.lojaKey,
+                          _previousProductKey!,
+                          inventory.fornecedorKey,
+                          searchedProductData);
+                    },
                   ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),

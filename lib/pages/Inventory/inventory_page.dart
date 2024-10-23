@@ -72,7 +72,7 @@ class _InventoryPageState extends State<InventoryPage> {
           color: Colors.white,
         ),
         title: const Text(
-          InventoryTitle,
+          inventoryTitle,
           style: TextStyle(
             color: Colors.white,
           ),

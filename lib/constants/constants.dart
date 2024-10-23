@@ -1,5 +1,5 @@
 // Titles
-const String InventoryTitle = 'Inventário';
+const String inventoryTitle = 'Inventário';
 const String productStockTitle = 'Estoque de Produtos';
 const String supplierInventoryTitle = 'Inventário Fornecedor';
 const String supplierByInventoryTitle = 'Inventários por Fornecedor';
@@ -30,6 +30,7 @@ const String supplierTittle = 'Fornecedor: ';
 const String divisionTittle = 'Divisão: ';
 const String statusTittle = 'Status: ';
 const String addProductToInventory = 'Adicionar Produto ao Inventário';
+const String updateProductInInventory = 'Atualizar Produto no Inventário';
 
 //Messages
 const String welcomeMessage = 'Bem-vindo!';
@@ -43,8 +44,12 @@ const String errorLoadingInventoryDetails =
     'Erro ao carregar detalhes do inventário: ';
 const String productAddedToInventorySuccessfully =
     'Produto adicionado ao inventário com sucesso!';
+const String productUpdatedInInventorySuccessfully =
+    'Produto atualizado no inventário com sucesso!';
 const String errorAddingProductToInventory =
     'Erro ao adicionar o produto ao inventário: ';
+const String errorUpdatingProductInInventory =
+    'Erro ao atualizar o produto no inventário';
 const String problemWithRequest =
     'Houve um problema com a requisição. Por favor, verifique se o token é válido.';
 const String problemsSearchingForProduct = 'Problemas ao buscar produto.';
@@ -60,6 +65,8 @@ const String wantToCompleteTheInventory =
     'Deseja realmente finalizar o inventário?';
 const String wantToAddTheProductToInventory =
     'Você tem certeza que deseja adicionar o produto ao inventário?';
+const String wantToUpdateTheProductInInventory =
+    'Você tem certeza que deseja atualizar o produto no inventário?';
 
 //Colors
 const int redColor = 0xFFA30000;
