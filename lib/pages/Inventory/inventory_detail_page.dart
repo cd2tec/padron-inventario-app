@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:padron_inventario_app/constants/constants.dart';
 
 import '../../routes/app_router.gr.dart';
@@ -63,6 +64,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool showAddressField = _getStringValue('lojaKey') == dotenv.env['STORE'];
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -89,11 +91,17 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
               _buildInfoCard(),
               const SizedBox(height: 20),
               for (final entry in _controllers.entries)
-                entry.key == 'Multiplo'
+                /*  entry.key == 'Multiplo'
                     ? _buildTextFormField(entry.key, entry.value,
-                        editable: false)
-                    : _buildTextFormField(entry.key, entry.value),
+                        editable: false) */
+                _buildTextFormField(entry.key, entry.value),
               const SizedBox(height: 20),
+              if (showAddressField)
+                _buildTextFormField(
+                  'Endereço',
+                  TextEditingController(),
+                  editable: true,
+                ),
               _buildConfirmButton(),
             ],
           ),

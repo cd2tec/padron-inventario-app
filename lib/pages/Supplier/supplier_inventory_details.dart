@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/models/Inventory.dart';
@@ -42,6 +43,7 @@ class _SupplierInventoryDetailsPageState
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
   final FocusNode _productKeyFocusNode = FocusNode();
   bool isLoading = false;
@@ -66,6 +68,7 @@ class _SupplierInventoryDetailsPageState
     _productkeyController.dispose();
     _quantityController.dispose();
     _productKeyFocusNode.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -393,17 +396,32 @@ class _SupplierInventoryDetailsPageState
                   ),
                 ),
                 if (showProductDetail && searchedProductData != null)
-                  ProductDetail(
-                    productData: searchedProductData,
-                    quantityController: _quantityController,
-                    onSubmitQuantity: (value) {
-                      _showAddConfirmationDialog(
-                          inventory.id,
-                          inventory.lojaKey,
-                          _previousProductKey!,
-                          inventory.fornecedorKey,
-                          searchedProductData);
-                    },
+                  Column(
+                    children: [
+                      ProductDetail(
+                        productData: searchedProductData,
+                        quantityController: _quantityController,
+                        onSubmitQuantity: (value) {
+                          _showAddConfirmationDialog(
+                              inventory.id,
+                              inventory.lojaKey,
+                              _previousProductKey!,
+                              inventory.fornecedorKey,
+                              searchedProductData);
+                        },
+                      ),
+                      if (widget.inventory['loja_key'] == dotenv.env['STORE'])
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextField(
+                            controller: _addressController,
+                            decoration: const InputDecoration(
+                              labelText: 'Endereço',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),

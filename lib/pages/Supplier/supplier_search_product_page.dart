@@ -102,7 +102,7 @@ class _SupplierSearchProductPageState extends State<SupplierSearchProductPage> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      searcProductTitle,
+                      searchProductTitle,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,

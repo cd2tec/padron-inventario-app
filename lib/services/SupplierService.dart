@@ -191,6 +191,7 @@ class SupplierService {
     required int inventoryId,
     required String gtin,
     required int estoqueDisponivel,
+    endereco,
   }) async {
     SharedPreferences prefs = await getSharedPreferences();
     var token = prefs.getString('token');
