@@ -29,9 +29,6 @@ class _InventoryPageState extends State<InventoryPage> {
   List<User> user = [];
 
   Store? selectedStore;
-  int? selectedStoreId;
-  List<int> storeIds = [];
-  List<int> storesNotSelected = [];
   int? defaultStore;
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
@@ -49,11 +46,6 @@ class _InventoryPageState extends State<InventoryPage> {
     List<Store> fetchedStores = await inventoryService.fetchStores();
     setState(() {
       stores = fetchedStores;
-      storeIds = stores
-          .map((store) => int.tryParse(store.nroEmpresaBluesoft ?? ''))
-          .where((nro) => nro != null)
-          .cast<int>()
-          .toList();
 
       if (defaultStore != null) {
         selectedStore = stores.firstWhere((store) => store.id == defaultStore);
@@ -160,7 +152,6 @@ class _InventoryPageState extends State<InventoryPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    _buildStoreSelection(),
                   ],
                 ),
               ),
@@ -202,55 +193,6 @@ class _InventoryPageState extends State<InventoryPage> {
     );
   }
 
-  Widget _buildStoreSelection() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Text(
-            selectStoreTittle,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-                ),
-                width: 300,
-                child: DropdownButton<int>(
-                  isExpanded: true,
-                  value: selectedStoreId,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedStoreId = value;
-                    });
-                    storesNotSelected =
-                        storeIds.where((id) => id != selectedStoreId).toList();
-                  },
-                  underline: Container(
-                    height: 0,
-                  ),
-                  items: storeIds.map<DropdownMenuItem<int>>((int value) {
-                    return DropdownMenuItem<int>(
-                      value: value,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('Loja $value'),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _scanBarcode() async {
     String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
       "#ff6666",
@@ -275,33 +217,28 @@ class _InventoryPageState extends State<InventoryPage> {
       isLoading = true;
     });
 
-    int? storeIdToUse = selectedStoreId ?? defaultStore;
-
-    if (storeIdToUse == null) {
+    if (selectedStore!.nroEmpresaBluesoft == null) {
       setState(() {
         isLoading = false;
       });
 
       const snackBar = SnackBar(
         content: Text(
-          'Loja não selecionada e loja padrão não disponível.',
+          'Loja padrão não cadastrada.',
           style: TextStyle(fontSize: 16),
         ),
         backgroundColor: Colors.redAccent,
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
     }
 
     inventoryService
-        .fetchInfoProduct(filter, value, storeIdToUse.toString())
+        .fetchInfoProduct(filter, value, selectedStore!.nroEmpresaBluesoft!)
         .then((productData) {
       var productStatus = jsonDecode(productData);
 
       if (productStatus.containsKey('error')) {
-        final errorSnackBar = ErrorSnackBar(
-            message:
-                'Houve um problema com a requisição. Por favor, verifique se o token é válido ou tente selecionar uma outra loja.');
+        final errorSnackBar = ErrorSnackBar(message: thereProblemWithRequest);
         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
         return;
       }

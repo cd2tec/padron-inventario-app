@@ -65,6 +65,10 @@ const String wantToCompleteTheInventory =
     'Deseja realmente finalizar o inventário?';
 const String wantToAddTheProductToInventory =
     'Você tem certeza que deseja adicionar o produto ao inventário?';
+const String fillOutAllFields =
+    'Por favor, preencha todos os campos antes de confirmar.';
+const String thereProblemWithRequest =
+    'Houve um problema com a requisição. Por favor, verifique se o token é válido.';
 
 //Colors
 const int redColor = 0xFFA30000;

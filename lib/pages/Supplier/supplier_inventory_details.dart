@@ -19,6 +19,7 @@ import 'package:padron_inventario_app/widgets/supplier/items_list_button.dart';
 import 'package:padron_inventario_app/widgets/supplier/product_detail.dart';
 import 'package:padron_inventario_app/widgets/supplier/product_search_field.dart';
 import 'package:padron_inventario_app/widgets/supplier/search_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class SupplierInventoryDetailsPage extends StatefulWidget {
@@ -59,6 +60,7 @@ class _SupplierInventoryDetailsPageState
     _loadInventoryDetails();
     _previousProductKey = null;
     _productkeyController.addListener(_onProductKeyChanged);
+    _loadAddress();
   }
 
   @override
@@ -70,6 +72,25 @@ class _SupplierInventoryDetailsPageState
     _productKeyFocusNode.dispose();
     _addressController.dispose();
     super.dispose();
+  }
+
+  bool isAddressRequired() {
+    return widget.inventory['loja_key'] == dotenv.env['STORE'];
+  }
+
+  Future<void> _loadAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedAddress = prefs.getString('savedAddress');
+    if (savedAddress != null) {
+      setState(() {
+        _addressController.text = savedAddress;
+      });
+    }
+  }
+
+  Future<void> _saveAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('savedAddress', _addressController.text);
   }
 
   void _onProductKeyChanged() {
@@ -130,6 +151,28 @@ class _SupplierInventoryDetailsPageState
       String gtin,
       String fornecedorKey,
       Map<String, dynamic>? searchedProductData) async {
+    if (isAddressRequired()) {
+      if (_quantityController.text.isEmpty || _addressController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(fillOutAllFields),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      } else {
+        if (_quantityController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(fillOutAllFields),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+          return;
+        }
+      }
+    }
+
     bool isUpdating = products.any((product) => product['gtin'] == gtin);
 
     if (isUpdating) {
@@ -140,6 +183,7 @@ class _SupplierInventoryDetailsPageState
         fornecedorKey: fornecedorKey,
         estoqueDisponivel: int.parse(_quantityController.text),
       );
+      _saveAddress();
     } else {
       showDialog(
         context: context,
@@ -156,6 +200,7 @@ class _SupplierInventoryDetailsPageState
                     'Descrição indisponível',
               );
               await _loadInventoryDetails();
+              _saveAddress();
             },
             onCancel: () {
               _productkeyController.clear();
@@ -410,7 +455,7 @@ class _SupplierInventoryDetailsPageState
                               searchedProductData);
                         },
                       ),
-                      if (widget.inventory['loja_key'] == dotenv.env['STORE'])
+                      if (isAddressRequired())
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: TextField(
@@ -419,6 +464,9 @@ class _SupplierInventoryDetailsPageState
                               labelText: 'Endereço',
                               border: OutlineInputBorder(),
                             ),
+                            onChanged: (value) {
+                              _saveAddress();
+                            },
                           ),
                         ),
                     ],

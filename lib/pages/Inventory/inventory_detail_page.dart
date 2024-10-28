@@ -36,6 +36,9 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   void _initializeControllers() {
     _controllers.addAll({
+      'Quantidade':
+          TextEditingController(text: _getStringValue('qtdDisponivel')),
+      'Endereço': TextEditingController(text: _getStringValue('endereco')),
       'Saldo Disponivel':
           TextEditingController(text: _getStringValue('qtdDisponivel')),
       'Quantidade Ponto Extra':
@@ -64,7 +67,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool showAddressField = _getStringValue('lojaKey') == dotenv.env['STORE'];
+    bool isStoreMatch = _getStringValue('lojaKey') == dotenv.env['STORE'];
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -90,18 +93,20 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
             children: [
               _buildInfoCard(),
               const SizedBox(height: 20),
-              for (final entry in _controllers.entries)
-                /*  entry.key == 'Multiplo'
-                    ? _buildTextFormField(entry.key, entry.value,
-                        editable: false) */
-                _buildTextFormField(entry.key, entry.value),
-              const SizedBox(height: 20),
-              if (showAddressField)
+              if (isStoreMatch) ...[
+                _buildTextFormField(
+                  'Quantidade',
+                  _controllers['Quantidade']!,
+                ),
                 _buildTextFormField(
                   'Endereço',
-                  TextEditingController(),
-                  editable: true,
+                  _controllers['Endereço']!,
                 ),
+              ] else ...[
+                for (final entry in _controllers.entries)
+                  _buildTextFormField(entry.key, entry.value),
+              ],
+              const SizedBox(height: 20),
               _buildConfirmButton(),
             ],
           ),

@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
 import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class SupplierProductDetailPage extends StatefulWidget {
@@ -26,11 +27,15 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
   final _originalData = <String, dynamic>{};
   final _currentData = <String, dynamic>{};
 
+  TextEditingController _addressController = TextEditingController();
+  String _lastAddress = '';
+
   @override
   void initState() {
     super.initState();
     _initializeControllers();
     _initializeData();
+    _loadLastAddress();
   }
 
   void _initializeControllers() {
@@ -47,9 +52,29 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
     _currentData.addAll(_originalData);
   }
 
+  Future<void> _loadLastAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String? addressValue = _getStringValue('endereco');
+
+    String? savedEndereco =
+        addressValue ?? prefs.getString('endereco') ?? 'Endereço indefinido';
+
+    setState(() {
+      _lastAddress = savedEndereco;
+      _addressController.text = _lastAddress;
+    });
+  }
+
+  Future<void> _saveAddress(String endereco) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('endereco', endereco);
+  }
+
   @override
   void dispose() {
     _controllers.values.forEach((controller) => controller.dispose());
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -83,9 +108,7 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
                   const SizedBox(height: 20),
                   _buildTextFormField(
                     'Endereço',
-                    TextEditingController(
-                        text: _getStringValue('endereco') ??
-                            'Endereço indefinido'),
+                    _addressController,
                   ),
                 ],
                 const SizedBox(height: 20),
@@ -98,6 +121,7 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
           child: ElevatedButton(
             onPressed: () {
               _updateProductInInventory();
+              _saveAddress(_addressController.text);
               Navigator.pop(context, {
                 'gtin': widget.productData?['gtin'],
                 'saldoDisponivel': _controllers['Saldo Disponivel']?.text,
