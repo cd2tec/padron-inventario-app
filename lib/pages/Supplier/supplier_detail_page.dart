@@ -224,6 +224,7 @@ class _SupplierDetailPageState extends State<SupplierDetailPage> {
 
     if (originalValue != updatedValue) {
       changes['saldodisponivel'] = updatedValue;
+      changes['saldo_disponivel_old'] = originalValue;
     }
 
     if (changes.isEmpty) {
