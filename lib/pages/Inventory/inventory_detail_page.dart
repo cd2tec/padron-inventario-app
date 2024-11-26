@@ -38,7 +38,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     _controllers.addAll({
       'Quantidade':
           TextEditingController(text: _getStringValue('qtdDisponivel')),
-      'Endereço': TextEditingController(text: _getStringValue('endereco')),
+      'Endereço':
+          TextEditingController(text: _getStringValue('endereco') ?? '0'),
       'Saldo Disponivel':
           TextEditingController(text: _getStringValue('qtdDisponivel')),
       'Quantidade Ponto Extra':
@@ -52,6 +53,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   void _initializeData() {
     _originalData.addAll({
       'saldodisponivel': _getStringValue('qtdDisponivel'),
+      'endereco': _getStringValue('endereco'),
       'quantidadeexposicao': _getStringValue('quantidadeExposicao'),
       'quantidadepontoextra': _getStringValue('quantidadePontoExtra'),
       'multiplo': _getStringValue('multiplo'),

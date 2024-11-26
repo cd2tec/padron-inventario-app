@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/constants/constants.dart';
+import 'package:padron_inventario_app/contexts/supplier_products_provider.dart';
 import 'package:padron_inventario_app/models/Inventory.dart';
 import 'package:padron_inventario_app/routes/app_router.gr.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
@@ -11,6 +12,7 @@ import 'package:padron_inventario_app/services/UserService.dart';
 import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
 import 'package:padron_inventario_app/widgets/supplier/inventory_list.dart';
 import 'package:padron_inventario_app/widgets/supplier/loader_overlay.dart';
+import 'package:provider/provider.dart';
 
 import '../../widgets/notifications/snackbar_widgets.dart';
 
@@ -63,6 +65,11 @@ class _SupplierPageState extends State<SupplierPage> {
 
   void _navigateToInventoryDetails(
       BuildContext context, Inventory inventory) async {
+    final provider =
+        Provider.of<SupplierProductsProvider>(context, listen: false);
+
+    await provider.loadInventoryDetails(inventory.id);
+
     await AutoRouter.of(context).push(
       SupplierInventoryDetailsRoute(inventory: inventory.toJson()),
     );
