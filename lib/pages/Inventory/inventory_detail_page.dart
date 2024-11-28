@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:padron_inventario_app/constants/constants.dart';
 
 import '../../routes/app_router.gr.dart';
@@ -35,6 +36,10 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   void _initializeControllers() {
     _controllers.addAll({
+      'Quantidade':
+          TextEditingController(text: _getStringValue('qtdDisponivel')),
+      'Endereço':
+          TextEditingController(text: _getStringValue('endereco') ?? '0'),
       'Saldo Disponivel':
           TextEditingController(text: _getStringValue('qtdDisponivel')),
       'Quantidade Ponto Extra':
@@ -48,6 +53,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   void _initializeData() {
     _originalData.addAll({
       'saldodisponivel': _getStringValue('qtdDisponivel'),
+      'endereco': _getStringValue('endereco'),
       'quantidadeexposicao': _getStringValue('quantidadeExposicao'),
       'quantidadepontoextra': _getStringValue('quantidadePontoExtra'),
       'multiplo': _getStringValue('multiplo'),
@@ -63,6 +69,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isStoreMatch = _getStringValue('lojaKey') == dotenv.env['STORE'];
+
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -88,11 +96,33 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
             children: [
               _buildInfoCard(),
               const SizedBox(height: 20),
-              for (final entry in _controllers.entries)
-                entry.key == 'Multiplo'
-                    ? _buildTextFormField(entry.key, entry.value,
-                        editable: false)
-                    : _buildTextFormField(entry.key, entry.value),
+              if (isStoreMatch) ...[
+                _buildTextFormField(
+                  'Quantidade',
+                  _controllers['Quantidade']!,
+                ),
+                _buildTextFormField(
+                  'Endereço',
+                  _controllers['Endereço']!,
+                ),
+              ] else ...[
+                _buildTextFormField(
+                  'Saldo Disponível',
+                  _controllers['Saldo Disponivel']!,
+                ),
+                _buildTextFormField(
+                  'Quantidade Ponto Extra',
+                  _controllers['Quantidade Ponto Extra']!,
+                ),
+                _buildTextFormField(
+                  'Quantidade Exposição',
+                  _controllers['Quantidade Exposição']!,
+                ),
+                _buildTextFormField(
+                  'Multiplo',
+                  _controllers['Multiplo']!,
+                ),
+              ],
               const SizedBox(height: 20),
               _buildConfirmButton(),
             ],

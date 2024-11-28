@@ -116,6 +116,7 @@ class _SupplierProductsListPageState extends State<SupplierProductsListPage>
         productData: product,
         additionalData: {
           'inventoryId': widget.inventory['id'],
+          'lojaKey': widget.inventory['loja_key'],
           'products': products,
         },
       ),

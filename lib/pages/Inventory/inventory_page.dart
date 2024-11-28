@@ -102,7 +102,7 @@ class _InventoryPageState extends State<InventoryPage> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      searcProductTitle,
+                      searchProductTitle,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -238,9 +238,7 @@ class _InventoryPageState extends State<InventoryPage> {
       var productStatus = jsonDecode(productData);
 
       if (productStatus.containsKey('error')) {
-        final errorSnackBar = ErrorSnackBar(
-            message:
-                'Houve um problema com a requisição. Por favor, verifique se o token é válido.');
+        final errorSnackBar = ErrorSnackBar(message: thereProblemWithRequest);
         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
         return;
       }

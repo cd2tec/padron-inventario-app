@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i17;
-import 'package:flutter/foundation.dart' as _i19;
 import 'package:flutter/material.dart' as _i18;
 import 'package:padron_inventario_app/main.dart' as _i6;
 import 'package:padron_inventario_app/pages/home_page.dart' as _i1;
@@ -216,7 +215,7 @@ class HomeRouteArgs {
 class InventoryDetailRoute
     extends _i17.PageRouteInfo<InventoryDetailRouteArgs> {
   InventoryDetailRoute({
-    _i19.Key? key,
+    _i18.Key? key,
     Map<String, dynamic>? productData,
     List<_i17.PageRouteInfo>? children,
   }) : super(
@@ -240,7 +239,7 @@ class InventoryDetailRouteArgs {
     this.productData,
   });
 
-  final _i19.Key? key;
+  final _i18.Key? key;
 
   final Map<String, dynamic>? productData;
 
@@ -348,7 +347,7 @@ class RegisterRoute extends _i17.PageRouteInfo<void> {
 /// [_i8.SupplierDetailPage]
 class SupplierDetailRoute extends _i17.PageRouteInfo<SupplierDetailRouteArgs> {
   SupplierDetailRoute({
-    _i19.Key? key,
+    _i18.Key? key,
     Map<String, dynamic>? productData,
     List<_i17.PageRouteInfo>? children,
   }) : super(
@@ -372,7 +371,7 @@ class SupplierDetailRouteArgs {
     this.productData,
   });
 
-  final _i19.Key? key;
+  final _i18.Key? key;
 
   final Map<String, dynamic>? productData;
 
