@@ -70,6 +70,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
   @override
   Widget build(BuildContext context) {
     bool isStoreMatch = _getStringValue('lojaKey') == dotenv.env['STORE'];
+
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -105,8 +106,22 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                   _controllers['Endereço']!,
                 ),
               ] else ...[
-                for (final entry in _controllers.entries)
-                  _buildTextFormField(entry.key, entry.value),
+                _buildTextFormField(
+                  'Saldo Disponível',
+                  _controllers['Saldo Disponivel']!,
+                ),
+                _buildTextFormField(
+                  'Quantidade Ponto Extra',
+                  _controllers['Quantidade Ponto Extra']!,
+                ),
+                _buildTextFormField(
+                  'Quantidade Exposição',
+                  _controllers['Quantidade Exposição']!,
+                ),
+                _buildTextFormField(
+                  'Multiplo',
+                  _controllers['Multiplo']!,
+                ),
               ],
               const SizedBox(height: 20),
               _buildConfirmButton(),

@@ -6,6 +6,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/constants/constants.dart';
+import 'package:padron_inventario_app/contexts/supplier_products_provider.dart';
 import 'package:padron_inventario_app/models/Inventory.dart';
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/services/InventoryService.dart';
@@ -19,6 +20,7 @@ import 'package:padron_inventario_app/widgets/supplier/items_list_button.dart';
 import 'package:padron_inventario_app/widgets/supplier/product_detail.dart';
 import 'package:padron_inventario_app/widgets/supplier/product_search_field.dart';
 import 'package:padron_inventario_app/widgets/supplier/search_button.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
@@ -63,6 +65,12 @@ class _SupplierInventoryDetailsPageState
     _loadAddress();
   }
 
+  Future<void> _loadInventoryDetails() async {
+    final provider =
+        Provider.of<SupplierProductsProvider>(context, listen: false);
+    await provider.loadInventoryDetails(widget.inventory['id']);
+  }
+
   @override
   void dispose() {
     _barcodeController.dispose();
@@ -75,7 +83,9 @@ class _SupplierInventoryDetailsPageState
   }
 
   bool isAddressRequired() {
-    return widget.inventory['loja_key'] == dotenv.env['STORE'];
+    final lojaKey = widget.inventory['loja_key'];
+    final store = dotenv.env['STORE'];
+    return lojaKey == store;
   }
 
   Future<void> _loadAddress() async {
@@ -100,48 +110,6 @@ class _SupplierInventoryDetailsPageState
       _productkeyController.clear();
       _quantityController.clear();
       _scanProductKey(_previousProductKey!);
-    }
-  }
-
-  Future<void> _loadInventoryDetails() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final List<Map<String, dynamic>> updatedInventories =
-          await supplierService
-              .fetchSupplierInventoryById(widget.inventory['id']);
-
-      if (updatedInventories.isNotEmpty) {
-        final Map<String, dynamic> inventory = updatedInventories.first;
-        setState(() {
-          products =
-              List<Map<String, dynamic>>.from(inventory['produtos'] ?? []);
-        });
-      } else {
-        setState(() {
-          products = [];
-        });
-      }
-    } catch (error) {
-      if (mounted) {
-        Future.delayed(const Duration(milliseconds: 100), () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('$errorLoadingInventoryDetails $error'),
-            ),
-          );
-        });
-      }
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        FocusScope.of(context).requestFocus(_productKeyFocusNode);
-      });
     }
   }
 
@@ -182,6 +150,8 @@ class _SupplierInventoryDetailsPageState
         gtin: gtin,
         fornecedorKey: fornecedorKey,
         estoqueDisponivel: int.parse(_quantityController.text),
+        endereco:
+            _addressController.text.isNotEmpty ? _addressController.text : null,
       );
       _saveAddress();
     } else {
@@ -196,6 +166,9 @@ class _SupplierInventoryDetailsPageState
                 gtin: gtin,
                 fornecedorKey: fornecedorKey,
                 estoqueDisponivel: int.parse(_quantityController.text),
+                endereco: _addressController.text.isNotEmpty
+                    ? _addressController.text
+                    : null,
                 description: searchedProductData?['descricao'] ??
                     'Descrição indisponível',
               );
@@ -223,7 +196,8 @@ class _SupplierInventoryDetailsPageState
       required String gtin,
       required String fornecedorKey,
       required int estoqueDisponivel,
-      required String description}) async {
+      required String description,
+      String? endereco}) async {
     try {
       await supplierService.addProductLocalInventory(
           inventoryId: inventoryId,
@@ -231,7 +205,8 @@ class _SupplierInventoryDetailsPageState
           gtin: gtin,
           fornecedorKey: fornecedorKey,
           estoqueDisponivel: estoqueDisponivel,
-          description: description);
+          description: description,
+          endereco: endereco);
 
       if (mounted) {
         Future.delayed(const Duration(milliseconds: 100), () {
@@ -269,12 +244,15 @@ class _SupplierInventoryDetailsPageState
       required String storeKey,
       required String gtin,
       required String fornecedorKey,
-      required int estoqueDisponivel}) async {
+      required int estoqueDisponivel,
+      String? endereco}) async {
     try {
       await supplierService.updateProductLocalInventory(
         inventoryId: inventoryId,
         gtin: gtin,
         estoqueDisponivel: estoqueDisponivel,
+        endereco:
+            _addressController.text.isNotEmpty ? _addressController.text : null,
       );
       if (mounted) {
         Future.delayed(const Duration(milliseconds: 100), () {
@@ -394,9 +372,16 @@ class _SupplierInventoryDetailsPageState
 
   @override
   Widget build(BuildContext context) {
-    if (products.isEmpty) {
+    final provider = Provider.of<SupplierProductsProvider>(context);
+
+    if (provider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
+
+    if (provider.products.isEmpty) {
+      return const Center(child: Text('Nenhum produto encontrado.'));
+    }
+
     final inventory = Inventory.fromJson(widget.inventory);
 
     return Scaffold(
@@ -460,6 +445,7 @@ class _SupplierInventoryDetailsPageState
                           padding: const EdgeInsets.all(10.0),
                           child: TextField(
                             controller: _addressController,
+                            keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
                               labelText: 'Endereço',
                               border: OutlineInputBorder(),
@@ -488,7 +474,7 @@ class _SupplierInventoryDetailsPageState
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: ItemsListButton(
-                    products: products,
+                    products: provider.products,
                     inventory: widget.inventory,
                   ),
                 ),

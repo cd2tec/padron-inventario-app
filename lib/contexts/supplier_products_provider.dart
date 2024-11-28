@@ -25,7 +25,6 @@ class SupplierProductsProvider extends ChangeNotifier {
           final inventory = updatedInventories.first;
           _products =
               List<Map<String, dynamic>>.from(inventory['produtos'] ?? []);
-          print(_products);
         } else {
           _products = [];
         }
@@ -33,7 +32,6 @@ class SupplierProductsProvider extends ChangeNotifier {
         _errorMessage = null;
       } catch (error) {
         _errorMessage = error.toString();
-        print(_errorMessage);
       } finally {
         _setLoading(false);
       }
