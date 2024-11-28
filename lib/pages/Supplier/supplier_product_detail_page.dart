@@ -1,8 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:padron_inventario_app/constants/constants.dart';
 import 'package:padron_inventario_app/services/SupplierService.dart';
 import 'package:padron_inventario_app/widgets/supplier/app_bar_title.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class SupplierProductDetailPage extends StatefulWidget {
@@ -25,14 +27,21 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
   final _originalData = <String, dynamic>{};
   final _currentData = <String, dynamic>{};
 
+  final TextEditingController _addressController = TextEditingController();
+  String _lastAddress = '';
+  String? _originalSaldoDisponivel;
+
   @override
   void initState() {
     super.initState();
     _initializeControllers();
     _initializeData();
+    _loadLastAddress();
   }
 
   void _initializeControllers() {
+    _originalSaldoDisponivel = _getStringValue('saldo_disponivel');
+
     _controllers.addAll({
       'Saldo Disponivel':
           TextEditingController(text: _getStringValue('saldo_disponivel')),
@@ -41,14 +50,38 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
   void _initializeData() {
     _originalData.addAll({
-      'saldoDisponivel': _getStringValue('saldo_disponivel'),
+      'saldoDisponivel': _controllers['Saldo Disponivel'],
     });
     _currentData.addAll(_originalData);
+  }
+
+  bool isAddressRequired() {
+    final lojaKey = widget.productData?['loja_key'];
+    final store = dotenv.env['STORE'];
+    return lojaKey == store;
+  }
+
+  Future<void> _loadLastAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? addressValue = _getStringValue('endereco');
+    String? savedEndereco =
+        addressValue ?? prefs.getString('endereco') ?? 'Endereço indefinido';
+
+    setState(() {
+      _lastAddress = savedEndereco ?? '';
+      _addressController.text = _lastAddress;
+    });
+  }
+
+  Future<void> _saveAddress(String endereco) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('endereco', endereco);
   }
 
   @override
   void dispose() {
     _controllers.values.forEach((controller) => controller.dispose());
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -77,6 +110,13 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
                 const SizedBox(height: 20),
                 for (final entry in _controllers.entries)
                   _buildTextFormField(entry.key, entry.value),
+                if (isAddressRequired()) ...[
+                  const SizedBox(height: 20),
+                  _buildTextFormField(
+                    'Endereço',
+                    _addressController,
+                  ),
+                ],
                 const SizedBox(height: 20),
               ],
             ),
@@ -87,6 +127,7 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
           child: ElevatedButton(
             onPressed: () {
               _updateProductInInventory();
+              _saveAddress(_addressController.text);
               Navigator.pop(context, {
                 'gtin': widget.productData?['gtin'],
                 'saldoDisponivel': _controllers['Saldo Disponivel']?.text,
@@ -130,6 +171,9 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
                 _getStringValue('quantidade_exposicao')),
             _buildReadOnlyField('Quantidade Ponto Extra:',
                 _getStringValue('quantidade_ponto_extra')),
+            if (_getStringValue('endereco') != null &&
+                _getStringValue('endereco')!.isNotEmpty)
+              _buildReadOnlyField('Endereço:', _getStringValue('endereco')),
           ],
         ),
       ),
@@ -187,10 +231,7 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
 
   String? _getStringValue(String key) {
     if (widget.productData != null && widget.productData!.containsKey(key)) {
-      if (key == 'quantidade_exposicao' || key == 'quantidade_ponto_extra') {
-        return widget.productData![key]?.toString() ?? '0';
-      }
-      return widget.productData![key]?.toString();
+      return widget.productData![key]?.toString() ?? '';
     } else {
       return null;
     }
@@ -208,25 +249,27 @@ class _SupplierProductDetailPageState extends State<SupplierProductDetailPage> {
     return value.replaceAll(RegExp(r'[^0-9]'), '');
   }
 
-  void _updateProductInInventory() async {
+  Future<void> _updateProductInInventory() async {
     try {
-      await SupplierService().updateProductLocalInventory(
-        inventoryId: widget.additionalData?['inventoryId'],
-        gtin: widget.productData?['gtin'],
-        estoqueDisponivel: int.parse(_currentData['saldodisponivel']),
-      );
+      final endereco = _addressController.text.trim().isNotEmpty
+          ? _addressController.text
+          : null;
 
+      final saldoDisponivel = (_currentData['saldodisponivel'] != null &&
+              _currentData['saldodisponivel'].isNotEmpty)
+          ? _currentData['saldodisponivel']
+          : _originalSaldoDisponivel;
+
+      await SupplierService().updateProductLocalInventory(
+          inventoryId: widget.additionalData?['inventoryId'],
+          gtin: widget.productData?['gtin'],
+          estoqueDisponivel: int.parse(saldoDisponivel),
+          endereco: endereco);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(changesSubmittedSuccessfully),
-        ),
-      );
+          const SnackBar(content: Text(changesSubmittedSuccessfully)));
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$errorSubmittingChanges $error'),
-        ),
-      );
+          SnackBar(content: Text('$errorSubmittingChanges $error')));
     }
   }
 }

@@ -1,5 +1,5 @@
 // Titles
-const String InventoryTitle = 'Inventário';
+const String inventoryTitle = 'Inventário';
 const String productStockTitle = 'Estoque de Produtos';
 const String supplierInventoryTitle = 'Inventário Fornecedor';
 const String supplierByInventoryTitle = 'Inventários por Fornecedor';
@@ -11,7 +11,8 @@ const String confirmTitle = 'Confirmar';
 const String detailsOfProductTitle = 'Detalhes do Produto';
 const String prductsListTitle = 'Lista de Produtos';
 const String searchTitle = 'Buscar';
-const String searcProductTitle = 'Buscar Produto';
+const String searchProductTitle = 'Buscar Produto';
+const String selectStoreTittle = 'Selecione a loja';
 const String registerUserTitle = 'Cadastrar Usuário';
 const String productCode = 'Código do Produto';
 const String finalizeInventoryTittle = 'Finalizar Inventário';
@@ -43,8 +44,12 @@ const String errorLoadingInventoryDetails =
     'Erro ao carregar detalhes do inventário: ';
 const String productAddedToInventorySuccessfully =
     'Produto adicionado ao inventário com sucesso!';
+const String productUpdatedInInventorySuccessfully =
+    'Produto atualizado no inventário com sucesso!';
 const String errorAddingProductToInventory =
     'Erro ao adicionar o produto ao inventário: ';
+const String errorUpdatingProductInInventory =
+    'Erro ao atualizar o produto no inventário';
 const String problemWithRequest =
     'Houve um problema com a requisição. Por favor, verifique se o token é válido.';
 const String problemsSearchingForProduct = 'Problemas ao buscar produto.';
@@ -60,6 +65,10 @@ const String wantToCompleteTheInventory =
     'Deseja realmente finalizar o inventário?';
 const String wantToAddTheProductToInventory =
     'Você tem certeza que deseja adicionar o produto ao inventário?';
+const String fillOutAllFields =
+    'Por favor, preencha todos os campos antes de confirmar.';
+const String thereProblemWithRequest =
+    'Houve um problema com a requisição. Por favor, verifique se o token é válido.';
 
 //Colors
 const int redColor = 0xFFA30000;

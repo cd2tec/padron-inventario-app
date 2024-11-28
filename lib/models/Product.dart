@@ -6,6 +6,7 @@ class Product {
   int? quantidadeExposicao;
   int? quantidadePontoExtra;
   String? saldoDisponivel;
+  String? endereco;
   String? gtin;
   int? multiplo;
   bool? flagUpdated;
@@ -20,6 +21,7 @@ class Product {
     this.quantidadeExposicao,
     this.quantidadePontoExtra,
     this.saldoDisponivel,
+    this.endereco,
     this.gtin,
     this.multiplo,
     this.flagUpdated,
@@ -36,6 +38,7 @@ class Product {
       quantidadeExposicao: json['quantidade_exposicao'],
       quantidadePontoExtra: json['quantidade_ponto_extra'],
       saldoDisponivel: json['saldo_disponivel'],
+      endereco: json['endereco'],
       gtin: json['gtin'],
       multiplo: json['multiplo'],
       flagUpdated: json['flg_updated'],

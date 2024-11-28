@@ -40,9 +40,6 @@ class AuthService {
       throw http.ClientException(response.body);
     }
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-
     saveUserInfo(response.body);
     return true;
   }

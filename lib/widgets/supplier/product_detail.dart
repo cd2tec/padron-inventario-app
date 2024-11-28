@@ -1,19 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:padron_inventario_app/constants/constants.dart';
 
-class ProductDetail extends StatelessWidget {
+class ProductDetail extends StatefulWidget {
   final Map<String, dynamic>? productData;
   final TextEditingController quantityController;
+  final void Function(String) onSubmitQuantity;
 
   const ProductDetail({
     Key? key,
     this.productData,
     required this.quantityController,
+    required this.onSubmitQuantity,
   }) : super(key: key);
 
   @override
+  _ProductDetailState createState() => _ProductDetailState();
+}
+
+class _ProductDetailState extends State<ProductDetail> {
+  late FocusNode _quantityFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _quantityFocusNode = FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _quantityFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _quantityFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (productData == null) {
+    if (widget.productData == null) {
       return const SizedBox.shrink();
     }
 
@@ -32,7 +57,7 @@ class ProductDetail extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$descriptionTittle ${productData!['descricao'] ?? 'N/A'}',
+                    '$descriptionTittle ${widget.productData!['descricao'] ?? 'N/A'}',
                     style: const TextStyle(
                       color: Color.fromARGB(255, 255, 252, 252),
                       fontSize: 18,
@@ -40,7 +65,7 @@ class ProductDetail extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Código do Produto: ${productData!['produtoKey'] ?? 'N/A'}',
+                    'Código do Produto: ${widget.productData!['produtoKey'] ?? 'N/A'}',
                     style: const TextStyle(
                       color: Color.fromARGB(255, 255, 252, 252),
                       fontSize: 18,
@@ -48,7 +73,7 @@ class ProductDetail extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Loja (Bluesoft): ${productData!['lojaKey'] ?? 'N/A'}',
+                    'Loja (Bluesoft): ${widget.productData!['lojaKey'] ?? 'N/A'}',
                     style: const TextStyle(
                       color: Color.fromARGB(255, 255, 252, 252),
                       fontSize: 18,
@@ -56,7 +81,7 @@ class ProductDetail extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'GTIN: ${productData!['gtinPrincipal'] ?? 'N/A'}',
+                    'GTIN: ${widget.productData!['gtinPrincipal'] ?? 'N/A'}',
                     style: const TextStyle(
                       color: Color.fromARGB(255, 255, 252, 252),
                       fontSize: 18,
@@ -69,8 +94,10 @@ class ProductDetail extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           TextField(
-            controller: quantityController,
+            controller: widget.quantityController,
+            focusNode: _quantityFocusNode,
             keyboardType: TextInputType.number,
+            onSubmitted: widget.onSubmitQuantity,
             decoration: const InputDecoration(
               labelText: 'Quantidade',
               border: OutlineInputBorder(),

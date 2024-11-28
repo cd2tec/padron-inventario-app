@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:padron_inventario_app/constants/constants.dart';
+import 'package:padron_inventario_app/contexts/supplier_products_provider.dart';
 import 'package:padron_inventario_app/models/Inventory.dart';
 import 'package:padron_inventario_app/models/Store.dart';
 import 'package:padron_inventario_app/services/InventoryService.dart';
@@ -18,6 +20,8 @@ import 'package:padron_inventario_app/widgets/supplier/items_list_button.dart';
 import 'package:padron_inventario_app/widgets/supplier/product_detail.dart';
 import 'package:padron_inventario_app/widgets/supplier/product_search_field.dart';
 import 'package:padron_inventario_app/widgets/supplier/search_button.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class SupplierInventoryDetailsPage extends StatefulWidget {
@@ -42,7 +46,9 @@ class _SupplierInventoryDetailsPageState
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productkeyController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
+  final FocusNode _productKeyFocusNode = FocusNode();
   bool isLoading = false;
   Map<String, dynamic>? searchedProductData;
   Store? selectedStore;
@@ -55,8 +61,14 @@ class _SupplierInventoryDetailsPageState
     super.initState();
     _loadInventoryDetails();
     _previousProductKey = null;
-
     _productkeyController.addListener(_onProductKeyChanged);
+    _loadAddress();
+  }
+
+  Future<void> _loadInventoryDetails() async {
+    final provider =
+        Provider.of<SupplierProductsProvider>(context, listen: false);
+    await provider.loadInventoryDetails(widget.inventory['id']);
   }
 
   @override
@@ -65,7 +77,30 @@ class _SupplierInventoryDetailsPageState
     _productkeyController.removeListener(_onProductKeyChanged);
     _productkeyController.dispose();
     _quantityController.dispose();
+    _productKeyFocusNode.dispose();
+    _addressController.dispose();
     super.dispose();
+  }
+
+  bool isAddressRequired() {
+    final lojaKey = widget.inventory['loja_key'];
+    final store = dotenv.env['STORE'];
+    return lojaKey == store;
+  }
+
+  Future<void> _loadAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedAddress = prefs.getString('savedAddress');
+    if (savedAddress != null) {
+      setState(() {
+        _addressController.text = savedAddress;
+      });
+    }
+  }
+
+  Future<void> _saveAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('savedAddress', _addressController.text);
   }
 
   void _onProductKeyChanged() {
@@ -78,62 +113,81 @@ class _SupplierInventoryDetailsPageState
     }
   }
 
-  Future<void> _loadInventoryDetails() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final List<Map<String, dynamic>> updatedInventories =
-          await supplierService
-              .fetchSupplierInventoryById(widget.inventory['id']);
-
-      if (updatedInventories.isNotEmpty) {
-        final Map<String, dynamic> inventory = updatedInventories.first;
-        setState(() {
-          products =
-              List<Map<String, dynamic>>.from(inventory['produtos'] ?? []);
-        });
+  Future<void> _showAddConfirmationDialog(
+      int inventoryId,
+      String storeKey,
+      String gtin,
+      String fornecedorKey,
+      Map<String, dynamic>? searchedProductData) async {
+    if (isAddressRequired()) {
+      if (_quantityController.text.isEmpty || _addressController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(fillOutAllFields),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
       } else {
-        setState(() {
-          products = [];
-        });
+        if (_quantityController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(fillOutAllFields),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+          return;
+        }
       }
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$errorLoadingInventoryDetails $error'),
-        ),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
     }
-  }
 
-  void _showAddConfirmationDialog(int inventoryId, String storeKey, String gtin,
-      String fornecedorKey, Map<String, dynamic>? searchedProductData) {
-    String description =
-        searchedProductData?['descricao'] ?? 'Descrição indisponível';
+    bool isUpdating = products.any((product) => product['gtin'] == gtin);
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ConfirmationAddProductInventory(
-          onConfirm: () async {
-            await _addProductInventory(
+    if (isUpdating) {
+      _updateProductInventory(
+        inventoryId: inventoryId,
+        storeKey: storeKey,
+        gtin: gtin,
+        fornecedorKey: fornecedorKey,
+        estoqueDisponivel: int.parse(_quantityController.text),
+        endereco:
+            _addressController.text.isNotEmpty ? _addressController.text : null,
+      );
+      _saveAddress();
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ConfirmationAddProductInventory(
+            onConfirm: () async {
+              await _addProductInventory(
                 inventoryId: inventoryId,
                 storeKey: storeKey,
                 gtin: gtin,
                 fornecedorKey: fornecedorKey,
                 estoqueDisponivel: int.parse(_quantityController.text),
-                description: description);
-            await _loadInventoryDetails();
-          },
-        );
-      },
-    );
+                endereco: _addressController.text.isNotEmpty
+                    ? _addressController.text
+                    : null,
+                description: searchedProductData?['descricao'] ??
+                    'Descrição indisponível',
+              );
+              await _loadInventoryDetails();
+              _saveAddress();
+            },
+            onCancel: () {
+              _productkeyController.clear();
+              _quantityController.clear();
+              setState(() {
+                searchedProductData = null;
+                showProductDetail = false;
+              });
+              _loadInventoryDetails();
+            },
+          );
+        },
+      );
+    }
   }
 
   Future<void> _addProductInventory(
@@ -142,7 +196,8 @@ class _SupplierInventoryDetailsPageState
       required String gtin,
       required String fornecedorKey,
       required int estoqueDisponivel,
-      required String description}) async {
+      required String description,
+      String? endereco}) async {
     try {
       await supplierService.addProductLocalInventory(
           inventoryId: inventoryId,
@@ -150,13 +205,19 @@ class _SupplierInventoryDetailsPageState
           gtin: gtin,
           fornecedorKey: fornecedorKey,
           estoqueDisponivel: estoqueDisponivel,
-          description: description);
+          description: description,
+          endereco: endereco);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(productAddedToInventorySuccessfully),
-        ),
-      );
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(productAddedToInventorySuccessfully),
+            ),
+          );
+        });
+      }
+
       await supplierService.updateProductLocalInventory(
         inventoryId: inventoryId,
         gtin: gtin,
@@ -166,11 +227,58 @@ class _SupplierInventoryDetailsPageState
         showProductDetail = false;
       });
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$errorAddingProductToInventory $error'),
-        ),
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$errorAddingProductToInventory $error'),
+            ),
+          );
+        });
+      }
+    }
+  }
+
+  Future<void> _updateProductInventory(
+      {required int inventoryId,
+      required String storeKey,
+      required String gtin,
+      required String fornecedorKey,
+      required int estoqueDisponivel,
+      String? endereco}) async {
+    try {
+      await supplierService.updateProductLocalInventory(
+        inventoryId: inventoryId,
+        gtin: gtin,
+        estoqueDisponivel: estoqueDisponivel,
+        endereco:
+            _addressController.text.isNotEmpty ? _addressController.text : null,
       );
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(productUpdatedInInventorySuccessfully),
+            ),
+          );
+        });
+
+        setState(() {
+          showProductDetail = false;
+        });
+
+        await _loadInventoryDetails();
+      }
+    } catch (error) {
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$errorAddingProductToInventory $error'),
+            ),
+          );
+        });
+      }
     }
   }
 
@@ -198,7 +306,12 @@ class _SupplierInventoryDetailsPageState
 
       if (productStatus.containsKey('error')) {
         final errorSnackBar = ErrorSnackBar(message: problemWithRequest);
-        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+        if (mounted) {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+          });
+        }
+
         return;
       }
 
@@ -223,7 +336,11 @@ class _SupplierInventoryDetailsPageState
         ),
         backgroundColor: Colors.redAccent,
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
+      }
     } else {
       const snackBar = SnackBar(
         content: Text(
@@ -232,7 +349,11 @@ class _SupplierInventoryDetailsPageState
         ),
         backgroundColor: Colors.redAccent,
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
+      }
     }
   }
 
@@ -244,17 +365,23 @@ class _SupplierInventoryDetailsPageState
     if (productKey.isEmpty) return;
 
     setState(() {
-      showProductDetail =
-          true; // Mostrar o ProductDetail quando um produto é pesquisado
+      showProductDetail = true;
     });
     _searchProduct(widget.inventory['loja_key'], productKey);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (products == null) {
-      return const CircularProgressIndicator();
+    final provider = Provider.of<SupplierProductsProvider>(context);
+
+    if (provider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
     }
+
+    if (provider.products.isEmpty) {
+      return const Center(child: Text('Nenhum produto encontrado.'));
+    }
+
     final inventory = Inventory.fromJson(widget.inventory);
 
     return Scaffold(
@@ -285,6 +412,7 @@ class _SupplierInventoryDetailsPageState
                       ProductSearchField(
                         productKeyController: _productkeyController,
                         barcodeController: _barcodeController,
+                        focusNode: _productKeyFocusNode,
                         onScan: _scanBarcode,
                         onSubmit: (value) {
                           _scanProductKey(value);
@@ -298,9 +426,36 @@ class _SupplierInventoryDetailsPageState
                   ),
                 ),
                 if (showProductDetail && searchedProductData != null)
-                  ProductDetail(
-                    productData: searchedProductData,
-                    quantityController: _quantityController,
+                  Column(
+                    children: [
+                      ProductDetail(
+                        productData: searchedProductData,
+                        quantityController: _quantityController,
+                        onSubmitQuantity: (value) {
+                          _showAddConfirmationDialog(
+                              inventory.id,
+                              inventory.lojaKey,
+                              _previousProductKey!,
+                              inventory.fornecedorKey,
+                              searchedProductData);
+                        },
+                      ),
+                      if (isAddressRequired())
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextField(
+                            controller: _addressController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Endereço',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (value) {
+                              _saveAddress();
+                            },
+                          ),
+                        ),
+                    ],
                   ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -319,7 +474,7 @@ class _SupplierInventoryDetailsPageState
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: ItemsListButton(
-                    products: products,
+                    products: provider.products,
                     inventory: widget.inventory,
                   ),
                 ),
