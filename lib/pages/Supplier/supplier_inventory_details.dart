@@ -141,7 +141,11 @@ class _SupplierInventoryDetailsPageState
       }
     }
 
-    bool isUpdating = products.any((product) => product['gtin'] == gtin);
+    final provider =
+        Provider.of<SupplierProductsProvider>(context, listen: false);
+
+    bool isUpdating =
+        provider.products.any((product) => product['gtin'] == gtin);
 
     if (isUpdating) {
       _updateProductInventory(
