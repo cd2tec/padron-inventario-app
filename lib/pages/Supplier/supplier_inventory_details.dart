@@ -128,6 +128,16 @@ class _SupplierInventoryDetailsPageState
           ),
         );
         return;
+      } else {
+        if (_quantityController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(fillOutAllFields),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+          return;
+        }
       }
     }
 
