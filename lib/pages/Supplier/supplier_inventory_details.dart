@@ -128,20 +128,14 @@ class _SupplierInventoryDetailsPageState
           ),
         );
         return;
-      } else {
-        if (_quantityController.text.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(fillOutAllFields),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
-          return;
-        }
       }
     }
 
-    bool isUpdating = products.any((product) => product['gtin'] == gtin);
+    final provider =
+        Provider.of<SupplierProductsProvider>(context, listen: false);
+
+    bool isUpdating =
+        provider.products.any((product) => product['gtin'] == gtin);
 
     if (isUpdating) {
       _updateProductInventory(
