@@ -62,6 +62,11 @@ class _SupplierInventoryDetailsPageState
     _loadInventoryDetails();
     _previousProductKey = null;
     _productkeyController.addListener(_onProductKeyChanged);
+
+    Future.delayed(const Duration(milliseconds: 200), () {
+      _productKeyFocusNode.requestFocus();
+    });
+
     _loadAddress();
   }
 
@@ -69,6 +74,9 @@ class _SupplierInventoryDetailsPageState
     final provider =
         Provider.of<SupplierProductsProvider>(context, listen: false);
     await provider.loadInventoryDetails(widget.inventory['id']);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      _productKeyFocusNode.requestFocus();
+    });
   }
 
   @override
@@ -157,6 +165,10 @@ class _SupplierInventoryDetailsPageState
         endereco:
             _addressController.text.isNotEmpty ? _addressController.text : null,
       );
+      _productkeyController.clear();
+      _quantityController.clear();
+      _productKeyFocusNode.requestFocus();
+
       _saveAddress();
     } else {
       showDialog(
@@ -182,6 +194,8 @@ class _SupplierInventoryDetailsPageState
             onCancel: () {
               _productkeyController.clear();
               _quantityController.clear();
+              _productKeyFocusNode.requestFocus();
+
               setState(() {
                 searchedProductData = null;
                 showProductDetail = false;
@@ -230,6 +244,7 @@ class _SupplierInventoryDetailsPageState
       setState(() {
         showProductDetail = false;
       });
+      _productKeyFocusNode.requestFocus();
     } catch (error) {
       if (mounted) {
         Future.delayed(const Duration(milliseconds: 100), () {
@@ -371,6 +386,7 @@ class _SupplierInventoryDetailsPageState
     setState(() {
       showProductDetail = true;
     });
+    _productkeyController.clear();
     _searchProduct(widget.inventory['loja_key'], productKey);
   }
 
